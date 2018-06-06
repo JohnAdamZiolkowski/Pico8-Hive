@@ -21,18 +21,21 @@ palt(14, true)
 cur = {c=8, r=8, t=0, s=0}
 
 function init_board()
-	for row = 0,b do
+	for row = 1,b do
 	 board[row] = {}
-	 for col = 0,b do
-	  board[row][col] = {}
-	  sprite = flr(rnd(20)) + 1
-	  if sprite > 5 then
-	  	sprite = 0
-	  	team = 0
-	  else
-	   team = flr(rnd(2)) + 1
+	 for col = 1,b do
+	  //leave out off screen cells
+	  if not (row%2 == 1 and col == b) then
+	   board[row][col] = {}
+	   sprite = flr(rnd(20)) + 1
+	   if sprite > 5 then
+	   	sprite = 0
+	   	team = 0
+	   else
+	    team = flr(rnd(2)) + 1
+	   end
+	   board[row][col] = {t=team, s=sprite}
 	  end
-	  board[row][col] = {t=team, s=sprite}
 	 end
 	end
 end
@@ -81,6 +84,13 @@ function _update()
   if btnp(➡️) then cur.c+=1 end
   if btnp(⬆️) then cur.r-=1 end
   if btnp(⬇️) then cur.r+=1 end
+  if cur.c < 1 then cur.c=1 end
+  if cur.c > b then cur.c=b end
+  if cur.r < 1 then cur.r=1 end
+  if cur.r > b then cur.r=b end
+  if cur.r%2==1 and cur.c==b then
+   cur.c=b-1
+  end	  
   if btnp(🅾️) then
    grab_or_place()
   end
@@ -106,23 +116,25 @@ function draw_over()
 end
 
 function draw_board()
- for row = 0,b do
-  for col = 0,b do
-   spr(16, col * c, row * c)
+ for row = 1,b do
+  for col = 1,b do
+   spr(16, col * c - c, row * c - c)
   end
  end
 end
 
 function draw_cells()
- for row = 0,b do
-  for col = 0,b do
-   //offset every other row
-   hex = (row % 2) * c / 2
-   local t = board[row][col].t
-   local s = board[row][col].s
-   if t > 0 then
-    spr(t+5, col * c + hex, row * c)
-    spr(s, col * c + hex, row * c)
+ for row = 1,b do
+  for col = 1,b do
+   if not (row%2 == 1 and col == b) then
+    //offset every other row
+    hex = (row % 2) * c / 2
+    local t = board[row][col].t
+    local s = board[row][col].s
+    if t > 0 then
+     spr(t+5, col * c + hex - c, row * c - c)
+     spr(s, col * c + hex - c, row * c - c)
+    end
    end
   end
  end
@@ -132,16 +144,16 @@ function draw_cursor()
  col = cur.c
  row = cur.r
  hex = (row % 2) * c / 2
- x = col * c + hex
- y = row * c
+ x = col * c + hex-c
+ y = row * c-c
  o = 3
  spr(8, x-o, y-o, 1, 1, false, false)
  spr(8, x+o, y-o, 1, 1, true, false)
  spr(8, x+o, y+o, 1, 1, true, true)
  spr(8, x-o, y+o, 1, 1, false, true)
  if cur.t != 0 then
-  spr(cur.t+5, col * c + hex, row * c)
-  spr(cur.s, col * c + hex, row * c)
+  spr(cur.t+5, col * c + hex-c, row * c-c)
+  spr(cur.s, col * c + hex-c, row * c-c)
  end
 end
 
