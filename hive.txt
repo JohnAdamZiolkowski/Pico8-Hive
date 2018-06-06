@@ -2,6 +2,8 @@
 -- by john ziolkowski
 
 state = "start"
+player = nil
+
 c = 8
 b = 128 / c
 
@@ -12,13 +14,37 @@ b = 128 / c
 🅾️ = 4
 ❎ = 5
 
+bee = 1
+ant = 2
+spi = 3
+gra = 4
+btl = 5
+
 board = {{{}}}
+hands = {}
 palt(0, false)
 palt(14, true)
 
 //team (0 is none)
 //sprite for bug (1-5)
 cur = {c=8, r=8, t=0, s=0}
+
+function init_hands()
+ for p = 1,2 do
+  hands[p] = {}
+  add(hands[p],{t=p, s=bee})
+  add(hands[p],{t=p, s=ant})
+  add(hands[p],{t=p, s=ant})
+  add(hands[p],{t=p, s=ant})
+  add(hands[p],{t=p, s=spi})
+  add(hands[p],{t=p, s=spi})
+  add(hands[p],{t=p, s=gra})
+  add(hands[p],{t=p, s=gra})
+  add(hands[p],{t=p, s=gra})
+  add(hands[p],{t=p, s=btl})
+  add(hands[p],{t=p, s=btl})
+ end
+end
 
 function init_board()
 	for row = 1,b do
@@ -43,7 +69,10 @@ end
 init_board()
 
 function reset()
+ player = 2
  init_board()
+ init_hands()
+ state = "playing"
 end
 
 function game_over()
@@ -72,11 +101,18 @@ function grab_or_place()
  end
 end
 
+function toggle_player()
+ if player == 1 then
+  player = 2
+ elseif player == 2 then
+  player = 1
+ end
+end
+
 function _update()
  if state == "start" or
     state == "over" then
   if(btn(🅾️)) then
-   state = "playing"
    reset()
   end
  elseif state == "playing" then
@@ -94,78 +130,8 @@ function _update()
   if btnp(🅾️) then
    grab_or_place()
   end
- end
-end
-
-function draw_start()
- color(0)
- rectfill(24, 56, 110, 96)
- 
- color(3)
- print("play hive", 32, 64)
- print("press 🅾️ to start", 32, 80)
-end
-
-function draw_over()
- color(0)
- rectfill(24, 56, 110, 110)
-
- color(8)
- print("game over", 32, 64)
- print("reset from menu", 32, 96)
-end
-
-function draw_board()
- for row = 1,b do
-  for col = 1,b do
-   spr(16, col * c - c, row * c - c)
+  if btnp(❎) then
+   toggle_player()
   end
- end
-end
-
-function draw_cells()
- for row = 1,b do
-  for col = 1,b do
-   if not (row%2 == 1 and col == b) then
-    //offset every other row
-    hex = (row % 2) * c / 2
-    local t = board[row][col].t
-    local s = board[row][col].s
-    if t > 0 then
-     spr(t+5, col * c + hex - c, row * c - c)
-     spr(s, col * c + hex - c, row * c - c)
-    end
-   end
-  end
- end
-end
-
-function draw_cursor()
- col = cur.c
- row = cur.r
- hex = (row % 2) * c / 2
- x = col * c + hex-c
- y = row * c-c
- o = 3
- spr(8, x-o, y-o, 1, 1, false, false)
- spr(8, x+o, y-o, 1, 1, true, false)
- spr(8, x+o, y+o, 1, 1, true, true)
- spr(8, x-o, y+o, 1, 1, false, true)
- if cur.t != 0 then
-  spr(cur.t+5, col * c + hex-c, row * c-c)
-  spr(cur.s, col * c + hex-c, row * c-c)
- end
-end
-
-function _draw()
- cls()
- if state == "start" then
-  draw_start()
- elseif state == "playing" then
-  draw_board()
-  draw_cells()
-  draw_cursor()
- elseif state == "over" then
-  draw_over()
  end
 end

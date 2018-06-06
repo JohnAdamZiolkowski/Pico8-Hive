@@ -1,0 +1,107 @@
+-- draw
+
+function draw_start()
+ color(0)
+ rectfill(24, 56, 110, 96)
+ 
+ color(3)
+ print("play hive", 32, 64)
+ print("press 🅾️ to start", 32, 80)
+end
+
+function draw_over()
+ color(0)
+ rectfill(24, 56, 110, 110)
+
+ color(8)
+ print("game over", 32, 64)
+ print("reset from menu", 32, 96)
+end
+
+function draw_board()
+ for row = 1,b do
+  for col = 1,b do
+   spr(16, col * c - c, row * c - c)
+  end
+ end
+end
+
+function draw_cells()
+ for row = 1,b do
+  for col = 1,b do
+   if not (row%2 == 1 and col == b) then
+    local t = board[row][col].t
+    local s = board[row][col].s
+    draw_tile(t, s, col, row)
+   end
+  end
+ end
+end
+
+function draw_tile(t, s, col, row)
+ //offset every other row
+ hex = (row % 2) * c / 2
+ if t > 0 then
+  spr(t+5, col * c + hex - c, row * c - c)
+  spr(s, col * c + hex - c, row * c - c)
+ end
+end
+
+function draw_cursor()
+ col = cur.c
+ row = cur.r
+ hex = (row % 2) * c / 2
+ x = col * c + hex-c
+ y = row * c-c
+ o = 3
+ spr(8, x-o, y-o, 1, 1, false, false)
+ spr(8, x+o, y-o, 1, 1, true, false)
+ spr(8, x+o, y+o, 1, 1, true, true)
+ spr(8, x-o, y+o, 1, 1, false, true)
+ draw_tile(cur.t, cur.s, col, row)
+end
+
+function draw_help()
+ if player == 1 then
+  bg = 5
+  text = 0
+ elseif player == 2 then
+  bg = 6
+  text = 7
+ end
+ rectfill(0,0,128,6,bg)
+ print("press ❎ to place",1,1,text)
+end
+
+function draw_hand()
+ if player == 1 then
+  bg = 5
+  text = 6
+  border = 0
+ elseif player == 2 then
+  bg = 6
+ end
+ rectfill(0,119,128,128,bg)
+ local row = 16
+ local hand = hands[player]
+ for col = 1,#hand do
+  local s = hand[col].s
+  draw_tile(player,s,col,row)
+ end
+ //print("❎🅾️❎🅾️❎🅾️❎",0,123,text)
+end
+
+function _draw()
+ cls()
+ if state == "start" then
+  draw_start()
+ elseif state == "playing" then
+  draw_board()
+  draw_cells()
+  draw_help()
+  draw_hand()
+  draw_cursor()
+ elseif state == "over" then
+  draw_over()
+ end
+end
