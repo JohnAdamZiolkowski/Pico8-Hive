@@ -1,0 +1,126 @@
+state = "start"
+c = 8
+b = 128 / c
+
+⬅️ = 0
+➡️ = 1
+⬆️ = 2
+⬇️ = 3
+🅾️ = 4
+❎ = 5
+
+board = {{{}}}
+palt(0, false)
+palt(14, true)
+
+cur = {x=8, y=8}
+
+function init_board()
+	for row = 0,b do
+	 board[row] = {}
+	 for col = 0,b do
+	  board[row][col] = {}
+	  sprite = flr(rnd(10))
+	  if sprite > 4 then
+	  	sprite = 5
+	  	team = 0
+	  	board[row][col] = {team, sprite}
+	  else
+	   team = flr(rnd(2)) + 1
+	   board[row][col] = {team, sprite}
+	  end
+	 end
+	end
+end
+
+init_board()
+
+function reset()
+ init_board()
+end
+
+function game_over()
+ state = "over"
+end
+
+function _update()
+ if state == "start" or
+    state == "over" then
+  if(btn(🅾️)) then
+   state = "playing"
+   reset()
+  end
+ elseif state == "playing" then
+   if btnp(⬅️) then cur.x-=1 end
+   if btnp(➡️) then cur.x+=1 end
+   if btnp(⬆️) then cur.y-=1 end
+   if btnp(⬇️) then cur.y+=1 end
+ end
+end
+
+function draw_start()
+ color(0)
+ rectfill(24, 56, 110, 96)
+ 
+ color(3)
+ print("play hive", 32, 64)
+ print("press 🅾️ to start", 32, 80)
+end
+
+function draw_over()
+ color(0)
+ rectfill(24, 56, 110, 110)
+
+ color(8)
+ print("game over", 32, 64)
+ print("reset from menu", 32, 96)
+end
+
+function draw_board()
+ for row = 0,b do
+  for col = 0,b do
+   spr(16, col * c, row * c)
+  end
+ end
+end
+
+function draw_cells()
+ for row = 0,b do
+  for col = 0,b do
+   //offset every other row
+   hex = (row % 2) * c / 2
+   t = board[row][col][1] + 5
+   s = board[row][col][2]
+   if t > 0 then
+    spr(t, col * c + hex, row * c)
+    spr(s, col * c + hex, row * c)
+   end
+  end
+ end
+end
+
+function draw_cursor()
+ col = cur.x
+ row = cur.y
+ hex = (row % 2) * c / 2
+ x = col * c + hex
+ y = row * c
+ o = 3
+ spr(8, x-o, y-o, 1, 1, false, false)
+ spr(8, x+o, y-o, 1, 1, true, false)
+ spr(8, x+o, y+o, 1, 1, true, true)
+ spr(8, x-o, y+o, 1, 1, false, true)
+end
+
+function _draw()
+ cls()
+ if state == "start" then
+  draw_start()
+ elseif state == "playing" then
+  draw_board()
+  draw_cells()
+  draw_cursor()
+ elseif state == "over" then
+  draw_over()
+ end
+end
