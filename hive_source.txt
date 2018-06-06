@@ -1,3 +1,6 @@
+-- hive
+-- by john ziolkowski
+
 state = "start"
 c = 8
 b = 128 / c
@@ -13,22 +16,23 @@ board = {{{}}}
 palt(0, false)
 palt(14, true)
 
-cur = {x=8, y=8}
+//team (0 is none)
+//sprite for bug (1-5)
+cur = {c=8, r=8, t=0, s=0}
 
 function init_board()
 	for row = 0,b do
 	 board[row] = {}
 	 for col = 0,b do
 	  board[row][col] = {}
-	  sprite = flr(rnd(10))
-	  if sprite > 4 then
-	  	sprite = 5
+	  sprite = flr(rnd(20)) + 1
+	  if sprite > 5 then
+	  	sprite = 0
 	  	team = 0
-	  	board[row][col] = {team, sprite}
 	  else
 	   team = flr(rnd(2)) + 1
-	   board[row][col] = {team, sprite}
 	  end
+	  board[row][col] = {t=team, s=sprite}
 	 end
 	end
 end
@@ -43,6 +47,28 @@ function game_over()
  state = "over"
 end
 
+function grab_or_place()
+ local r = cur.r
+ local c = cur.c
+ if cur.t == 0 then
+  //grab if cursor empty
+  if board[r][c].t != 0 then
+   cur.t = board[r][c].t
+   cur.s = board[r][c].s
+   board[r][c].t = 0
+   board[r][c].s = 0
+  end
+ else
+  //place if cell empty
+  if board[r][c].t == 0 then
+   board[r][c].t = cur.t
+   board[r][c].s = cur.s
+   cur.s = 0
+   cur.t = 0
+  end
+ end
+end
+
 function _update()
  if state == "start" or
     state == "over" then
@@ -51,10 +77,13 @@ function _update()
    reset()
   end
  elseif state == "playing" then
-   if btnp(⬅️) then cur.x-=1 end
-   if btnp(➡️) then cur.x+=1 end
-   if btnp(⬆️) then cur.y-=1 end
-   if btnp(⬇️) then cur.y+=1 end
+  if btnp(⬅️) then cur.c-=1 end
+  if btnp(➡️) then cur.c+=1 end
+  if btnp(⬆️) then cur.r-=1 end
+  if btnp(⬇️) then cur.r+=1 end
+  if btnp(🅾️) then
+   grab_or_place()
+  end
  end
 end
 
@@ -89,10 +118,10 @@ function draw_cells()
   for col = 0,b do
    //offset every other row
    hex = (row % 2) * c / 2
-   t = board[row][col][1] + 5
-   s = board[row][col][2]
+   local t = board[row][col].t
+   local s = board[row][col].s
    if t > 0 then
-    spr(t, col * c + hex, row * c)
+    spr(t+5, col * c + hex, row * c)
     spr(s, col * c + hex, row * c)
    end
   end
@@ -100,8 +129,8 @@ function draw_cells()
 end
 
 function draw_cursor()
- col = cur.x
- row = cur.y
+ col = cur.c
+ row = cur.r
  hex = (row % 2) * c / 2
  x = col * c + hex
  y = row * c
@@ -110,6 +139,10 @@ function draw_cursor()
  spr(8, x+o, y-o, 1, 1, true, false)
  spr(8, x+o, y+o, 1, 1, true, true)
  spr(8, x-o, y+o, 1, 1, false, true)
+ if cur.t != 0 then
+  spr(cur.t+5, col * c + hex, row * c)
+  spr(cur.s, col * c + hex, row * c)
+ end
 end
 
 function _draw()
