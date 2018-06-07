@@ -82,9 +82,12 @@ function draw_cursor()
  to = 0
  stacked = 0
  if row < b then
+  if board[row][col].t != 0 then
+   stacked += 1
+  end
   stack = board[row][col].b
   if stack then
-   stacked = #stack
+   stacked += #stack
   end
  end
  if cur.t!=0 then to=2 end
