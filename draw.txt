@@ -32,19 +32,21 @@ function draw_cells()
    if not (row%2 == 1 and col == b) then
     local t = board[row][col].t
     local s = board[row][col].s
-    draw_tile(t, s, col, row)
+    draw_tile(t, s, col, row, 0)
    end
   end
  end
 end
 
-function draw_tile(t, s, col, row)
+function draw_tile(t, s, col, row, stacked)
  //offset every other row
  hex = (row % 2) * c / 2
  if t > 0 then
-  spr(t+5, col * c + hex - c,-1+row * c - c)
-  spr(t+5, col * c + hex - c,1+row * c - c)
-  spr(s, col * c + hex - c, row * c - c)
+  local x = col * c + hex - c
+  local y = row * c - c - stacked * 2
+  spr(t+5, x, y-1)
+  spr(t+5, x, y+1)
+  spr(s, x, y)
  end
 end
 
@@ -52,9 +54,8 @@ function draw_nearby_tiles(col, row)
  nearby = nearby_cells(col, row)
  for n=1,#nearby do
   near = nearby[n]
-  draw_tile(player, bee, near.c, near.r)
+  draw_tile(player, bee, near.c, near.r, 0)
  end
- //print(#nearby,2,2,0)
 end
 
 function draw_cursor()
@@ -64,15 +65,13 @@ function draw_cursor()
  x = col * c + hex-c
  y = row * c-c
  o = 3
- spr(8, x-o, y-o, 1, 1, false, false)
- spr(8, x+o, y-o, 1, 1, true, false)
- spr(8, x+o, y+o, 1, 1, true, true)
- spr(8, x-o, y+o, 1, 1, false, true)
- draw_tile(cur.t, cur.s, col, row)
- //draw_nearby_tiles(col, row)
- //if on_board(col, row) then
- // draw_tile(player, ant, col, row)
- //end
+ to = 0
+ if cur.t!=0 then to=2 end
+ spr(8, x-o, y-o-to, 1, 1, false, false)
+ spr(8, x+o, y-o-to, 1, 1, true, false)
+ spr(8, x+o, y+o-to, 1, 1, true, true)
+ spr(8, x-o, y+o-to, 1, 1, false, true)
+ draw_tile(cur.t, cur.s, col, row, 1)
 end
 
 function update_help()
@@ -100,6 +99,9 @@ function update_help()
     name = names[cur.s]
     help_text="press ❎ to place "..name
    end
+  elseif cur.s==btl then
+   name = names[cur.s]
+   help_text="press ❎ to place "..name
   else
    if cur.t==0 and board[cur.r][cur.c].t == player then
     name = names[board[cur.r][cur.c].s]
@@ -144,7 +146,7 @@ function draw_hand()
  for col = 1,#hand do
   local t = hand[col].t
   local s = hand[col].s
-  draw_tile(t,s,col,row)
+  draw_tile(t,s,col,row,0)
  end
 end
 

@@ -121,6 +121,11 @@ function grab_or_place()
     board[r][c].s = cur.s
     cur.s = 0
     cur.t = 0
+   elseif cur.s == btl then
+    board[r][c].t = cur.t
+    board[r][c].s = cur.s
+    cur.s = 0
+    cur.t = 0
    end
   end
  else
