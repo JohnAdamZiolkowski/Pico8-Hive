@@ -27,7 +27,7 @@ function draw_board()
 end
 
 function draw_cells()
- for row = 1,b do
+ for row = 2,b-1 do
   for col = 1,b do
    if not (row%2 == 1 and col == b) then
     local t = board[row][col].t
@@ -61,6 +61,43 @@ function draw_cursor()
  draw_tile(cur.t, cur.s, col, row)
 end
 
+function update_help()
+ if cur.r==16 then
+  if hands[player][cur.c].t==0 then
+   if cur.t==0 then
+    help_text="use arrows to move cursor"
+   else
+    name = names[cur.s]
+    help_text="press ❎ to place "..name
+   end
+  else
+   if cur.t==0 then
+    name = names[hands[player][cur.c].s]
+    help_text="press ❎ to grab "..name
+   else
+    help_text="press arrows to move cursor"
+   end
+  end
+ else
+  if board[cur.r][cur.c].t==0 then
+   if cur.t==0 then
+    help_text="use arrows to move cursor"
+   else
+    name = names[cur.s]
+    help_text="press ❎ to place "..name
+   end
+  else
+   if cur.t==0 then
+    name = names[board[cur.r][cur.c].s]
+    help_text="press ❎ to grab "..name
+   else
+    help_text="use arrows to move cursor"
+   end
+  end
+ end 
+end
+
+help_text=""
 function draw_help()
  if player == 1 then
   bg = 5
@@ -70,7 +107,10 @@ function draw_help()
   text = 7
  end
  rectfill(0,0,128,6,bg)
- print("press ❎ to place",1,1,text)
+ update_help() 
+ local offset = #help_text * 2
+ local x_pos = 64 - offset
+ print(help_text,x_pos,1,text)
 end
 
 function draw_hand()
@@ -81,14 +121,14 @@ function draw_hand()
  elseif player == 2 then
   bg = 6
  end
- rectfill(0,119,128,128,bg)
+ rectfill(0,120,128,128,bg)
  local row = 16
  local hand = hands[player]
  for col = 1,#hand do
+  local t = hand[col].t
   local s = hand[col].s
-  draw_tile(player,s,col,row)
+  draw_tile(t,s,col,row)
  end
- //print("❎🅾️❎🅾️❎🅾️❎",0,123,text)
 end
 
 function _draw()
