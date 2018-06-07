@@ -42,7 +42,8 @@ function draw_tile(t, s, col, row)
  //offset every other row
  hex = (row % 2) * c / 2
  if t > 0 then
-  spr(t+5, col * c + hex - c, row * c - c)
+  spr(t+5, col * c + hex - c,-1+row * c - c)
+  spr(t+5, col * c + hex - c,1+row * c - c)
   spr(s, col * c + hex - c, row * c - c)
  end
 end
@@ -87,7 +88,7 @@ function update_help()
     help_text="press ❎ to place "..name
    end
   else
-   if cur.t==0 then
+   if cur.t==0 and board[cur.r][cur.c].t == player then
     name = names[board[cur.r][cur.c].s]
     help_text="press ❎ to grab "..name
    else
