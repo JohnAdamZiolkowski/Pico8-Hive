@@ -48,6 +48,15 @@ function draw_tile(t, s, col, row)
  end
 end
 
+function draw_nearby_tiles(col, row)
+ nearby = nearby_cells(col, row)
+ for n=1,#nearby do
+  near = nearby[n]
+  draw_tile(player, bee, near.c, near.r)
+ end
+ //print(#nearby,2,2,0)
+end
+
 function draw_cursor()
  col = cur.c
  row = cur.r
@@ -60,6 +69,10 @@ function draw_cursor()
  spr(8, x+o, y+o, 1, 1, true, true)
  spr(8, x-o, y+o, 1, 1, false, true)
  draw_tile(cur.t, cur.s, col, row)
+ //draw_nearby_tiles(col, row)
+ //if on_board(col, row) then
+ // draw_tile(player, ant, col, row)
+ //end
 end
 
 function update_help()
@@ -95,7 +108,10 @@ function update_help()
     help_text="use arrows to move cursor"
    end
   end
- end 
+ end
+ if state=="over" then
+  help_text="press 🅾️ to reset"
+ end
 end
 
 help_text=""
@@ -136,7 +152,8 @@ function _draw()
  cls()
  if state == "start" then
   draw_start()
- elseif state == "playing" then
+ elseif state == "playing" or
+  state == "over" then
   draw_board()
   draw_cells()
   draw_help()
