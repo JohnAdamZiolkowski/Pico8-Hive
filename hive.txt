@@ -112,7 +112,7 @@ function grab_or_place()
   if cur.t == 0 then
    //grab if cursor empty
    if board[r][c].t == player then
-    stack = board[r][c].b
+    local stack = board[r][c].b
     if not stack then
      cur.t = board[r][c].t
      cur.s = board[r][c].s
@@ -122,12 +122,14 @@ function grab_or_place()
      //if there is a beetle stack
      cur.t = board[r][c].t
      cur.s = board[r][c].s
-     stacked = stack[#stack]
+     local stacked = stack[#stack]
      board[r][c].t = stacked.t
      board[r][c].s = stacked.s
      del(stack, stacked)
      if #stack == 0 then
-      stack = nil
+      //can't nil stack
+      //or it doesnt remove it
+      board[r][c].b = nil
      end
     end
    end
