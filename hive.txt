@@ -22,6 +22,9 @@ btl = 5
 names = {"bee", "ant", "spider",
          "cricket", "beetle"}
 
+white=2
+black=1
+
 board = {{{}}}
 hands = {}
 palt(0, false)
@@ -91,7 +94,7 @@ function init_board()
 end
 
 function reset()
- player = 2
+ player = white
  //shuffle_board()
  init_board()
  init_hands()
@@ -109,10 +112,24 @@ function grab_or_place()
   if cur.t == 0 then
    //grab if cursor empty
    if board[r][c].t == player then
-    cur.t = board[r][c].t
-    cur.s = board[r][c].s
-    board[r][c].t = 0
-    board[r][c].s = 0
+    stack = board[r][c].b
+    if not stack then
+     cur.t = board[r][c].t
+     cur.s = board[r][c].s
+     board[r][c].t = 0
+     board[r][c].s = 0
+    else
+     //if there is a beetle stack
+     cur.t = board[r][c].t
+     cur.s = board[r][c].s
+     stacked = stack[#stack]
+     board[r][c].t = stacked.t
+     board[r][c].s = stacked.s
+     del(stack, stacked)
+     if #stack == 0 then
+      stack = nil
+     end
+    end
    end
   else
    //place if cell empty
@@ -121,7 +138,14 @@ function grab_or_place()
     board[r][c].s = cur.s
     cur.s = 0
     cur.t = 0
+   //place on top if beetle
    elseif cur.s == btl then
+    if not board[r][c].b then
+     board[r][c].b = {}
+    end
+    stacked = {t=board[r][c].t,
+               s=board[r][c].s}
+    add(board[r][c].b, stacked)
     board[r][c].t = cur.t
     board[r][c].s = cur.s
     cur.s = 0
@@ -151,10 +175,10 @@ end
 
 function toggle_player()
  if cur.t == 0 then
-  if player == 1 then
-   player = 2
-  elseif player == 2 then
-   player = 1
+  if player == black then
+   player = white
+  elseif player == white then
+   player = black
   end
  end
 end
