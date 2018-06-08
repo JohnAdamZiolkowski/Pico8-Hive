@@ -3,6 +3,9 @@
 
 state = "start"
 player = nil
+turns = nil
+rounds = nil
+message = ""
 
 c = 8
 b = 128 / c
@@ -99,6 +102,8 @@ function reset()
  init_board()
  init_hands()
  state = "playing"
+ turns = 0
+ rounds = 0
 end
 
 function game_over()
@@ -177,12 +182,32 @@ end
 
 function toggle_player()
  if cur.t == 0 then
+  if not can_end_turn() then
+   return
+  end
   if player == black then
    player = white
   elseif player == white then
    player = black
   end
+  turns += 1
+  rounds = flr(turns / 2)
  end
+end
+
+function can_end_turn()
+ if rounds == 4 then
+  local hand = hands[player] 
+  for i=1,#hand do
+   tile = hand[i]
+   if tile.s == bee then
+    message = "must place bee by 4th turn"
+    return false
+   end
+  end
+ end
+ message = ""
+ return true
 end
 
 function check_win()

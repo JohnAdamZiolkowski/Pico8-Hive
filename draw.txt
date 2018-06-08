@@ -99,6 +99,11 @@ function draw_cursor()
 end
 
 function update_help()
+ if message!="" then
+  help_text=message
+  return
+ end
+
  if cur.r==16 then
   if hands[player][cur.c].t==0 then
    if cur.t==0 then
@@ -142,7 +147,10 @@ end
 
 help_text=""
 function draw_help()
- if player == black then
+ if message != "" then
+  bg = 8
+  text = 14
+ elseif player == black then
   bg = 5
   text = 0
  elseif player == white then
@@ -154,6 +162,7 @@ function draw_help()
  local offset = #help_text * 2
  local x_pos = 64 - offset
  print(help_text,x_pos,1,text)
+ print(rounds,1,1,0)
 end
 
 function draw_hand()
