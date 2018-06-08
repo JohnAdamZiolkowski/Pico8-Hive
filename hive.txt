@@ -5,7 +5,7 @@ state = "start"
 player = nil
 turns = nil
 rounds = nil
-message = ""
+message = nil
 
 c = 8
 b = 128 / c
@@ -102,12 +102,14 @@ function reset()
  init_board()
  init_hands()
  state = "playing"
+ message = ""
  turns = 0
  rounds = 0
 end
 
 function game_over()
  state = "over"
+ message = "game over! press 🅾️ to reset"
 end
 
 function grab_or_place()
@@ -309,10 +311,10 @@ function _update()
   end	  
   if btnp(🅾️) then
    grab_or_place()
-   check_win()
   end
   if btnp(❎) then
    toggle_player()
+   check_win()
   end
  end
 end
