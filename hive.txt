@@ -1,11 +1,26 @@
 -- hive
 -- by john ziolkowski
 
+menuitem(1,"manual",function() toggle_manual() end)
+
+function toggle_manual()
+ if state != "manual" then
+  prev_state = state
+  state="manual"
+  page = 1
+ else
+  state=prev_state
+  prev_state = nil
+ end
+end
+
 state = "start"
-player = nil
-turns = nil
-rounds = nil
-message = nil
+//player = nil
+//turns = nil
+//rounds = nil
+//message = nil
+//help_text=nil
+//prev_state=nil
 
 c = 8
 b = 128 / c
@@ -103,8 +118,10 @@ function reset()
  init_hands()
  state = "playing"
  message = ""
+ hint_text = ""
  turns = 0
  rounds = 0
+ page = 0 //manual page
 end
 
 function game_over()
@@ -195,6 +212,7 @@ function toggle_player()
   turns += 1
   rounds = flr(turns / 2)
  end
+ check_win()
 end
 
 function can_end_turn()
@@ -297,6 +315,9 @@ function _update()
   if(btnp(❎)) then
    reset()
   end
+  if btnp(🅾️) then
+   toggle_manual()
+  end
  elseif state == "playing" then
   if btnp(⬅️) then cur.c-=1 end
   if btnp(➡️) then cur.c+=1 end
@@ -314,7 +335,13 @@ function _update()
   end
   if btnp(❎) then
    toggle_player()
-   check_win()
+  end
+ elseif state == "manual" then
+  if btnp(🅾️) then
+   toggle_manual()
+  end
+  if btnp(❎) then
+   manual_page()
   end
  end
 end

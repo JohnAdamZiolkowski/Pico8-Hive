@@ -1,12 +1,21 @@
 -- draw
 
 function draw_start()
- color(0)
- rectfill(24, 56, 110, 96)
+ cls(3)
  
  color(3)
- print("play hive", 32, 64)
- print("press 🅾️ to start", 32, 80)
+ print("░ play hive ░", 48, 32, 7)
+ 
+ rectfill(0,119,128,128,11)
+ local text="❎: open manual, 🅾️: start game"
+ print(text, 2, 121, 0)
+ 
+ for t=1,2 do
+  for s=1,5 do
+   draw_tile(t, s, t+2, s+2, 0)
+  end
+ end
+ 
 end
 
 function draw_board()
@@ -133,7 +142,6 @@ function update_help()
  end
 end
 
-help_text=""
 function draw_help()
  if message != "" then
   bg = 8
@@ -170,6 +178,57 @@ function draw_hand()
  end
 end
 
+function manual_page()
+ page += 1
+ if page > #manual then page=1 end
+end
+
+function draw_manual()
+ cls(4)
+ manual={{
+  "object: surround foe's bee",
+  "",
+  "❎: grab and place tiles",
+  "🅾️: end your turn",
+  "enter: system menu",
+  "",
+  "bee: move 1. must keep free!",
+  "     have to place by turn 4.",
+  "ant: can move any number.",
+  "spider: must move exactly 3.",
+  "cricket: jumps over tiles to",
+  "         next empty space.",
+  "beetle: move 1. can go on top.",
+  "        pinned tiles cant move.",
+  "",
+  },{
+  "additional rules:",
+  "",
+  "all bugs always form one hive.",
+  "",
+  "placing:",
+  "on first turn, place in middle.",
+  "cant place bugs next to foes.",
+  "(except for 2nd player 1st turn)",
+  "",
+  "moving:",
+  "cant move bugs until bee played.",
+  "most bugs move by sliding.",
+  "can't slide in narrow gaps.",
+  "(must use cricket or beetle)",
+  "",
+  }
+ }
+ for l=1,#manual[page] do
+  local text = manual[page][l]
+  print(text, 1, 8*(l-1)+1, 15)
+ end
+ 
+ rectfill(0,119,128,128,15)
+ text="❎: next page, 🅾️: close manual"
+ print(text, 2, 121, 4)
+end
+
 function _draw()
  cls()
  if state == "start" then
@@ -181,5 +240,7 @@ function _draw()
   draw_help()
   draw_hand()
   draw_cursor()
+ elseif state == "manual" then
+  draw_manual()
  end
 end
