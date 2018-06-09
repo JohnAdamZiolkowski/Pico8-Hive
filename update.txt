@@ -112,7 +112,22 @@ function toggle_player()
 end
 
 function can_end_turn()
- if rounds == 4 then
+ if turns == 0 then
+  if board[8][8].t == 0  then
+   message = "must place bug on 1st turn"
+   return false
+  end
+ elseif turns == 1 then
+  local nearby = nearby_cells(8,8)
+  for cell in all(nearby) do
+   if board[cell.r][cell.c].t != 0 then
+    return true
+   end
+  end
+  message = "must place bug on 2nd turn"
+  return false
+
+ elseif rounds == 4 then
   local hand = hands[player] 
   for i=1,#hand do
    local tile = hand[i]
