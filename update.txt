@@ -1,0 +1,228 @@
+-- update
+
+function grab_or_place()
+ local r = cur.r
+ local c = cur.c
+ if r < b then
+  if cur.t == 0 then
+   //grab if cursor empty
+   if board[r][c].t == player then
+    local stack = board[r][c].b
+    if not stack then
+     cur.t = board[r][c].t
+     cur.s = board[r][c].s
+     board[r][c].t = 0
+     board[r][c].s = 0
+    else
+     //if there is a beetle stack
+     cur.t = board[r][c].t
+     cur.s = board[r][c].s
+     local stacked = stack[#stack]
+     board[r][c].t = stacked.t
+     board[r][c].s = stacked.s
+     del(stack, stacked)
+     if #stack == 0 then
+      //can't nil stack
+      //or it doesnt remove it
+      board[r][c].b = nil
+     end
+    end
+   end
+  else
+   //place if cell empty
+   if board[r][c].t == 0 then
+    if turns == 0 and
+     (r != 8 or c != 8) then
+     message = "must place first bug in center"
+     return
+    else
+     board[r][c].t = cur.t
+     board[r][c].s = cur.s
+     cur.s = 0
+     cur.t = 0
+    end
+   //place on top if beetle
+   elseif cur.s == btl then
+    if not board[r][c].b then
+     board[r][c].b = {}
+    end
+    local stacked = {t=board[r][c].t,
+               s=board[r][c].s}
+    add(board[r][c].b, stacked)
+    board[r][c].t = cur.t
+    board[r][c].s = cur.s
+    cur.s = 0
+    cur.t = 0
+   end
+  end
+ else
+  if cur.t == 0 then
+   //grab if cursor empty
+   if hands[player][c].t != 0 then
+    cur.t = hands[player][c].t
+    cur.s = hands[player][c].s
+    hands[player][c].t = 0
+    hands[player][c].s = 0
+   end
+  else
+   //place if cell empty
+   if hands[player][c].t == 0 then
+    hands[player][c].t = cur.t
+    hands[player][c].s = cur.s
+    cur.s = 0
+    cur.t = 0
+   end
+  end
+ end
+end
+
+function toggle_player()
+ if cur.t == 0 then
+  if not can_end_turn() then
+   return
+  end
+  if player == black then
+   player = white
+  elseif player == white then
+   player = black
+  end
+  turns += 1
+  rounds = flr(turns / 2)
+ end
+ check_win()
+end
+
+function can_end_turn()
+ if rounds == 4 then
+  local hand = hands[player] 
+  for i=1,#hand do
+   local tile = hand[i]
+   if tile.s == bee then
+    message = "must place bee by 4th turn"
+    return false
+   end
+  end
+ end
+ message = ""
+ return true
+end
+
+function check_win()
+ for row = 2,b-1 do
+  for col = 1,b do
+   if not (row%2 == 1 and col == b) then
+    local t = board[row][col].t
+    local s = board[row][col].s
+    if s==bee then
+     local nearby = nearby_cells(col,row)
+     stats = nearby_stats(nearby,t)
+     if stats.full == #nearby then
+      game_over()
+     end
+    end
+   end
+  end
+ end
+end
+
+function on_board(col, row)
+ local hex = row % 2
+ if row < 2 then return false end
+ if row > b-1 then return false end
+ if col < 1 then return false end
+ if col+hex > b then return false end
+
+ return true
+end
+
+function nearby_cells(col, row)
+ local hex = row % 2 - 1
+
+ local nearby = {}
+ if row == b then
+  return nearby
+ end
+ 
+ //up-left
+ add(nearby, {c=col+hex, r=row-1})
+ //up-right
+ add(nearby, {c=col+hex+1, r=row-1})
+
+ //left
+ add(nearby, {c=col-1, r=row})
+ //right
+ add(nearby, {c=col+1, r=row})
+ 
+ //down-left
+ add(nearby, {c=col+hex, r=row+1})
+ //down-right
+ add(nearby, {c=col+hex+1, r=row+1})
+
+ for cell in all(nearby) do
+  if not on_board(cell.c, cell.r) then
+   del(nearby, cell)
+  end
+ end
+ 
+ return nearby
+end
+
+function nearby_stats(nearby,team)
+ local stats = {empty=0, full=0,
+          friend=0, foe=0}
+ for cell in all(nearby) do
+  local tile = board[cell.r][cell.c]
+  if tile.t == 0 then
+   stats.empty+=1
+  elseif tile.t == team then
+   stats.full+=1
+   stats.friend+=1
+  else
+   stats.full+=1
+   stats.foe+=1
+  end
+ end
+ 
+ return stats
+end
+
+function _update()
+ if state == "start" or
+    state == "over" then
+  if(btnp(❎)) then
+   reset()
+  end
+  if btnp(🅾️) then
+   toggle_manual()
+  end
+ elseif state == "playing" then
+  if btnp(⬅️) or btnp(➡️) or
+   btnp(⬆️) or btnp(⬇️) then
+   message = ""
+  end
+  if btnp(⬅️) then cur.c-=1 end
+  if btnp(➡️) then cur.c+=1 end
+  if btnp(⬆️) then cur.r-=1 end
+  if btnp(⬇️) then cur.r+=1 end
+  if cur.c < 1 then cur.c=1 end
+  if cur.c > b then cur.c=b end
+  if cur.r < 2 then cur.r=2 end
+  if cur.r > b then cur.r=b end
+  if cur.r%2==1 and cur.c==b then
+   cur.c=b-1
+  end	  
+  if btnp(🅾️) then
+   grab_or_place()
+  end
+  if btnp(❎) then
+   toggle_player()
+  end
+ elseif state == "manual" then
+  if btnp(🅾️) then
+   toggle_manual()
+  end
+  if btnp(❎) then
+   manual_page()
+  end
+ end
+end

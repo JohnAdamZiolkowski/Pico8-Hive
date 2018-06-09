@@ -98,14 +98,15 @@ function draw_cursor()
    stacked += #stack
   end
  end
+ if turns == 0 then
+  draw_possible(8,8)
+ end
  if cur.t!=0 then to=2 end
  spr(8, x-o, y-o-to, 1, 1, false, false)
  spr(8, x+o, y-o-to, 1, 1, true, false)
  spr(8, x+o, y+o-to, 1, 1, true, true)
  spr(8, x-o, y+o-to, 1, 1, false, true)
  draw_tile(cur.t, cur.s, col, row, 1+stacked)
-
- draw_possible(8,8)
 end
 
 function update_help()
