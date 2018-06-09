@@ -33,6 +33,8 @@ function grab_or_place(undo)
  if undo then
   r = cur.from.r
   c = cur.from.c
+  cur.r = r
+  cur.c = c
   cur.from = nil
  end
  if r < b then
@@ -83,6 +85,17 @@ function grab_or_place(undo)
        return
       end
      end
+     if rounds > 0 and cur.from != nil and cur.from.r == b then
+      local nearby = nearby_cells(c,r)
+      local stats = nearby_stats(nearby, player)
+      if stats.friend < 1 then
+       message = "bug must touch same color"
+       return
+      elseif stats.foe > 0 then
+       message = "bug can only touch own color"
+       return
+      end
+     end
      board[r][c].t = cur.t
      board[r][c].s = cur.s
      cur.s = 0
@@ -91,6 +104,11 @@ function grab_or_place(undo)
     end
    //place on top if beetle
    elseif cur.s == btl then
+    if cur.from != nil and cur.from.r == b then
+     message = "can not stack beetle from hand"
+     return
+    end
+    
     if not board[r][c].b then
      board[r][c].b = {}
     end
