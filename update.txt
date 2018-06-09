@@ -11,6 +11,22 @@ function in_cells(cell,cells)
  return false
 end
 
+function find_bees()
+ local bees = {}
+ for row = 2,b-1 do
+  for col = 1,b do
+   if not (row%2 == 1 and col == b) then
+    local t = board[row][col].t
+    local s = board[row][col].s
+    if s==bee then
+     bees[t] = {c=col, r=row}
+    end
+   end
+  end
+ end
+ return bees
+end
+
 function grab_or_place()
  local r = cur.r
  local c = cur.c
@@ -20,6 +36,12 @@ function grab_or_place()
    if board[r][c].t == player then
     local stack = board[r][c].b
     if not stack then
+     local bees = find_bees()
+     if bees[player] == nil then
+      message = "cant move until bee is placed"
+      return
+     end
+     
      cur.t = board[r][c].t
      cur.s = board[r][c].s
      board[r][c].t = 0
@@ -142,21 +164,18 @@ function can_end_turn()
 end
 
 function check_win()
- for row = 2,b-1 do
-  for col = 1,b do
-   if not (row%2 == 1 and col == b) then
-    local t = board[row][col].t
-    local s = board[row][col].s
-    if s==bee then
-     local nearby = nearby_cells(col,row)
-     stats = nearby_stats(nearby,t)
-     if stats.full == #nearby then
-      game_over()
-     end
-    end
+ local bees = find_bees()
+ for player = 1,2 do
+  if bees[player] != nil then
+   local col = bees[player].c
+   local row = bees[player].r
+   local nearby = nearby_cells(col,row)
+   local stats = nearby_stats(nearby,player)
+   if stats.full == #nearby then
+    game_over()
    end
   end
- end
+ end 
 end
 
 function on_board(col, row)
