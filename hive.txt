@@ -26,7 +26,7 @@ manual={{
   "object: surround foe's bee",
   "",
   "❎: grab and place tiles",
-  "🅾️: end your turn",
+  "🅾️: end your turn, undo grab",
   "enter: system menu",
   "",
   "bee: move 1. must keep free!",

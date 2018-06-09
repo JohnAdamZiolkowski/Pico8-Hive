@@ -80,6 +80,18 @@ function draw_possible(col, row)
  spr(9, x, y)
 end
 
+function draw_from()
+ if cur.from == nil then
+  return
+ end
+ local col = cur.from.c
+ local row = cur.from.r
+ local hex = (row % 2) * c / 2
+ local x = col * c + hex - c
+ local y = row * c - c
+ spr(10, x, y)
+end
+
 function draw_cursor()
  local col = cur.c
  local row = cur.r
@@ -114,6 +126,7 @@ function draw_cursor()
  spr(8, x+o, y+o-to, 1, 1, true, true)
  spr(8, x-o, y+o-to, 1, 1, false, true)
  draw_tile(cur.t, cur.s, col, row, 1+stacked)
+ draw_from()
 end
 
 function update_help()
@@ -174,7 +187,7 @@ function draw_help()
   text = 7
  end
  rectfill(0,0,128,6,bg)
- update_help() 
+ update_help()
  local offset = #help_text * 2
  local x_pos = 64 - offset
  print(help_text,x_pos,1,text)
