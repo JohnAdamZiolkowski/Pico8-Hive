@@ -14,7 +14,7 @@ b = 128 / c //board size in cells
 bee = 1
 ant = 2
 spi = 3
-gra = 4
+cri = 4
 btl = 5
 names = {"bee", "ant", "spider",
          "cricket", "beetle"}
@@ -92,7 +92,7 @@ function init_hands()
    add(hands[p],{t=p, s=spi})
   end
   for i=1,3 do
-   add(hands[p],{t=p, s=gra})
+   add(hands[p],{t=p, s=cri})
   end
   for i=1,2 do
    add(hands[p],{t=p, s=btl})

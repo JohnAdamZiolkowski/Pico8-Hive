@@ -16,6 +16,17 @@ function find_bees()
  for row = 2,b-1 do
   for col = 1,b do
    if not (row%2 == 1 and col == b) then
+    local stack = board[row][col].b
+    if stack != nil then
+     for i = 1,#stack do
+      local tile = stack[i]
+      local t = tile.t
+      local s = tile.s
+      if s==bee then
+       bees[t] = {c=col, r=row}
+      end 
+     end
+    end 
     local t = board[row][col].t
     local s = board[row][col].s
     if s==bee then
@@ -25,6 +36,28 @@ function find_bees()
   end
  end
  return bees
+end
+
+function update_possibilities()
+ local p
+ if cur.s == bee then
+  p = nearby_cells(cur.c, cur.r)
+  for cell in all(p) do
+   if board[cell.r][cell.c].t != 0 then
+    del(p, cell)
+   end
+  end
+ elseif cur.s == ant then
+  // all
+ elseif cur.s == spi then
+  // all
+ elseif cur.s == btl then
+  p = nearby_cells(cur.c, cur.r)
+ elseif cur.s == cri then
+  // all
+ end
+  
+ possibilities = p
 end
 
 function grab_or_place(undo)
@@ -53,6 +86,7 @@ function grab_or_place(undo)
      cur.s = board[r][c].s
      board[r][c].t = 0
      board[r][c].s = 0
+     update_possibilities()
     else
      //if there is a beetle stack
      cur.t = board[r][c].t
@@ -61,6 +95,7 @@ function grab_or_place(undo)
      local stacked = stack[#stack]
      board[r][c].t = stacked.t
      board[r][c].s = stacked.s
+     update_possibilities()
      del(stack, stacked)
      if #stack == 0 then
       //can't nil stack
@@ -85,7 +120,14 @@ function grab_or_place(undo)
        return
       end
      end
-     if rounds > 0 and cur.from != nil and cur.from.r == b then
+     if rounds > 0 and cur.from != nil and cur.from.r < b then
+      if possibilities != nil then
+       if not in_cells(cur, possibilities) then
+        message = "invalid"
+        return
+       end
+      end
+     elseif rounds > 0 and cur.from != nil and cur.from.r == b then
       local nearby = nearby_cells(c,r)
       local stats = nearby_stats(nearby, player)
       if stats.friend < 1 then
@@ -101,6 +143,7 @@ function grab_or_place(undo)
      cur.s = 0
      cur.t = 0
      cur.from = nil
+     update_possibilities()
     end
    //place on top if beetle
    elseif cur.s == btl then
@@ -120,6 +163,7 @@ function grab_or_place(undo)
     cur.s = 0
     cur.t = 0
     cur.from = nil
+    update_possibilities()
    end
   end
  else
@@ -131,6 +175,7 @@ function grab_or_place(undo)
     cur.s = hands[player][c].s
     hands[player][c].t = 0
     hands[player][c].s = 0
+    update_possibilities()
    end
   else
    //place if cell empty
@@ -140,6 +185,7 @@ function grab_or_place(undo)
     cur.s = 0
     cur.t = 0
     cur.from = nil
+    update_possibilities()
    end
   end
  end

@@ -72,8 +72,14 @@ function draw_nearby_tiles(col, row)
  end
 end
 
+function draw_possibilities()
+ for cell in all(possibilities) do
+  draw_possible(cell.c, cell.r)
+ end
+end
+
 function draw_possible(col, row)
-  //offset every other row
+ //offset every other row
  local hex = (row % 2) * c / 2
  local x = col * c + hex - c
  local y = row * c - c
@@ -110,15 +116,19 @@ function draw_cursor()
    stacked += #stack
   end
  end
- if turns == 0 then
-  draw_possible(8,8)
- end
- if turns == 1 then
-  local nearby = nearby_cells(8,8)
-  for c=1,#nearby do
-   local cell=nearby[c]
-   draw_possible(cell.c, cell.r)
+ if t < 8 then
+  if turns == 0 then
+   draw_possible(8,8)
   end
+  if turns == 1 then
+   local nearby = nearby_cells(8,8)
+   for c=1,#nearby do
+    local cell=nearby[c]
+    draw_possible(cell.c, cell.r)
+   end
+  end
+  draw_from()
+  draw_possibilities()
  end
  if cur.t!=0 then to=2 end
  spr(8, x-o, y-o-to, 1, 1, false, false)
@@ -126,7 +136,6 @@ function draw_cursor()
  spr(8, x+o, y+o-to, 1, 1, true, true)
  spr(8, x-o, y+o-to, 1, 1, false, true)
  draw_tile(cur.t, cur.s, col, row, 1+stacked)
- draw_from()
 end
 
 function update_help()
@@ -231,7 +240,10 @@ function draw_manual()
  print(text, 2, 121, 4)
 end
 
+t=0
 function _draw()
+ t += 1
+ if t > 15 then t=0 end
  cls()
  if state == "start" then
   draw_start()
