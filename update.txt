@@ -1,5 +1,16 @@
 -- update
 
+function in_cells(cell,cells)
+ local possible = false
+  for cell_i in all(cells) do
+  if (cell.c == cell_i.c and
+   cell.r == cell_i.r) then
+   return true
+  end
+ end
+ return false
+end
+
 function grab_or_place()
  local r = cur.r
  local c = cur.c
@@ -36,6 +47,14 @@ function grab_or_place()
      message = "must place first bug in center"
      return
     else
+     if turns == 1 then
+      local nearby = nearby_cells(8,8)
+      local possible = in_cells(cur,nearby)
+      if not possible then
+       message = "2nd bug must touch first"
+       return
+      end
+     end
      board[r][c].t = cur.t
      board[r][c].s = cur.s
      cur.s = 0
