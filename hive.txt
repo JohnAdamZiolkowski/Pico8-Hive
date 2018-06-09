@@ -1,29 +1,8 @@
 -- hive
 -- by john ziolkowski
 
-menuitem(1,"manual",function() toggle_manual() end)
-
-function toggle_manual()
- if state != "manual" then
-  prev_state = state
-  state="manual"
-  page = 1
- else
-  state=prev_state
-  prev_state = nil
- end
-end
-
-state = "start"
-//player = nil
-//turns = nil
-//rounds = nil
-//message = nil
-//help_text=nil
-//prev_state=nil
-
-c = 8
-b = 128 / c
+c = 8 //cell size
+b = 128 / c //board size in cells
 
 ⬅️ = 0
 ➡️ = 1
@@ -43,16 +22,62 @@ names = {"bee", "ant", "spider",
 white=2
 black=1
 
-board = {{{}}}
-hands = {}
-palt(0, false)
-palt(14, true)
+manual={{
+  "object: surround foe's bee",
+  "",
+  "❎: grab and place tiles",
+  "🅾️: end your turn",
+  "enter: system menu",
+  "",
+  "bee: move 1. must keep free!",
+  "     have to place by turn 4.",
+  "ant: can move any number.",
+  "spider: must move exactly 3.",
+  "cricket: jumps over tiles to",
+  "         next empty space.",
+  "beetle: move 1. can go on top.",
+  "        pinned tiles cant move.",
+  "",
+  },{
+  "additional rules:",
+  "",
+  "all bugs always form one hive.",
+  "",
+  "placing:",
+  "on first turn, place in middle.",
+  "cant place bugs next to foes.",
+  "(except for 2nd player 1st turn)",
+  "",
+  "moving:",
+  "cant move bugs until bee played.",
+  "most bugs move by sliding.",
+  "can't slide in narrow gaps.",
+  "(must use cricket or beetle)",
+  "",
+ }
+}
 
-//team (0 is none)
-//sprite for bug (1-5)
-cur = {c=8, r=8, t=0, s=0}
+
+function _init()
+ palt(0, false)
+ palt(14, true)
+ menuitem(1,"manual",function() toggle_manual() end)
+ state = "start"
+end
+
+function toggle_manual()
+ if state != "manual" then
+  prev_state = state
+  state="manual"
+  page = 1
+ else
+  state=prev_state
+  prev_state = nil
+ end
+end
 
 function init_hands()
+ hands = {{}}
  for p = 1,2 do
   hands[p] = {}
   for i=1,2 do
@@ -86,7 +111,8 @@ function shuffle_board()
 	  //leave out off screen cells
 	  if not (row%2 == 1 and col == b) then
 	   board[row][col] = {}
-	   sprite = flr(rnd(20)) + 1
+	   local sprite = flr(rnd(20)) + 1
+	   local team
 	   if sprite > 5 then
 	   	sprite = 0
 	   	team = 0
@@ -100,6 +126,7 @@ function shuffle_board()
 end
 
 function init_board()
+ board = {{{}}}
 	for row = 2,b-1 do
 	 board[row] = {}
 	 for col = 1,b do
@@ -122,6 +149,10 @@ function reset()
  turns = 0
  rounds = 0
  page = 0 //manual page
+ 
+ //team (0 is none)
+ //sprite for bug (1-5)
+ cur = {c=8, r=8, t=0, s=0}
 end
 
 function game_over()
@@ -169,7 +200,7 @@ function grab_or_place()
     if not board[r][c].b then
      board[r][c].b = {}
     end
-    stacked = {t=board[r][c].t,
+    local stacked = {t=board[r][c].t,
                s=board[r][c].s}
     add(board[r][c].b, stacked)
     board[r][c].t = cur.t
@@ -219,7 +250,7 @@ function can_end_turn()
  if rounds == 4 then
   local hand = hands[player] 
   for i=1,#hand do
-   tile = hand[i]
+   local tile = hand[i]
    if tile.s == bee then
     message = "must place bee by 4th turn"
     return false
@@ -237,7 +268,7 @@ function check_win()
     local t = board[row][col].t
     local s = board[row][col].s
     if s==bee then
-     nearby = nearby_cells(col,row)
+     local nearby = nearby_cells(col,row)
      stats = nearby_stats(nearby,t)
      if stats.full == #nearby then
       game_over()
@@ -249,7 +280,7 @@ function check_win()
 end
 
 function on_board(col, row)
- hex = row % 2
+ local hex = row % 2
  if row < 2 then return false end
  if row > b-1 then return false end
  if col < 1 then return false end
@@ -259,9 +290,9 @@ function on_board(col, row)
 end
 
 function nearby_cells(col, row)
- hex = row % 2 - 1
+ local hex = row % 2 - 1
 
- nearby = {}
+ local nearby = {}
  if row == b then
   return nearby
  end
@@ -291,10 +322,10 @@ function nearby_cells(col, row)
 end
 
 function nearby_stats(nearby,team)
- stats = {empty=0, full=0,
+ local stats = {empty=0, full=0,
           friend=0, foe=0}
  for cell in all(nearby) do
-  tile = board[cell.r][cell.c]
+  local tile = board[cell.r][cell.c]
   if tile.t == 0 then
    stats.empty+=1
   elseif tile.t == team then
