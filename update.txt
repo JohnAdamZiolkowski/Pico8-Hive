@@ -270,7 +270,9 @@ function can_end_turn()
   end
   message = "must place bug on 2nd turn"
   return false
-
+ elseif would_break_hive() then
+  message = "cannot break up hive"
+  return false
  elseif rounds == 4 then
   local hand = hands[player] 
   for i=1,#hand do
@@ -283,6 +285,53 @@ function can_end_turn()
  end
  message = ""
  return true
+end
+
+function check_connected(tile,tiles)
+ assert(tile != nil)
+ assert(tile.c != nil)
+ assert(tile.r != nil)
+ assert(tiles != nil)
+ assert(#tiles != 0)
+ 
+ if tile.connected then
+  return
+ end
+ 
+ tile.connected = true
+ 
+ local nearby = nearby_cells(tile.c, tile.r)
+ 
+ for nt in all(nearby) do
+  for t in all(tiles) do
+   if t.c == nt.c and t.r == nt.r then
+    check_connected(t, tiles)
+   end
+  end
+ end
+end
+
+function would_break_hive()
+ local tiles = {}
+ 
+ for row = 2,b-1 do
+  for col = 1,b do
+   if not (row%2 == 1 and col == b) then
+    if board[row][col].t != 0 then
+     add(tiles, {c=col, r=row})
+    end
+   end
+  end
+ end
+ 
+ check_connected(tiles[1], tiles)
+ 
+ for tile in all(tiles) do
+  if not tile.connected then
+   return true
+  end
+ end
+ return false
 end
 
 function check_win()
