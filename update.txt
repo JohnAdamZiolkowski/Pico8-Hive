@@ -40,6 +40,10 @@ end
 
 function update_possibilities()
  local p
+ if cur.from != nil and cur.from.r == b then
+  possibilities = p
+  return
+ end
  if cur.s == bee then
   p = nearby_cells(cur.c, cur.r)
   for cell in all(p) do
@@ -54,10 +58,34 @@ function update_possibilities()
  elseif cur.s == btl then
   p = nearby_cells(cur.c, cur.r)
  elseif cur.s == cri then
-  // all
+  p = {}
+  local dir_funcs = {left,right,
+   up_left,up_right,
+   down_left,down_right}
+  for dir_func in all(dir_funcs) do
+   local next = next_empty(cur, dir_func)
+   if next != nil
+   and not in_cells(next, nearby_cells(cur.c, cur.r)) then
+    add(p, next)
+   end
+  end 
+  if #p == 0 then
+   p = nil
+  end
  end
   
  possibilities = p
+end
+
+function next_empty(cell, dir_func)
+ local next = dir_func(cell.c, cell.r)
+ while next != nil and 
+  on_board(next.c, next.r) do
+  if board[next.r][next.c].t!=0 then
+   next = next_empty(next, dir_func)
+  end
+  return next
+ end
 end
 
 function grab_or_place(undo)
@@ -264,28 +292,47 @@ function on_board(col, row)
  return true
 end
 
-function nearby_cells(col, row)
- local hex = row % 2 - 1
+function left(col, row)
+ return {c=col-1, r=row}
+end
 
+function right(col, row)
+ return {c=col+1, r=row}
+end
+
+function up_left(col, row)
+ local hex = row % 2 - 1
+ return {c=col+hex, r=row-1}
+end
+
+function up_right(col, row)
+ local hex = row % 2 - 1
+ return {c=col+hex+1, r=row-1}
+end
+
+function down_left(col, row)
+ local hex = row % 2 - 1
+ return {c=col+hex, r=row+1}
+end
+
+function down_right(col, row)
+ local hex = row % 2 - 1
+ return {c=col+hex+1, r=row+1}
+end
+
+function nearby_cells(col, row)
+ 
  local nearby = {}
  if row == b then
   return nearby
  end
  
- //up-left
- add(nearby, {c=col+hex, r=row-1})
- //up-right
- add(nearby, {c=col+hex+1, r=row-1})
-
- //left
- add(nearby, {c=col-1, r=row})
- //right
- add(nearby, {c=col+1, r=row})
- 
- //down-left
- add(nearby, {c=col+hex, r=row+1})
- //down-right
- add(nearby, {c=col+hex+1, r=row+1})
+ add(nearby, up_left(col,row))
+ add(nearby, up_right(col,row))
+ add(nearby, left(col,row))
+ add(nearby, right(col,row))
+ add(nearby, down_left(col,row))
+ add(nearby, down_right(col,row))
 
  for cell in all(nearby) do
   if not on_board(cell.c, cell.r) then
