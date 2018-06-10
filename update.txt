@@ -1,6 +1,11 @@
 -- update
 
 function in_cells(cell,cells)
+ assert(type(cell)=="table")
+ assert(type(cell.c)=="number")
+ assert(type(cell.r)=="number")
+ assert(type(cells)=="table")
+ 
  local possible = false
   for cell_i in all(cells) do
   if (cell.c == cell_i.c and
@@ -96,6 +101,11 @@ function update_possibilities()
 end
 
 function next_empty(cell, dir_func)
+ assert(type(cell)=="table")
+ assert(type(cell.c)=="number")
+ assert(type(cell.r)=="table")
+ assert(type(dir_func)=="function")
+ 
  local next = dir_func(cell.c, cell.r)
  while next != nil and 
   on_board(next.c, next.r) do
@@ -107,6 +117,8 @@ function next_empty(cell, dir_func)
 end
 
 function grab_or_place(undo)
+ assert(type(undo)=="boolean")
+ 
  local r = cur.r
  local c = cur.c
  if undo then
@@ -288,10 +300,10 @@ function can_end_turn()
 end
 
 function check_connected(tile,tiles)
- assert(tile != nil)
- assert(tile.c != nil)
- assert(tile.r != nil)
- assert(tiles != nil)
+ assert(type(tile)=="table")
+ assert(type(tile.c)=="number")
+ assert(type(tile.r)=="number")
+ assert(type(tiles)=="table")
  assert(#tiles != 0)
  
  if tile.connected then
@@ -350,6 +362,9 @@ function check_win()
 end
 
 function on_board(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
+ 
  local hex = row % 2
  if row < 2 then return false end
  if row > b-1 then return false end
@@ -360,34 +375,48 @@ function on_board(col, row)
 end
 
 function left(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
  return {c=col-1, r=row}
 end
 
 function right(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
  return {c=col+1, r=row}
 end
 
 function up_left(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
  local hex = row % 2 - 1
  return {c=col+hex, r=row-1}
 end
 
 function up_right(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
  local hex = row % 2 - 1
  return {c=col+hex+1, r=row-1}
 end
 
 function down_left(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
  local hex = row % 2 - 1
  return {c=col+hex, r=row+1}
 end
 
 function down_right(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
  local hex = row % 2 - 1
  return {c=col+hex+1, r=row+1}
 end
 
 function nearby_cells(col, row)
+ assert(type(col)=="number")
+ assert(type(row)=="number")
  
  local nearby = {}
  if row == b then
@@ -411,6 +440,10 @@ function nearby_cells(col, row)
 end
 
 function nearby_stats(nearby,team)
+ assert(type(nearby)=="table")
+ assert(type(team)=="number")
+ assert(team!=0)
+ 
  local stats = {empty=0, full=0,
           friend=0, foe=0}
  for cell in all(nearby) do

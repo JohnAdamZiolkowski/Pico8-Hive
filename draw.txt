@@ -36,7 +36,9 @@ function draw_cells()
     if not stack then
      local t = board[row][col].t
      local s = board[row][col].s
-     draw_tile(t, s, col, row, 0)
+     if t != 0 then
+      draw_tile(t, s, col, row, 0)
+     end
     else
      //if there is a beetle stack
      for i=1,#stack do
@@ -54,6 +56,13 @@ function draw_cells()
 end
 
 function draw_tile(t, s, col, row, stacked)
+ assert(type(t)=="number")
+ assert(type(s)=="number")
+ assert(t!=0)
+ assert(s!=0)
+ assert(type(row)=="number")
+ assert(type(col)=="number")
+ 
  //offset every other row
  local hex = (row % 2) * c / 2
  if t > 0 then
@@ -62,14 +71,6 @@ function draw_tile(t, s, col, row, stacked)
   spr(t+5, x, y-1)
   spr(t+5, x, y+1)
   spr(s, x, y)
- end
-end
-
-function draw_nearby_tiles(col, row)
- local nearby = nearby_cells(col, row)
- for n=1,#nearby do
-  local near = nearby[n]
-  draw_tile(player, bee, near.c, near.r, 0)
  end
 end
 
@@ -136,7 +137,9 @@ function draw_cursor()
  spr(8, x+o, y-o-to, 1, 1, true, false)
  spr(8, x+o, y+o-to, 1, 1, true, true)
  spr(8, x-o, y+o-to, 1, 1, false, true)
- draw_tile(cur.t, cur.s, col, row, 1+stacked)
+ if cur.t != 0 then
+  draw_tile(cur.t, cur.s, col, row, 1+stacked)
+ end
 end
 
 function update_help()
@@ -219,7 +222,9 @@ function draw_hand()
  for col = 1,#hand do
   local t = hand[col].t
   local s = hand[col].s
-  draw_tile(t,s,col,row,0)
+  if t != 0 then
+   draw_tile(t,s,col,row,0)
+  end
  end
 end
 
