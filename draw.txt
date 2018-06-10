@@ -20,8 +20,9 @@ end
 
 function draw_board()
  for row = 1,b do
-  for col = 1,b do
-   spr(16, col * c - c, row * c - c)
+  for col = 0,b do
+   local hex = (row % 2) * c / 2
+   spr(16, col * c - c + hex, row * c - c)
   end
  end
 end

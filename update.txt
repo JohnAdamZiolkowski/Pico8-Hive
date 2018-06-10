@@ -52,9 +52,19 @@ function update_possibilities()
    end
   end
  elseif cur.s == ant then
-  // all
+  p = nearby_cells(cur.c, cur.r)
+  for cell in all(p) do
+   if board[cell.r][cell.c].t != 0 then
+    del(p, cell)
+   end
+  end
  elseif cur.s == spi then
-  // all
+  p = nearby_cells(cur.c, cur.r)
+  for cell in all(p) do
+   if board[cell.r][cell.c].t != 0 then
+    del(p, cell)
+   end
+  end
  elseif cur.s == btl then
   p = nearby_cells(cur.c, cur.r)
  elseif cur.s == cri then
@@ -71,6 +81,14 @@ function update_possibilities()
   end 
   if #p == 0 then
    p = nil
+  end
+ end
+ 
+ for cell in all(p) do
+  local nearby = nearby_cells(cell.c, cell.r)
+  local stats = nearby_stats(nearby, player)
+  if stats.full == 0 then
+   del(p, cell)
   end
  end
   
