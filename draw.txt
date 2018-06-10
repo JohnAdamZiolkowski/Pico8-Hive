@@ -76,16 +76,24 @@ end
 
 function draw_possibilities()
  for cell in all(possibilities) do
-  draw_possible(cell.c, cell.r)
+  local blocked = cell.blocked
+  if blocked == nil then blocked = false end
+  draw_possible(cell.c, cell.r, blocked)
  end
 end
 
-function draw_possible(col, row)
+function draw_possible(col, row, blocked)
+ assert(type(col) == "number")
+ assert(type(row) == "number")
+ assert(type(blocked) == "boolean")
+ 
  //offset every other row
  local hex = (row % 2) * c / 2
  local x = col * c + hex - c
  local y = row * c - c
- spr(9, x, y)
+ local s = 9
+ if blocked then s = 10 end
+ spr(s, x, y)
 end
 
 function draw_from()
@@ -120,19 +128,19 @@ function draw_cursor()
  end
  if t < 8 then
   if turns == 0 then
-   draw_possible(8,8)
+   draw_possible(8,8,false)
   end
   if turns == 1 then
    local nearby = nearby_cells(8,8)
    for c=1,#nearby do
     local cell=nearby[c]
-    draw_possible(cell.c, cell.r)
+    draw_possible(cell.c, cell.r,false)
    end
   end
   draw_from()
   draw_possibilities()
  end
- if cur.t!=0 then to=2 end
+ if cur.t!=0 then to=1 end
  spr(8, x-o, y-o-to, 1, 1, false, false)
  spr(8, x+o, y-o-to, 1, 1, true, false)
  spr(8, x+o, y+o-to, 1, 1, true, true)

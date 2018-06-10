@@ -72,6 +72,18 @@ function update_possibilities()
   end
  elseif cur.s == btl then
   p = nearby_cells(cur.c, cur.r)
+  //ignore freedom of movement
+  //rule for beetles on top
+  for cell in all(p) do
+   //climbing up
+   if board[cell.r][cell.c].t != 0 then
+    cell.blocked = nil
+   end
+   //climbing down or across
+   if board[cur.from.r][cur.from.c].t != 0 then
+    cell.blocked = nil
+   end
+  end
  elseif cur.s == cri then
   p = {}
   local dir_funcs = {left,right,
@@ -103,7 +115,7 @@ end
 function next_empty(cell, dir_func)
  assert(type(cell)=="table")
  assert(type(cell.c)=="number")
- assert(type(cell.r)=="table")
+ assert(type(cell.r)=="number")
  assert(type(dir_func)=="function")
  
  local next = dir_func(cell.c, cell.r)
@@ -425,10 +437,32 @@ function nearby_cells(col, row)
  
  add(nearby, up_left(col,row))
  add(nearby, up_right(col,row))
- add(nearby, left(col,row))
  add(nearby, right(col,row))
- add(nearby, down_left(col,row))
  add(nearby, down_right(col,row))
+ add(nearby, down_left(col,row))
+ add(nearby, left(col,row))
+ 
+ //determine which cells are
+ //blocked (freedom to move rule)
+ for p=1,6 do
+  local prev = nearby[p]
+
+  local c = p + 1
+  if c > 6 then c -= 6 end
+  local cell = nearby[c]
+  
+  local n = p + 2
+  if n > 6 then n -= 6 end
+  local next = nearby[n]
+  
+  if on_board(prev.c, prev.r) and
+   board[prev.r][prev.c].t != 0 and
+   on_board(next.c, next.r) and
+   board[next.r][next.c].t != 0 then
+
+   cell.blocked=true
+  end
+ end
 
  for cell in all(nearby) do
   if not on_board(cell.c, cell.r) then
