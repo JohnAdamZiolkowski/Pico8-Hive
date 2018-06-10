@@ -156,6 +156,18 @@ function grab_or_place(undo)
      cur.s = board[r][c].s
      board[r][c].t = 0
      board[r][c].s = 0
+     
+     //pick up first so we can
+     //check for the break
+     if would_break_hive() then
+      message = "all bugs must form one hive"
+      cur.from = nil
+      board[r][c].t = cur.t
+      board[r][c].s = cur.s
+      cur.t = 0
+      cur.s = 0
+      return
+     end
      update_possibilities()
     else
      //if there is a beetle stack
@@ -206,6 +218,14 @@ function grab_or_place(undo)
       elseif stats.foe > 0 then
        message = "bug can only touch own color"
        return
+      end
+     end
+     for p in all(possibilities) do
+      if p.r == r and p.c == c then
+       if p.blocked then
+        message = "too narrow to move there"
+        return
+       end
       end
      end
      board[r][c].t = cur.t
