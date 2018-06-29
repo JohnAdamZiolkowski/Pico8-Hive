@@ -83,16 +83,25 @@ def load_and_compress_5_x_5_image(infilename, outfilename):
     img.shape = h, w
 
     for r in range(rows):
-        print("r", r, rows)
+        # print("r", r, rows)
         for c in range(cols):
             # print("c", c, cols)
             for y in range(th):
                 # print("y", y, th)
                 for x in range(tw):
                     # print("x", x, tw)
-                    rand = random.randint(0, len(hex_pallet) - 1)
+                    # rand = random.randint(0, len(hex_pallet) - 1)
                     # r = int(x / 8)
-                    color = hex_pallet[rand]
+                    sx = bw + x + c * (tw + bw)
+                    sy = bw + y + r * (th + bw)
+                    src_color = src_npdata[sy, sx]
+                    color = hex_pallet[7]
+                    for p in range(len(pallet)):
+                        if src_color[0] == pallet[p][0] and \
+                                src_color[1] == pallet[p][1] and \
+                                src_color[2] == pallet[p][2]:
+                            color = hex_pallet[p]
+                    # color = hex_pallet[rand]
                     # print(w, h, color)
                     tx = x + c * tw
                     ty = y + r * th
@@ -110,6 +119,13 @@ def save_image(npdata, outfilename):
 def save_image32(npdata, outfilename):
     img = Image.fromarray(numpy.asarray(numpy.clip(npdata, 0, 255), dtype="int32"))
     img.save(outfilename)
+
+
+def convert255x3to0xFFFFFFFF(sequence):
+    value = 255 + sequence[2] * 256 + sequence[1] * 256 * 256 + sequence[0] * 256 * 256 * 256
+    raw = hex(value)
+    # raw = 0xFFFFFFFF
+    return raw
 
 
 # path = "C:\\Users\\johna\\Desktop\\picopng.png"
