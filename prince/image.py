@@ -1,6 +1,5 @@
 from PIL import Image
 import numpy
-import random
 import math
 
 pallet = [
@@ -40,28 +39,6 @@ hex_pallet = [
     0xFFA877FF,
     0xFFAACCFF
 ]
-
-
-def load_image(infilename):
-    img = Image.open(infilename)
-    img.load()
-    npdata = numpy.asarray(img, dtype="int32")
-    return npdata
-
-
-def create_image(outfilename):
-    w, h = 128, 128
-    img = numpy.empty((w, h), numpy.uint32)
-    img.shape = h, w
-
-    for y in range(h):
-        for x in range(w):
-            r = random.randint(0, len(hex_pallet) - 1)
-            color = hex_pallet[r]
-            img[y, x] = color
-
-    img = Image.frombuffer('RGBA', (w, h), img, 'raw', 'RGBA', 0, 1)
-    img.save(outfilename)
 
 
 def load_and_compress_images(sheets, outfilename):
@@ -114,31 +91,11 @@ def load_and_compress_images(sheets, outfilename):
     img.save(outfilename)
 
 
-def save_image(npdata, outfilename):
-    img = Image.fromarray(numpy.asarray(numpy.clip(npdata, 0, 255), dtype="uint8"))
-    img.save(outfilename)
-
-
-def save_image32(npdata, outfilename):
-    img = Image.fromarray(numpy.asarray(numpy.clip(npdata, 0, 255), dtype="int32"))
-    img.save(outfilename)
-
-
 def convert255x3to0xFFFFFFFF(sequence):
     value = 255 + sequence[2] * 256 + sequence[1] * 256 * 256 + sequence[0] * 256 * 256 * 256
     raw = hex(value)
-    # raw = 0xFFFFFFFF
     return raw
 
-
-# path = "C:\\Users\\johna\\Desktop\\picopng.png"
-# data = load_image(path)
-#
-# path = "C:\\Users\\johna\\Desktop\\picopng2.png"
-# save_image(data, path)
-#
-# path = "C:\\Users\\johna\\Desktop\\picopng3.png"
-# create_image(path)
 
 sheets = [
     {
