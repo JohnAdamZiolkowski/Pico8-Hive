@@ -1,7 +1,7 @@
 from PIL import Image
 import numpy
 import random
-import time
+import math
 
 pallet = [
     (0, 0, 0),
@@ -70,39 +70,39 @@ def load_and_compress_5_x_5_image(infilename, outfilename):
     src_img = Image.open(infilename)
     src_img.load()
     src_npdata = numpy.asarray(src_img, dtype="int32")
-    h, w = src_npdata.shape[0], src_npdata.shape[1]
+    sh, sw = src_npdata.shape[0], src_npdata.shape[1]
     th = 5
     tw = 5
     bw = 1
-    rows = int((h - bw) / (th + bw))
-    cols = int((w - bw) / (tw + bw))
+    rows = int((sh - bw) / (th + bw))
+    cols = int((sw - bw) / (tw + bw))
 
-    w = cols * tw
+    layers = 4
+    l_cols = int(math.ceil(cols / layers))
+
+    w = l_cols * tw
     h = rows * th
     img = numpy.empty((w, h), numpy.uint32)
     img.shape = h, w
 
     for r in range(rows):
-        # print("r", r, rows)
-        for c in range(cols):
-            # print("c", c, cols)
+        for c in range(l_cols):
             for y in range(th):
-                # print("y", y, th)
                 for x in range(tw):
-                    # print("x", x, tw)
-                    # rand = random.randint(0, len(hex_pallet) - 1)
-                    # r = int(x / 8)
-                    sx = bw + x + c * (tw + bw)
-                    sy = bw + y + r * (th + bw)
-                    src_color = src_npdata[sy, sx]
-                    color = hex_pallet[7]
-                    for p in range(len(pallet)):
-                        if src_color[0] == pallet[p][0] and \
-                                src_color[1] == pallet[p][1] and \
-                                src_color[2] == pallet[p][2]:
-                            color = hex_pallet[p]
-                    # color = hex_pallet[rand]
-                    # print(w, h, color)
+                    pixel_pallet = 0
+
+                    for l in range(layers):
+                        if l + c * layers >= cols:
+                            continue
+                        sx = bw + x + l * (tw + bw) + c * (tw + bw) * layers
+                        sy = bw + y + r * (th + bw)
+                        if sx >= sw:
+                            print(sx, sw)
+                        src_color = src_npdata[sy, sx]
+                        if src_color[0] != 0 or src_color[1] != 0 or src_color[2] != 0:
+                            pixel_pallet += l + 1
+
+                    color = hex_pallet[pixel_pallet]
                     tx = x + c * tw
                     ty = y + r * th
                     img[ty, tx] = color
