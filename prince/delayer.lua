@@ -25,26 +25,30 @@ end
 cls(13)
 
 function print(ps, px, py, pc, wide)
+ layers = 4
+
  for char=1,#ps do
   ci = ord(ps,char)
 
   if wide then
    tw = 5
    th = 5
-   offset = 0
+   off_x = 0
+   off_y = 0
   else
    tw = 3
    th = 5
-   offset = 5
+   off_x = 0
+   off_y = 5
   end
 
   sw = tw
   sh = th
 
-  local l = ci % 4
-  local r = flr(ci / 4)
-  local sx = offset //? * tw
-  local sy = r * th
+  local c = flr(ci / layers)
+  local l = ci % layers
+  local sx = off_x + c * tw
+  local sy = off_y
   local dx = px + (char-1) * (tw+1)
   local dy = py
 
@@ -61,8 +65,13 @@ function print(ps, px, py, pc, wide)
  end
 end
 
-print("hello world", 1, 10, 0, true)
-print("0123456789", 1, 20, 0, true)
+print("abcdefghijklm", 1, 10, 0, true)
+print("nopqrstuvwxyz", 1, 20, 0, true)
+print("0123456789   ", 1, 30, 0, true)
 
-print("hello world", 1, 40, 0, false)
-print("0123456789", 1, 50, 0, false)
+print("abcdefghijklm", 1, 40, 0, false)
+print("nopqrstuvwxyz", 1, 50, 0, false)
+print("0123456789   ", 1, 60, 0, false)
+
+print("hello world", 1, 80, 0, true)
+print("hello world", 1, 90, 0, false)
