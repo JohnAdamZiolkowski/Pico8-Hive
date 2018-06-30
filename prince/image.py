@@ -57,9 +57,7 @@ def create_image(outfilename):
     for y in range(h):
         for x in range(w):
             r = random.randint(0, len(hex_pallet) - 1)
-            # r = int(x / 8)
             color = hex_pallet[r]
-            # print(w, h, color)
             img[y, x] = color
 
     img = Image.frombuffer('RGBA', (w, h), img, 'raw', 'RGBA', 0, 1)
@@ -96,14 +94,10 @@ def load_and_compress_5_x_5_image(infilename, outfilename):
                             continue
                         sx = bw + x + l * (tw + bw) + c * (tw + bw) * layers
                         sy = bw + y + r * (th + bw)
-                        if sx >= sw:
-                            print(sx, sw)
                         src_color = src_npdata[sy, sx]
-                        if src_color[0] != 0 or src_color[1] != 0 or src_color[2] != 0:
-                            pixel_pallet += l * 2
+                        if src_color[0] == 0 and src_color[1] == 0 and src_color[2] == 0:
+                            pixel_pallet += int(math.pow(2, l))
 
-                    # if pixel_pallet == 16:
-                    #   pixel_pallet = 0
                     color = hex_pallet[pixel_pallet]
                     tx = x + c * tw
                     ty = y + r * th
