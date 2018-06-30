@@ -64,44 +64,51 @@ def create_image(outfilename):
     img.save(outfilename)
 
 
-def load_and_compress_5_x_5_image(infilename, outfilename):
-    src_img = Image.open(infilename)
-    src_img.load()
-    src_npdata = numpy.asarray(src_img, dtype="int32")
-    sh, sw = src_npdata.shape[0], src_npdata.shape[1]
-    th = 5
-    tw = 5
-    bw = 1
-    rows = int((sh - bw) / (th + bw))
-    cols = int((sw - bw) / (tw + bw))
-
-    layers = 4
-    l_cols = int(math.ceil(cols / layers))
-
-    w = l_cols * tw
-    h = rows * th
+def load_and_compress_images(sheets, outfilename):
+    w = 128
+    h = 128
     img = numpy.empty((w, h), numpy.uint32)
     img.shape = h, w
+    img.fill(hex_pallet[0])
 
-    for r in range(rows):
-        for c in range(l_cols):
-            for y in range(th):
-                for x in range(tw):
-                    pixel_pallet = 0
+    offset = 0
+    for sheet in sheets:
+        infilename = sheet["file"]
+        tw = sheet["tw"]
+        th = sheet["th"]
+        bw = sheet["bw"]
+        layers = sheet["layers"]
 
-                    for l in range(layers):
-                        if l + c * layers >= cols:
-                            continue
-                        sx = bw + x + l * (tw + bw) + c * (tw + bw) * layers
-                        sy = bw + y + r * (th + bw)
-                        src_color = src_npdata[sy, sx]
-                        if src_color[0] == 0 and src_color[1] == 0 and src_color[2] == 0:
-                            pixel_pallet += int(math.pow(2, l))
+        src_img = Image.open(infilename)
+        src_img.load()
+        src_npdata = numpy.asarray(src_img, dtype="int32")
+        sh, sw = src_npdata.shape[0], src_npdata.shape[1]
+        rows = int((sh - bw) / (th + bw))
+        cols = int((sw - bw) / (tw + bw))
 
-                    color = hex_pallet[pixel_pallet]
-                    tx = x + c * tw
-                    ty = y + r * th
-                    img[ty, tx] = color
+        l_cols = int(math.ceil(cols / layers))
+
+        for r in range(rows):
+            for c in range(l_cols):
+                for y in range(th):
+                    for x in range(tw):
+                        pixel_pallet = 0
+
+                        for l in range(layers):
+                            if l + c * layers >= cols:
+                                continue
+                            sx = bw + x + l * (tw + bw) + c * (tw + bw) * layers
+                            sy = bw + y + r * (th + bw)
+                            src_color = src_npdata[sy, sx]
+                            if src_color[0] == 0 and src_color[1] == 0 and src_color[2] == 0:
+                                pixel_pallet += int(math.pow(2, l))
+
+                        color = hex_pallet[pixel_pallet]
+                        tx = x + c * tw
+                        ty = y + r * th
+                        img[ty, tx + offset] = color
+
+        offset += l_cols * tw
 
     img = Image.frombuffer('RGBA', (w, h), img, 'raw', 'RGBA', 0, 1)
     img.save(outfilename)
@@ -133,6 +140,22 @@ def convert255x3to0xFFFFFFFF(sequence):
 # path = "C:\\Users\\johna\\Desktop\\picopng3.png"
 # create_image(path)
 
-in_path = "C:\\Users\\johna\\Desktop\\5x5.png"
-out_path = "C:\\Users\\johna\\Desktop\\5x5pico.png"
-load_and_compress_5_x_5_image(in_path, out_path)
+sheets = [
+    {
+        "file": "C:\\Users\\johna\\Desktop\\5x5.png",
+        "tw": 5,
+        "th": 5,
+        "bw": 1,
+        "layers": 4
+    },
+    {
+        "file": "C:\\Users\\johna\\Desktop\\3x5.png",
+        "tw": 3,
+        "th": 5,
+        "bw": 1,
+        "layers": 4
+    }
+]
+
+combined_path = "C:\\Users\\johna\\AppData\\Roaming\\pico-8\\carts\\combined.png"
+load_and_compress_images(sheets, combined_path)

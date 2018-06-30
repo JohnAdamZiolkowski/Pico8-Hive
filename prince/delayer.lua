@@ -23,19 +23,27 @@ function ord(s,i)
 end
 
 cls(13)
-th = 5
-tw = 5
 
-sw = tw
-sh = th
-
-function print(ps, px, py, pc)
+function print(ps, px, py, pc, wide)
  for char=1,#ps do
   ci = ord(ps,char)
 
-  local l= ci % 4
-  local r= flr(ci / 4)
-  local sx = 0 * tw
+  if wide then
+   tw = 5
+   th = 5
+   offset = 0
+  else
+   tw = 3
+   th = 5
+   offset = 5
+  end
+
+  sw = tw
+  sh = th
+
+  local l = ci % 4
+  local r = flr(ci / 4)
+  local sx = offset //? * tw
   local sy = r * th
   local dx = px + (char-1) * (tw+1)
   local dy = py
@@ -45,15 +53,16 @@ function print(ps, px, py, pc)
     local spixel = sget(sx + x, sy + y)
     local b = inttobin(spixel)
     if b[l+1] == 1 then
-     spixel = 0
-    else
-     spixel = 13
+     spixel = pc
+     pset(dx + x, dy + y, spixel)
     end
-    pset(dx + x, dy + y, spixel)
    end
   end
  end
 end
 
-print("hello world", 1, 10, 0)
-print("0123456789", 1, 20, 0)
+print("hello world", 1, 10, 0, true)
+print("0123456789", 1, 20, 0, true)
+
+print("hello world", 1, 40, 0, false)
+print("0123456789", 1, 50, 0, false)
