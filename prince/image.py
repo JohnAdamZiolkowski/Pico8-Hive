@@ -100,8 +100,10 @@ def load_and_compress_5_x_5_image(infilename, outfilename):
                             print(sx, sw)
                         src_color = src_npdata[sy, sx]
                         if src_color[0] != 0 or src_color[1] != 0 or src_color[2] != 0:
-                            pixel_pallet += l + 1
+                            pixel_pallet += l * 2
 
+                    # if pixel_pallet == 16:
+                    #   pixel_pallet = 0
                     color = hex_pallet[pixel_pallet]
                     tx = x + c * tw
                     ty = y + r * th
