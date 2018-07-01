@@ -87,7 +87,7 @@ enemy = {
 }
 
 
-function print(string, x, y, pc, caps)
+function print(string, x, y, pc, caps, bg_col)
  assert(type(string)=="string")
  local offset = 0
  local shift = false
@@ -101,7 +101,11 @@ function print(string, x, y, pc, caps)
     sheet = slim
    end
    ci = ord(sheet, string, char)
-   render(sheet, ci, x + offset, y, pc)
+   if bg_col != nil then
+    color(bg_col)
+    rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th+1)
+   end
+   render(sheet, ci, x + offset, y, pc, bg_col)
   	offset += sheet.tw + 1
   	shift = false
   end
@@ -243,9 +247,10 @@ end
 
 function check_over()
  if #arena.enemies == 0 then
-  print("^no more enemies remain!", 1, 118, 9)
+  print("^no more enemies remain!", 2, 118, 7, false, 0)
 
- //elseif #arena.party == 0 then
+ elseif #arena.party == 0 then
+  print("^no more party members remain!", 2, 118, 8, false, 0)
 
  end
 end
@@ -254,6 +259,8 @@ end
 ➡️ = 1
 ⬆️ = 2
 ⬇️ = 3
+❎ = 4
+🅾️ = 5
 
 function _update()
  if btnp(⬅️) or btnp(➡️) then
@@ -271,6 +278,14 @@ function _update()
   cap_cursor()
   draw_arena()
   draw_cursor()
+ elseif btnp(🅾️) then
+  eliminate()
+  cap_cursor()
+  draw_arena()
+  draw_cursor()
+  check_over()
+ elseif btnp(❎) then
+
  end
 end
 
@@ -306,8 +321,18 @@ function draw_cursor()
  else
   x = 80
  end
- y = 91 + 6 * cur.i
- print("^[", x, y, 0)
+ if cur.i > 0 then
+  y = 91 + 6 * cur.i
+  print("^[", x, y, 0)
+ end
+end
+
+function eliminate()
+ if cur.l == "enemies" then
+  del(arena.enemies, arena.enemies[cur.i])
+ else
+  del(arena.party, arena.party[cur.i])
+ end
 end
 
 set_up_arena()
