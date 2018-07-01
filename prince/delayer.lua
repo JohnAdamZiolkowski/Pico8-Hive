@@ -50,18 +50,18 @@ enemy = {
  layers = 2
 }
 
-function print(string, x, y)
+function print(string, x, y, pc)
  local offset = 0
  for char=1,#string do
 
   ci = ord(string, char)
   sheet = slim
-  render(sheet, ci, x + offset, y)
+  render(sheet, ci, x + offset, y, pc)
  	offset += sheet.tw + 1
  end
 end
 
-function render(sheet, ci, dx, dy)
+function render(sheet, ci, dx, dy, pc)
 
  tw = sheet.tw
  th = sheet.th
@@ -91,15 +91,15 @@ function draw_enemy()
 
 end
 
-print("abcdefghijklm", 1, 10)
-print("nopqrstuvwxyz", 1, 20)
-print("0123456789   ", 1, 30)
+print("abcdefghijklm", 1, 10, 0)
+print("nopqrstuvwxyz", 1, 20, 1)
+print("0123456789   ", 1, 30, 2)
 
-print("abcdefghijklm", 1, 40)
-print("nopqrstuvwxyz", 1, 50)
-print("0123456789   ", 1, 60)
+print("abcdefghijklm", 1, 40, 3)
+print("nopqrstuvwxyz", 1, 50, 4)
+print("0123456789   ", 1, 60, 5)
 
-print("hello world", 1, 80)
-print("hello world", 1, 90)
+print("hello world", 1, 80, 6)
+print("hello world", 1, 90, 7)
 
 //draw_enemy(126, 100, 100)
