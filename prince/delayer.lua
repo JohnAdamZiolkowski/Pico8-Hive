@@ -32,7 +32,7 @@ end
 cls(13)
 
 wide = {
- chars = " abcdefghijklmnopqrstuvwxyz0123456789",
+ chars = " abcdefghijklmnopqrstuvwxyz0123456789.,!?:'+-*/(){}[]",
  x = 0,
  y = 0,
  tw = 5,
@@ -113,12 +113,13 @@ end
 print("abcdefghijklm", 1, 10, 0, true)
 print("nopqrstuvwxyz", 1, 20, 1, true)
 print("0123456789   ", 1, 30, 2, true)
+print(".,!? :'+- */() {}[]", 1, 40, 10, true)
 
-print("abcdefghijklm", 1, 40, 3)
-print("nopqrstuvwxyz", 1, 50, 4)
-print("0123456789.,!?:'+-*/()", 1, 60, 5)
+print("abcdefghijklm", 1, 50, 11)
+print("nopqrstuvwxyz", 1, 60, 4)
+print("0123456789.,!?:'+-*/()", 1, 70, 5)
 
-print("hello world", 1, 80, 6, true)
-print("hello world", 1, 90, 7)
-print("^hello ^world!", 1, 100, 9)
+print("hello world", 1, 90, 6, true)
+print("hello world", 1, 100, 7)
+print("^]^{^]^hello ^world!^]^{^]", 1, 110, 9)
 //draw_enemy(126, 100, 100)
