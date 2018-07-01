@@ -20,6 +20,16 @@ function get_chars(sheet)
  end
 end
 
+function get_element(eni)
+ en_el_c=sub(enemy.elements,eni+1,eni+1)
+ for element in all(elements) do
+  if sub(element.n, 1, 1) == en_el_c then
+   return element
+  end
+ end
+ assert(false, "unknown element:"..eni)
+end
+
 function ord(sheet, s, i)
  assert(type(sheet)=="table")
  assert(type(s)=="string")
@@ -30,6 +40,21 @@ function ord(sheet, s, i)
 end
 
 cls(13)
+elements = {
+ {n="none", c=5},
+ {n="god", c=14},
+ {n="light", c=6},
+ {n="dark", c=2},
+ {n="fire", c=9},
+ {n="elec", c=10},
+ {n="air", c=15},
+ {n="ice", c=12},
+ {n="water", c=1},
+ {n="blood", c=8},
+ {n="rock", c=4},
+ {n="plant", c=3},
+ {n="variable", c=11}
+}
 
 wide = {
  chars = " abcdefghijklmnopqrstuvwxyz0123456789.,!?:'+-*/(){}[]",
@@ -52,11 +77,12 @@ slim = {
 get_chars(slim)
 
 enemy = {
+ elements = "nnnnnnnnnnnnvvvvvvvvvvvvvvvvvvfffeeeaaapppwwwiiirrrbbbllldddgggnnnnnffeeaappwwiirrbbllddggfeapwirbldgg",
 	x = 0,
 	y = 10,
  tw = 16,
  th = 12,
- layers = 2
+ layers = 2,
 }
 
 
@@ -125,8 +151,9 @@ function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4)
 end
 
 function draw_enemy(i, x, y)
- sheet = enemy
- render(sheet, i, x, y, nil, 0, nil, 7)
+ local sheet = enemy
+ local c = get_element(i).c
+ render(sheet, i, x, y, nil, c, nil, 7)
 end
 
 //print("abcdefghijklm", 1, 10, 0, true)
@@ -144,7 +171,9 @@ print("^]^{^]^hello ^world!^]^{^]", 1, 118, 9)
 
 for r = 0,8 do
  for c = 0,7 do
-  i = r * 8 + c
-  draw_enemy(i, c*16, r*12+8)
+  i = (r+4) * 8 + c
+  if i < 102 then
+   draw_enemy(i, c*16, r*12+8)
+  end
  end
 end
