@@ -24,26 +24,48 @@ end
 
 cls(13)
 
-function print(ps, px, py, pc, wide)
+wide = {
+ x = 0,
+ y = 0,
+ tw = 5,
+ th = 5,
  layers = 4
+}
+
+slim = {
+	x = 0,
+	y = 5,
+ tw = 3,
+ th = 5,
+ layers = 4
+}
+
+enemy = {
+	x = 0,
+	y = 10,
+ tw = 16,
+ th = 12,
+ layers = 2
+}
+
+function print(ps, px, py, pc, draw_wide)
+ if draw_wide then
+  render(ps, px, py, pc, wide)
+ else
+  render(ps, px, py, pc, slim)
+ end
+end
+
+function render(ps, px, py, pc, sheet)
 
  for char=1,#ps do
   ci = ord(ps,char)
 
-  if wide then
-   tw = 5
-   th = 5
-   off_x = 0
-   off_y = 0
-  else
-   tw = 3
-   th = 5
-   off_x = 0
-   off_y = 5
-  end
-
-  sw = tw
-  sh = th
+  tw = sheet.tw
+  th = sheet.th
+  off_x = sheet.x
+  off_y = sheet.y
+  layers = sheet.layers
 
   local c = flr(ci / layers)
   local l = ci % layers
@@ -65,6 +87,10 @@ function print(ps, px, py, pc, wide)
  end
 end
 
+function draw_enemy()
+
+end
+
 print("abcdefghijklm", 1, 10, 0, true)
 print("nopqrstuvwxyz", 1, 20, 0, true)
 print("0123456789   ", 1, 30, 0, true)
@@ -75,3 +101,5 @@ print("0123456789   ", 1, 60, 0, false)
 
 print("hello world", 1, 80, 0, true)
 print("hello world", 1, 90, 0, false)
+
+//draw_enemy(126, 100, 100)
