@@ -89,12 +89,13 @@ def load_and_compress_images(sheets, outfilename):
                                 if src_color[0] == 0 and src_color[1] == 0 and src_color[2] == 0:
                                     pixel_pallet += int(math.pow(2, l))
                             elif layers == 2:
+                                ld = 4
                                 if src_color[0] == 0 and src_color[1] == 0 and src_color[2] == 0:
                                     pixel_pallet += int(math.pow(4, l))
                                 elif src_color[0] == 127 and src_color[1] == 127 and src_color[2] == 127:
-                                    pixel_pallet += int(math.pow(4, l)) + 1
+                                    pixel_pallet += int(math.pow(7, l)) + 1
                                 elif src_color[0] == 255 and src_color[1] == 255 and src_color[2] == 255:
-                                    pixel_pallet += int(math.pow(4, l)) + 2
+                                    pixel_pallet += int(math.pow(10, l)) + 2
 
                         color = hex_pallet[pixel_pallet]
                         tx = x + tc * tw
@@ -131,7 +132,7 @@ sheets = [
         "y": 5,
         "layers": 4
     }, {
-        "file": "C:\\Users\\johna\\Desktop\\Prince - Classic RPG\\Sheets\\EnemySheet.bmp",
+        "file": "C:\\Users\\johna\\Desktop\\Prince - Classic RPG\\Sheets\\EnemySheet2.png",
         "tw": 16,
         "th": 12,
         "bw": 1,

@@ -80,46 +80,69 @@ function print(string, x, y, pc, caps)
  end
 end
 
-function render(sheet, ci, dx, dy, pc)
+function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4)
 
  tw = sheet.tw
  th = sheet.th
  off_x = sheet.x
  off_y = sheet.y
  layers = sheet.layers
+ rw = flr(128 * layers / sheet.tw) //tiles per row
 
- local c = flr(ci / layers)
+ local c = flr(ci / layers) % (rw / layers)
  local l = ci % layers
+ local r = flr(ci / rw)
  local sx = off_x + c * tw
- local sy = off_y
+ local sy = off_y + r * th
 
  for y = 0,th-1 do
   for x = 0,tw-1 do
+   local dpixel
    local spixel = sget(sx + x, sy + y)
    local b = inttobin(spixel)
-   if b[l+1] == 1 then
-    spixel = pc
-    pset(dx + x, dy + y, spixel)
+   if layers == 4 then
+    if b[l+1] == 1 then
+     dpixel = pc1
+    end
+   elseif layers == 2 then
+    ll = l * 2
+    if b[ll+1] == 1 and b[ll+2] == 1 then
+     dpixel = pc4
+    elseif b[ll+1] == 1 then
+     dpixel = pc2
+    elseif b[ll+2] == 1 then
+     dpixel = pc3
+    end
+   end
+   if dpixel != nil then
+    pset(dx + x, dy + y, dpixel)
    end
   end
  end
 
 end
 
-function draw_enemy()
-
+function draw_enemy(i, x, y)
+ sheet = enemy
+ render(sheet, i, x, y, nil, 0, nil, 7)
 end
 
-print("abcdefghijklm", 1, 10, 0, true)
-print("nopqrstuvwxyz", 1, 20, 1, true)
-print("0123456789   ", 1, 30, 2, true)
-print(".,!? :'+- */() {}[]", 1, 40, 10, true)
+//print("abcdefghijklm", 1, 10, 0, true)
+//print("nopqrstuvwxyz", 1, 20, 1, true)
+//print("0123456789   ", 1, 30, 2, true)
+//print(".,!? :'+- */() {}[]", 1, 40, 10, true)
 
-print("abcdefghijklm", 1, 50, 11)
-print("nopqrstuvwxyz", 1, 60, 4)
-print("0123456789.,!?:'+-*/()", 1, 70, 5)
+//print("abcdefghijklm", 1, 50, 11)
+//print("nopqrstuvwxyz", 1, 60, 4)
+//print("0123456789.,!?:'+-*/()", 1, 70, 5)
 
-print("hello world", 1, 90, 6, true)
-print("hello world", 1, 100, 7)
-print("^]^{^]^hello ^world!^]^{^]", 1, 110, 9)
-//draw_enemy(126, 100, 100)
+//print("hello world", 1, 90, 6, true)
+//print("hello world", 1, 100, 7)
+print("^]^{^]^hello ^world!^]^{^]", 1, 118, 9)
+
+for r = 0,8 do
+ for c = 0,7 do
+  i = r * 8 + c
+  draw_enemy(i, c*16, r*12+8)
+ end
+end
