@@ -39,6 +39,7 @@ function ord(sheet, s, i)
  return ci
 end
 
+palt(0, false)
 cls(13)
 elements = {
  {n="none", c=5},
@@ -161,17 +162,6 @@ function draw_enemy(i, x, y, flipx)
  render(sheet, i, x, y, nil, 0, nil, 7, flipx)
 end
 
-//print("^]^{^]^hello ^world!^]^{^]", 1, 118, 9)
-
-//for r = 0,8 do
-// for c = 0,7 do
-//  i = (r+4) * 8 + c
-//  if i < 102 then
-//   draw_enemy(i, c*16, r*12+8)
-//  end
-// end
-//end
-
 arena = nil
 
 function set_up_arena()
@@ -205,17 +195,25 @@ function set_up_arena()
  	if id != nil then
   	local member = {
   		i = id,
-  		x = 80 - (s % 2) * 12 ,
+  		x = 96 - (s % 2) * 12,
   		y = s * 16 + 16
   	}
   	add(arena.party, member)
  	end
  end
+
+ cur = {l="party", i=1}
 end
 
 function draw_arena()
+ cls(13)
+ for x = 0,15 do
+  spr(192, x*8, 0)
+ end
  draw_enemies()
  draw_party()
+ line(0,94,128,94)
+ draw_cursor()
 end
 
 function draw_enemies()
@@ -226,7 +224,7 @@ function draw_enemies()
   local en = arena.enemies[e]
   //local c = get_element(en.i).c
   local c = 0
-  print("^]"..enemy.stats[en.i+1].n, 1, 6*e + 90, c)
+  print("^]"..enemy.stats[en.i+1].n, 1, 6*e + 91, c)
  end
 end
 
@@ -238,13 +236,10 @@ function draw_party()
   local en = arena.party[m]
   //local c = get_element(en.i).c
   local c = 0
-  print("^]"..enemy.stats[en.i+1].n, 64, 6*m + 90, c)
+  print("^]"..enemy.stats[en.i+1].n, 80, 6*m + 91, c)
  end
 end
 
-set_up_arena()
-
-draw_arena()
 
 function check_over()
  if #arena.enemies == 0 then
@@ -255,4 +250,66 @@ function check_over()
  end
 end
 
+⬅️ = 0
+➡️ = 1
+⬆️ = 2
+⬇️ = 3
+
+function _update()
+ if btnp(⬅️) or btnp(➡️) then
+  toggle_cursor()
+  cap_cursor()
+  draw_arena()
+  draw_cursor()
+ elseif btnp(⬆️) then
+  cur.i -= 1
+  cap_cursor()
+  draw_arena()
+  draw_cursor()
+ elseif btnp(⬇️) then
+  cur.i += 1
+  cap_cursor()
+  draw_arena()
+  draw_cursor()
+ end
+end
+
+function toggle_cursor()
+ if cur.l == "enemies" then
+  cur.l = "party"
+ else
+  cur.l = "enemies"
+ end
+end
+
+function cap_cursor()
+ if cur.l == "enemies" then
+  if cur.i < 1 then
+   cur.i = 1
+  elseif cur.i > #arena.enemies then
+   cur.i = #arena.enemies
+  end
+ else
+  if cur.i < 1 then
+   cur.i = 1
+  elseif cur.i > #arena.party then
+   cur.i = #arena.party
+  end
+ end
+end
+
+function draw_cursor()
+ local x
+ local y
+ if cur.l == "enemies" then
+  x = 1
+ else
+  x = 80
+ end
+ y = 91 + 6 * cur.i
+ print("^[", x, y, 0)
+end
+
+set_up_arena()
+draw_arena()
 check_over()
