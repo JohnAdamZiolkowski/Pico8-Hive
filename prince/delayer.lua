@@ -21,7 +21,7 @@ function get_chars(sheet)
 end
 
 function get_element(eni)
- en_el_c=sub(enemy.elements,eni+1,eni+1)
+ en_el_c=enemy.stats[eni+1].e
  for element in all(elements) do
   if sub(element.n, 1, 1) == en_el_c then
    return element
@@ -42,7 +42,7 @@ end
 cls(13)
 elements = {
  {n="none", c=5},
- {n="god", c=14},
+ {n="holy", c=14},
  {n="light", c=6},
  {n="dark", c=2},
  {n="fire", c=9},
@@ -77,16 +77,17 @@ slim = {
 get_chars(slim)
 
 enemy = {
- elements = "nnnnnnnnnnnnvvvvvvvvvvvvvvvvvvfffeeeaaapppwwwiiirrrbbbllldddgggnnnnnffeeaappwwiirrbbllddggfeapwirbldgg",
-	x = 0,
+ x = 0,
 	y = 10,
  tw = 16,
  th = 12,
  layers = 2,
+ stats = {{n="^bunny",e="n"},{n="^rabbit",e="n"},{n="^bunny ^girl",e="n"},{n="^horse",e="n"},{n="^unicorn",e="n"},{n="^cenitaur",e="n"},{n="^ghost",e="n"},{n="^poltergeist",e="n"},{n="^zombie",e="n"},{n="^ghoul",e="n"},{n="^skeleton",e="n"},{n="^skull ^army",e="n"},{n="^floating^eye",e="n"},{n="^eye ^beast",e="n"},{n="^willowisp",e="n"},{n="^giant ^skull",e="n"},{n="^sadness",e="n"},{n="^madness",e="n"},{n="^man",e="n"},{n="^woman",e="n"},{n="^child",e="n"},{n="^prince",e="n"},{n="^king",e="n"},{n="^emperor",e="n"},{n="^fighter",e="n"},{n="^general",e="n"},{n="^giant",e="n"},{n="^caster",e="n"},{n="^sorceror",e="n"},{n="^merlin",e="n"},{n="^lizard",e="f"},{n="^dragon",e="f"},{n="^drako",e="f"},{n="^snake",e="e"},{n="^cobra",e="e"},{n="^lamia",e="e"},{n="^bird",e="a"},{n="^crow",e="a"},{n="^harpy",e="a"},{n="^sap",e="p"},{n="^slime",e="p"},{n="^jelly ^girl",e="p"},{n="^fish",e="w"},{n="^shark",e="w"},{n="^mermaid",e="w"},{n="^mouse",e="i"},{n="^rat",e="i"},{n="^mouse^prince",e="i"},{n="^turtle",e="r"},{n="^tortise",e="r"},{n="^kapa",e="r"},{n="^bat",e="b"},{n="^vampire ^bat",e="b"},{n="^vampire",e="b"},{n="^cat",e="l"},{n="^lion",e="l"},{n="^cat ^girl",e="l"},{n="^dog",e="d"},{n="^wolf",e="d"},{n="^werewolf",e="d"},{n="^slug",e="h"},{n="^snail",e="h"},{n="^hermit",e="h"},{n="^mist",e="n"},{n="^blarg",e="n"},{n="^rude ^demon",e="n"},{n="^living^sword",e="n"},{n="^mimic",e="n"},{n="^embers",e="f"},{n="^phoenix",e="f"},{n="^bolt ^rider",e="e"},{n="^android",e="e"},{n="^wind ^rider",e="a"},{n="^marionette",e="a"},{n="^evil ^weed",e="p"},{n="^evil ^tree",e="p"},{n="^rain ^rider",e="w"},{n="^hydra",e="w"},{n="^snow ^rider",e="i"},{n="^polar ^bear",e="i"},{n="^mushroom",e="r"},{n="^golem",e="r"},{n="^death",e="b"},{n="^haunted^tree",e="b"},{n="^cactus",e="l"},{n="^mummy",e="l"},{n="^dark ^hand",e="d"},{n="^dark ^mouth",e="d"},{n="^priest",e="h"},{n="^angel",e="h"},{n="^elder^dragon",e="f"},{n="^blade^master",e="e"},{n="^puppeteer",e="a"},{n="^venus ^trap",e="p"},{n="^kraken",e="w"},{n="^frozen^mimic",e="i"},{n="^raging ^dino",e="r"},{n="^vampiress",e="b"},{n="^sphinx",e="l"},{n="^hatman",e="d"},{n="^bishop",e="h"},{n="^final^bishop",e="h"}}
 }
 
 
 function print(string, x, y, pc, caps)
+ assert(type(string)=="string")
  local offset = 0
  local shift = false
  for char=1,#string do
@@ -190,20 +191,18 @@ function set_up_arena()
 
  arena.party = {}
  for s = 0,4 do
+  local id
   if s == 2 then
-   local member = {
-  		i = 21,
-  		x = 80 - (s % 2) * 12 ,
-  		y = s * 16 + 16
-  	}
-  	add(arena.party, member)
+   id = 21
   elseif rnd(5) > 2 then
-   local id = flr(rnd(2))
+   id = flr(rnd(2))
    if id == 0 then
     id = 24
    else
     id = 27
-    end
+   end
+ 	end
+ 	if id != nil then
   	local member = {
   		i = id,
   		x = 80 - (s % 2) * 12 ,
@@ -223,11 +222,23 @@ function draw_enemies()
  for e in all(arena.enemies) do
   draw_enemy(e.i, e.x, e.y)
  end
+ for e = 1,#arena.enemies do
+  local en = arena.enemies[e]
+  //local c = get_element(en.i).c
+  local c = 0
+  print("^]"..enemy.stats[en.i+1].n, 1, 6*e + 90, c)
+ end
 end
 
 function draw_party()
  for e in all(arena.party) do
   draw_enemy(e.i, e.x, e.y, true)
+ end
+ for m = 1,#arena.party do
+  local en = arena.party[m]
+  //local c = get_element(en.i).c
+  local c = 0
+  print("^]"..enemy.stats[en.i+1].n, 64, 6*m + 90, c)
  end
 end
 
