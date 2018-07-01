@@ -106,7 +106,7 @@ function print(string, x, y, pc, caps)
  end
 end
 
-function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4)
+function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4, flipx)
 
  tw = sheet.tw
  th = sheet.th
@@ -142,7 +142,11 @@ function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4)
      end
     end
     if dpixel != nil then
-     pset(dx + x, dy + y, dpixel)
+     final_x = dx + x
+     if flipx then
+      final_x = dx - x + tw
+     end
+     pset(final_x, dy + y, dpixel)
     end
    end
   end
@@ -150,10 +154,10 @@ function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4)
 
 end
 
-function draw_enemy(i, x, y)
+function draw_enemy(i, x, y, flipx)
  local sheet = enemy
  local c = get_element(i).c
- render(sheet, i, x, y, nil, 0, nil, 7)
+ render(sheet, i, x, y, nil, 0, nil, 7, flipx)
 end
 
 //print("^]^{^]^hello ^world!^]^{^]", 1, 118, 9)
@@ -183,15 +187,47 @@ function set_up_arena()
   	add(arena.enemies, enemy)
  	end
  end
+
+ arena.party = {}
+ for s = 0,4 do
+  if s == 2 then
+   local member = {
+  		i = 21,
+  		x = 80 - (s % 2) * 12 ,
+  		y = s * 16 + 16
+  	}
+  	add(arena.party, member)
+  elseif rnd(5) > 2 then
+   local id = flr(rnd(2))
+   if id == 0 then
+    id = 24
+   else
+    id = 27
+    end
+  	local member = {
+  		i = id,
+  		x = 80 - (s % 2) * 12 ,
+  		y = s * 16 + 16
+  	}
+  	add(arena.party, member)
+ 	end
+ end
 end
 
 function draw_arena()
  draw_enemies()
+ draw_party()
 end
 
 function draw_enemies()
  for e in all(arena.enemies) do
   draw_enemy(e.i, e.x, e.y)
+ end
+end
+
+function draw_party()
+ for e in all(arena.party) do
+  draw_enemy(e.i, e.x, e.y, true)
  end
 end
 

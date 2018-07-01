@@ -144,3 +144,28 @@ sheets = [
 
 combined_path = "C:\\Users\\johna\\AppData\\Roaming\\pico-8\\carts\\combined.png"
 load_and_compress_images(sheets, combined_path)
+
+n = "normal"
+g = "god"
+l = "light"
+d = "dark"
+f = "fire"
+e = "elec"
+a = "air"
+i = "ice"
+w = "water"
+b = "blood"
+r = "rock"
+p = "plant"
+v = "variable"
+
+elements = ""+\
+    "nnnnnnnnnnnn"+\
+    "vvvvvvvvvvvv"+\
+    "vvvvvvfffeee"+\
+    "aaapppwwwiii"+\
+    "rrrbbblllddd"+\
+    "gggnnnnnffee"+\
+    "aappwwiirrbb"+\
+    "llddggfeapwi"+\
+    "rbldgg"
