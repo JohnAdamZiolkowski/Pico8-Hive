@@ -153,27 +153,59 @@ end
 function draw_enemy(i, x, y)
  local sheet = enemy
  local c = get_element(i).c
- render(sheet, i, x, y, nil, c, nil, 7)
+ render(sheet, i, x, y, nil, 0, nil, 7)
 end
 
-//print("abcdefghijklm", 1, 10, 0, true)
-//print("nopqrstuvwxyz", 1, 20, 1, true)
-//print("0123456789   ", 1, 30, 2, true)
-//print(".,!? :'+- */() {}[]", 1, 40, 10, true)
+//print("^]^{^]^hello ^world!^]^{^]", 1, 118, 9)
 
-//print("abcdefghijklm", 1, 50, 11)
-//print("nopqrstuvwxyz", 1, 60, 4)
-//print("0123456789.,!?:'+-*/()", 1, 70, 5)
+//for r = 0,8 do
+// for c = 0,7 do
+//  i = (r+4) * 8 + c
+//  if i < 102 then
+//   draw_enemy(i, c*16, r*12+8)
+//  end
+// end
+//end
 
-//print("hello world", 1, 90, 6, true)
-//print("hello world", 1, 100, 7)
-print("^]^{^]^hello ^world!^]^{^]", 1, 118, 9)
+arena = nil
 
-for r = 0,8 do
- for c = 0,7 do
-  i = (r+4) * 8 + c
-  if i < 102 then
-   draw_enemy(i, c*16, r*12+8)
-  end
+function set_up_arena()
+ arena = {}
+ arena.enemies = {}
+ for s=0,4 do
+  if rnd(5) > 2 then
+   local id = flr(rnd(102))
+  	local enemy = {
+  		i = id,
+  		x = 16 + (s % 2) * 12 ,
+  		y = s * 16 + 16
+  	}
+  	add(arena.enemies, enemy)
+ 	end
  end
 end
+
+function draw_arena()
+ draw_enemies()
+end
+
+function draw_enemies()
+ for e in all(arena.enemies) do
+  draw_enemy(e.i, e.x, e.y)
+ end
+end
+
+set_up_arena()
+
+draw_arena()
+
+function check_over()
+ if #arena.enemies == 0 then
+  print("^no more enemies remain!", 1, 118, 9)
+
+ //elseif #arena.party == 0 then
+
+ end
+end
+
+check_over()
