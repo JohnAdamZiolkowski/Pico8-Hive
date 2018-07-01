@@ -99,23 +99,25 @@ function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4)
   for x = 0,tw-1 do
    local dpixel
    local spixel = sget(sx + x, sy + y)
-   local b = inttobin(spixel)
-   if layers == 4 then
-    if b[l+1] == 1 then
-     dpixel = pc1
+   if spixel != 0 then
+    local b = inttobin(spixel)
+    if layers == 4 then
+     if b[l+1] == 1 then
+      dpixel = pc1
+     end
+    elseif layers == 2 then
+     ll = l * 2
+     if b[ll+1] == 1 and b[ll+2] == 1 then
+      dpixel = pc4
+     elseif b[ll+1] == 1 then
+      dpixel = pc2
+     elseif b[ll+2] == 1 then
+      dpixel = pc3
+     end
     end
-   elseif layers == 2 then
-    ll = l * 2
-    if b[ll+1] == 1 and b[ll+2] == 1 then
-     dpixel = pc4
-    elseif b[ll+1] == 1 then
-     dpixel = pc2
-    elseif b[ll+2] == 1 then
-     dpixel = pc3
+    if dpixel != nil then
+     pset(dx + x, dy + y, dpixel)
     end
-   end
-   if dpixel != nil then
-    pset(dx + x, dy + y, dpixel)
    end
   end
  end
