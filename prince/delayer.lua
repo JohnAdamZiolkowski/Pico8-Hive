@@ -1,6 +1,6 @@
 function inttobin(b)
- t={}
- a=0
+ local t={}
+ local a=0
  for i = 0,4 do
   a=2^i
   t[i+1]=band(a,b)/a
@@ -21,7 +21,7 @@ function get_chars(sheet)
 end
 
 function get_element(eni)
- en_el_c=enemy.stats[eni+1].e
+ local en_el_c=enemy.stats[eni+1].e
  for element in all(elements) do
   if sub(element.n, 1, 1) == en_el_c then
    return element
@@ -34,7 +34,7 @@ function ord(sheet, s, i)
  assert(type(sheet)=="table")
  assert(type(s)=="string")
  assert(type(i)=="number")
- ci = sheet.s2c[sub(s,i or 1,i or 1)]
+ local ci = sheet.s2c[sub(s,i or 1,i or 1)]
  assert(ci, s..".."..i)
  return ci
 end
@@ -100,7 +100,7 @@ function print(string, x, y, pc, caps, bg_col)
    else
     sheet = slim
    end
-   ci = ord(sheet, string, char)
+   local ci = ord(sheet, string, char)
    if bg_col != nil then
     color(bg_col)
     rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th)
@@ -114,12 +114,12 @@ end
 
 function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4, flipx)
 
- tw = sheet.tw
- th = sheet.th
- off_x = sheet.x
- off_y = sheet.y
- layers = sheet.layers
- rw = flr(128 * layers / sheet.tw) //tiles per row
+ local tw = sheet.tw
+ local th = sheet.th
+ local off_x = sheet.x
+ local off_y = sheet.y
+ local layers = sheet.layers
+ local rw = flr(128 * layers / sheet.tw) //tiles per row
 
  local c = flr(ci / layers) % (rw / layers)
  local l = ci % layers
@@ -138,7 +138,7 @@ function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4, flipx)
       dpixel = pc1
      end
     elseif layers == 2 then
-     ll = l * 2
+     local ll = l * 2
      if b[ll+1] == 1 and b[ll+2] == 1 then
       dpixel = pc4
      elseif b[ll+1] == 1 then
@@ -148,7 +148,7 @@ function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4, flipx)
      end
     end
     if dpixel != nil then
-     final_x = dx + x
+     local final_x = dx + x
      if flipx then
       final_x = dx - x + tw
      end
@@ -221,7 +221,6 @@ function draw_arena()
  draw_party()
  line(0,94,128,94)
  draw_options()
- //draw_cursor()
 end
 
 function draw_enemies()
@@ -283,66 +282,72 @@ end
 
 function _update()
  if state == "arena" then
-  if turn == "party" then
-
-   if btnp(⬅️) or btnp(➡️) then
-    //toggle_cursor()
-    //cap_cursor()
-    //draw_arena()
-    //draw_cursor()
-   elseif btnp(⬆️) then
-    cur.i -= 1
-    cap_cursor()
-    draw_arena()
-    draw_options()
-   elseif btnp(⬇️) then
-    cur.i += 1
-    cap_cursor()
-    draw_arena()
-    draw_options()
-   elseif btnp(🅾️) then
-    select()
-   elseif btnp(❎) then
-    eliminate()
-    cap_cursor()
-    draw_arena()
-    draw_options()
-    check_over()
-  	end
-  elseif turn == "enemies" then
-   enemy_turn()
+  if attacking then
+   update_attack()
+  else
+   if turn == "party" then
+    if btnp(⬅️) or btnp(➡️) then
+     //toggle_cursor()
+     //cap_cursor()
+     //draw_arena()
+     //draw_cursor()
+    elseif btnp(⬆️) then
+     cur.i -= 1
+     cap_cursor()
+     draw_arena()
+     draw_options()
+    elseif btnp(⬇️) then
+     cur.i += 1
+     cap_cursor()
+     draw_arena()
+     draw_options()
+    elseif btnp(🅾️) then
+     select()
+    elseif btnp(❎) then
+     eliminate()
+     cap_cursor()
+     draw_arena()
+     draw_options()
+     check_over()
+   	end
+   elseif turn == "enemies" then
+    update_enemy_turn()
+   else
+    assert(false, turn)
+   end
   end
  elseif state == "over" then
 
  end
 end
 
-function select()
+function toggle_turn()
  if turn == "party" then
-  if cur.l == "enemies" then
-   eliminate()
-   cur.s = {l=nil, i=nil}
-   turn = "enemies"
-   ticks = 0
-   drawn = false
-  else
-   cur.s = {l=cur.l, i=cur.i}
-   toggle_cursor()
-  end
- elseif turn == "enemies" then
-  if cur.l == "party" then
-   eliminate()
-   cur.s = {l=nil, i=nil}
-   turn = "party"
-  else
-   cur.s = {l=cur.l, i=cur.i}
-   toggle_cursor()
-  end
+  enemy_turn()
+ else
+  turn = "party"
  end
  cap_cursor()
- draw_arena()
- draw_options()
- check_over() // checked twice
+end
+
+function select()
+ local sets = {{"party", "enemies"},
+               {"enemies", "party"}}
+
+ for set in all(sets) do
+  if turn == set[1] then
+   if cur.l == set[1] then
+    cur.s = {l=cur.l, i=cur.i}
+    toggle_cursor()
+    draw_arena()
+    draw_options()
+    return
+   else
+    attack()
+    return
+   end
+  end
+ end
 end
 
 function toggle_cursor()
@@ -351,20 +356,19 @@ function toggle_cursor()
  else
   cur.l = "enemies"
  end
+ cap_cursor()
 end
 
 function cap_cursor()
- if cur.l == "enemies" then
-  if cur.i < 1 then
-   cur.i = 1
-  elseif cur.i > #arena.enemies then
-   cur.i = #arena.enemies
-  end
- else
-  if cur.i < 1 then
-   cur.i = 1
-  elseif cur.i > #arena.party then
-   cur.i = #arena.party
+ local sets = {{n="enemies", l=arena.enemies},
+               {n="party", l=arena.party}}
+ for set in all(sets) do
+  if cur.l == set.n then
+   if cur.i < 1 then
+    cur.i = 1
+   elseif cur.i > #set.l then
+    cur.i = #set.l
+   end
   end
  end
 end
@@ -383,30 +387,68 @@ function draw_cursor()
  end
 end
 
+function attack()
+ attacking = true
+ attack_ticks = 0
+end
+
+function update_attack()
+ if attack_ticks == 0 then
+  print("enemy ^bat attacks party ^fighter", 0,0, 7, false, 0)
+
+ elseif attack_ticks == 30 then
+
+  cur.s = {l=nil, i=nil}
+
+  local hit = rnd(2) > 1
+  local text = "^but it missed!"
+  if hit then
+   text = "^hit! party ^fighter is gone"
+   eliminate()
+  end
+
+  draw_arena()
+  draw_options()
+  print(text, 0, 0, 7, false, 0)
+
+ elseif attack_ticks == 60 then
+  cur.s = {l=nil, i=nil}
+  attacking = false
+  toggle_turn()
+  draw_arena()
+  draw_options()
+  check_over()
+ end
+ attack_ticks += 1
+end
+
 function eliminate()
  if cur.l == "enemies" then
   del(arena.enemies, arena.enemies[cur.i])
  else
   del(arena.party, arena.party[cur.i])
  end
- check_over()
 end
 
 function enemy_turn()
- ticks += 1
+ enemy_ticks = 0
+ turn = "enemies"
+end
 
- if ticks == 20 then
-  //cur.l = "enemies"
+function update_enemy_turn()
+ enemy_ticks += 1
+
+ if enemy_ticks == 20 then
   cur.i = flr(rnd(#arena.enemies)) + 1
   draw_arena()
   draw_options()
- elseif ticks == 40 then
+ elseif enemy_ticks == 40 then
   select()
- elseif ticks == 60 then
+ elseif enemy_ticks == 60 then
   cur.i = flr(rnd(#arena.party)) + 1
   draw_arena()
   draw_options()
- elseif ticks == 80 then
+ elseif enemy_ticks == 80 then
   select()
  end
 end
