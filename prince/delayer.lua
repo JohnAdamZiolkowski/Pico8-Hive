@@ -103,7 +103,7 @@ function print(string, x, y, pc, caps, bg_col)
    ci = ord(sheet, string, char)
    if bg_col != nil then
     color(bg_col)
-    rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th+1)
+    rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th)
    end
    render(sheet, ci, x + offset, y, pc, bg_col)
   	offset += sheet.tw + 1
@@ -169,6 +169,7 @@ end
 arena = nil
 
 function set_up_arena()
+ state = "arena"
  arena = {}
  arena.enemies = {}
  for s=0,4 do
@@ -206,7 +207,8 @@ function set_up_arena()
  	end
  end
 
- cur = {l="party", i=1}
+ cur = {l="party", i=1,
+        s={l=nil, i=nil}}
 end
 
 function draw_arena()
@@ -217,30 +219,46 @@ function draw_arena()
  draw_enemies()
  draw_party()
  line(0,94,128,94)
- draw_cursor()
+ draw_options()
+ //draw_cursor()
 end
 
 function draw_enemies()
  for e in all(arena.enemies) do
   draw_enemy(e.i, e.x, e.y)
  end
- for e = 1,#arena.enemies do
-  local en = arena.enemies[e]
-  //local c = get_element(en.i).c
-  local c = 0
-  print("^]"..enemy.stats[en.i+1].n, 1, 6*e + 91, c)
- end
+
 end
 
 function draw_party()
  for e in all(arena.party) do
   draw_enemy(e.i, e.x, e.y, true)
  end
- for m = 1,#arena.party do
-  local en = arena.party[m]
-  //local c = get_element(en.i).c
-  local c = 0
-  print("^]"..enemy.stats[en.i+1].n, 80, 6*m + 91, c)
+end
+
+function draw_options()
+ local lists = {{l=arena.enemies, n="enemies", x=2},
+          {l=arena.party, n="party", x=80}}
+
+ for l = 1,#lists do
+  local list = lists[l]
+  for e = 1,#list.l do
+   local en = list.l[e]
+   //local c = get_element(en.i).c
+   local c = 0
+   local bg = nil
+   local icon = "^ "
+   if cur.s.l == list.n and cur.s.i == e then
+    c = 7
+    bg = 0
+    icon = "^{"
+   elseif cur.l == list.n and cur.i != e then
+    icon = "^]"
+   elseif cur.l == list.n and cur.i == e then
+    icon = "^["
+   end
+   print(icon..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, false, bg)
+  end
  end
 end
 
@@ -248,10 +266,10 @@ end
 function check_over()
  if #arena.enemies == 0 then
   print("^no more enemies remain!", 2, 118, 7, false, 0)
-
+  state = "over"
  elseif #arena.party == 0 then
   print("^no more party members remain!", 2, 118, 8, false, 0)
-
+  state = "over"
  end
 end
 
@@ -263,30 +281,45 @@ end
 🅾️ = 5
 
 function _update()
- if btnp(⬅️) or btnp(➡️) then
-  toggle_cursor()
-  cap_cursor()
-  draw_arena()
-  draw_cursor()
- elseif btnp(⬆️) then
-  cur.i -= 1
-  cap_cursor()
-  draw_arena()
-  draw_cursor()
- elseif btnp(⬇️) then
-  cur.i += 1
-  cap_cursor()
-  draw_arena()
-  draw_cursor()
- elseif btnp(🅾️) then
-  eliminate()
-  cap_cursor()
-  draw_arena()
-  draw_cursor()
-  check_over()
- elseif btnp(❎) then
+ if state == "arena" then
+
+  if btnp(⬅️) or btnp(➡️) then
+   //toggle_cursor()
+   //cap_cursor()
+   //draw_arena()
+   //draw_cursor()
+  elseif btnp(⬆️) then
+   cur.i -= 1
+   cap_cursor()
+   draw_arena()
+   draw_options()
+  elseif btnp(⬇️) then
+   cur.i += 1
+   cap_cursor()
+   draw_arena()
+   draw_options()
+  elseif btnp(🅾️) then
+   select()
+  elseif btnp(❎) then
+   eliminate()
+   cap_cursor()
+   draw_arena()
+   draw_options()
+   check_over()
+ 	end
+ elseif state == "over" then
 
  end
+end
+
+function select()
+ cur.s = {l=cur.l, i=cur.i}
+
+ toggle_cursor()
+ cap_cursor()
+ draw_arena()
+ draw_options()
+ //draw_cursor()
 end
 
 function toggle_cursor()
