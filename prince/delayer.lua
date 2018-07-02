@@ -1,3 +1,5 @@
+cls(13)
+
 function inttobin(b)
  local t={}
  local a=0
@@ -40,7 +42,6 @@ function ord(sheet, s, i)
 end
 
 palt(0, false)
-cls(13)
 elements = {
  {n="none", c=5},
  {n="holy", c=14},
@@ -102,8 +103,7 @@ function print(string, x, y, pc, caps, bg_col)
    end
    local ci = ord(sheet, string, char)
    if bg_col != nil then
-    color(bg_col)
-    rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th)
+    rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th, bg_col)
    end
    render(sheet, ci, x + offset, y, pc, bg_col)
   	offset += sheet.tw + 1
@@ -227,7 +227,6 @@ function draw_enemies()
  for e in all(arena.enemies) do
   draw_enemy(e.i, e.x, e.y)
  end
-
 end
 
 function draw_party()
@@ -304,11 +303,7 @@ function _update()
     elseif btnp(🅾️) then
      select()
     elseif btnp(❎) then
-     eliminate()
-     cap_cursor()
-     draw_arena()
-     draw_options()
-     check_over()
+     deselect()
    	end
    elseif turn == "enemies" then
     update_enemy_turn()
@@ -348,6 +343,10 @@ function select()
    end
   end
  end
+end
+
+function deselect()
+ assert(false)
 end
 
 function toggle_cursor()
@@ -390,11 +389,28 @@ end
 function attack()
  attacking = true
  attack_ticks = 0
+
+ a_id = nil
+ t_id = nil
+ attacker = nil
+ target = nil
+
+ if turn == "party" then
+  a_id = arena.party[cur.s.i].i+1
+  t_id = arena.enemies[cur.i].i+1
+ else
+  a_id = arena.enemies[cur.s.i].i+1
+  t_id = arena.party[cur.i].i+1
+ end
+ attacker = enemy.stats[a_id].n
+ target = enemy.stats[t_id].n
+
 end
 
 function update_attack()
+
  if attack_ticks == 0 then
-  print("enemy ^bat attacks party ^fighter", 0,0, 7, false, 0)
+  print(attacker.." attacks "..target, 0,0, 7, false, 0)
 
  elseif attack_ticks == 30 then
 
@@ -403,7 +419,7 @@ function update_attack()
   local hit = rnd(2) > 1
   local text = "^but it missed!"
   if hit then
-   text = "^hit! party ^fighter is gone"
+   text = "^hit! "..target.." is gone"
    eliminate()
   end
 
