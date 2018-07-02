@@ -247,14 +247,15 @@ function draw_options()
    local c = 0
    local bg = nil
    local icon = "^ "
-   if cur.s.l == list.n and cur.s.i == e then
+   if (cur.s.l == list.n and cur.s.i == e) or
+    (cur.s.l != list.n and cur.i == e and attacking and attack_ticks<20) then
     c = 7
     bg = 0
     icon = "^{"
-   elseif cur.l == list.n and cur.i != e and turn == "party" then
-    icon = "^]"
-   elseif cur.l == list.n and cur.i == e then
-    icon = "^["
+   elseif cur.l == list.n and cur.i != e and turn == "party" and not attacking then
+    icon = "^]" //notch
+   elseif cur.l == list.n and cur.i == e and not attacking then
+    icon = "^[" //arrow
    end
    print(icon..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, false, bg)
   end
@@ -346,7 +347,12 @@ function select()
 end
 
 function deselect()
- assert(false)
+ if cur.s.l and cur.s.i then
+  cur.s = {l=nil, i=nil}
+  toggle_cursor()
+  draw_arena()
+  draw_options()
+ end
 end
 
 function toggle_cursor()
@@ -405,6 +411,8 @@ function attack()
  attacker = enemy.stats[a_id].n
  target = enemy.stats[t_id].n
 
+	draw_arena()
+	draw_options()
 end
 
 function update_attack()
