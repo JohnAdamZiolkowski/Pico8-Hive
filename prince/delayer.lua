@@ -207,6 +207,7 @@ function set_up_arena()
  	end
  end
 
+ turn = "party"
  cur = {l="party", i=1,
         s={l=nil, i=nil}}
 end
@@ -252,7 +253,7 @@ function draw_options()
     c = 7
     bg = 0
     icon = "^{"
-   elseif cur.l == list.n and cur.i != e then
+   elseif cur.l == list.n and cur.i != e and turn == "party" then
     icon = "^]"
    elseif cur.l == list.n and cur.i == e then
     icon = "^["
@@ -282,44 +283,66 @@ end
 
 function _update()
  if state == "arena" then
+  if turn == "party" then
 
-  if btnp(⬅️) or btnp(➡️) then
-   //toggle_cursor()
-   //cap_cursor()
-   //draw_arena()
-   //draw_cursor()
-  elseif btnp(⬆️) then
-   cur.i -= 1
-   cap_cursor()
-   draw_arena()
-   draw_options()
-  elseif btnp(⬇️) then
-   cur.i += 1
-   cap_cursor()
-   draw_arena()
-   draw_options()
-  elseif btnp(🅾️) then
-   select()
-  elseif btnp(❎) then
-   eliminate()
-   cap_cursor()
-   draw_arena()
-   draw_options()
-   check_over()
- 	end
+   if btnp(⬅️) or btnp(➡️) then
+    //toggle_cursor()
+    //cap_cursor()
+    //draw_arena()
+    //draw_cursor()
+   elseif btnp(⬆️) then
+    cur.i -= 1
+    cap_cursor()
+    draw_arena()
+    draw_options()
+   elseif btnp(⬇️) then
+    cur.i += 1
+    cap_cursor()
+    draw_arena()
+    draw_options()
+   elseif btnp(🅾️) then
+    select()
+   elseif btnp(❎) then
+    eliminate()
+    cap_cursor()
+    draw_arena()
+    draw_options()
+    check_over()
+  	end
+  elseif turn == "enemies" then
+   enemy_turn()
+  end
  elseif state == "over" then
 
  end
 end
 
 function select()
- cur.s = {l=cur.l, i=cur.i}
-
- toggle_cursor()
+ if turn == "party" then
+  if cur.l == "enemies" then
+   eliminate()
+   cur.s = {l=nil, i=nil}
+   turn = "enemies"
+   ticks = 0
+   drawn = false
+  else
+   cur.s = {l=cur.l, i=cur.i}
+   toggle_cursor()
+  end
+ elseif turn == "enemies" then
+  if cur.l == "party" then
+   eliminate()
+   cur.s = {l=nil, i=nil}
+   turn = "party"
+  else
+   cur.s = {l=cur.l, i=cur.i}
+   toggle_cursor()
+  end
+ end
  cap_cursor()
  draw_arena()
  draw_options()
- //draw_cursor()
+ check_over() // checked twice
 end
 
 function toggle_cursor()
@@ -365,6 +388,26 @@ function eliminate()
   del(arena.enemies, arena.enemies[cur.i])
  else
   del(arena.party, arena.party[cur.i])
+ end
+ check_over()
+end
+
+function enemy_turn()
+ ticks += 1
+
+ if ticks == 20 then
+  //cur.l = "enemies"
+  cur.i = flr(rnd(#arena.enemies)) + 1
+  draw_arena()
+  draw_options()
+ elseif ticks == 40 then
+  select()
+ elseif ticks == 60 then
+  cur.i = flr(rnd(#arena.party)) + 1
+  draw_arena()
+  draw_options()
+ elseif ticks == 80 then
+  select()
  end
 end
 
