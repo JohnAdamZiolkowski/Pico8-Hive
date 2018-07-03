@@ -12,6 +12,23 @@ auto = true
 ❎ = 4
 🅾️ = 5
 
+black = 0
+navy = 1
+purple = 2
+forest = 3
+brown = 4
+dark = 5
+light = 6
+white = 7
+red = 8
+orange = 9
+yellow = 10
+neon = 11
+sky = 12
+pale = 13
+pink = 14
+sand = 15
+
 function inttobin(b)
  local t={}
  local a=0
@@ -53,21 +70,21 @@ function ord(sheet, s, i)
  return ci
 end
 
-palt(0, false)
+palt(black, false)
 elements = {
- {n="none", c=5},
- {n="holy", c=14},
- {n="light", c=6},
- {n="dark", c=2},
- {n="fire", c=9},
- {n="elec", c=10},
- {n="air", c=15},
- {n="ice", c=12},
- {n="water", c=1},
- {n="blood", c=8},
- {n="rock", c=4},
- {n="plant", c=3},
- {n="variable", c=11}
+ {n="none", c=dark},
+ {n="holy", c=pink},
+ {n="light", c=light},
+ {n="dark", c=purple},
+ {n="fire", c=orange},
+ {n="elec", c=yellow},
+ {n="air", c=sand},
+ {n="ice", c=sky},
+ {n="water", c=navy},
+ {n="blood", c=red},
+ {n="rock", c=brown},
+ {n="plant", c=forest},
+ {n="variable", c=neon}
 }
 
 wide = {

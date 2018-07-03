@@ -1,6 +1,6 @@
 -- draw
 
-function print(string, x, y, pc, caps, bg_col)
+function print(string, x, y, pc, bg_col, caps)
  assert(type(string)=="string",type(string))
  assert(type(x)=="number")
  assert(type(y)=="number")
@@ -47,7 +47,7 @@ function render(sheet, ci, dx, dy, pc1, pc2, pc3, pc4, flipx)
   for x = 0,tw-1 do
    local dpixel
    local spixel = sget(sx + x, sy + y)
-   if spixel != 0 then
+   if spixel != black then
     local b = inttobin(spixel)
     if layers == 4 then
      if b[l+1] == 1 then
@@ -79,7 +79,7 @@ end
 function draw_enemy(i, x, y, flipx)
  local sheet = enemy
  local c = get_element(i).c
- render(sheet, i, x, y, nil, 0, nil, 7, flipx)
+ render(sheet, i, x, y, nil, black, nil, white, flipx)
 end
 
 function draw_arena()
@@ -91,7 +91,7 @@ function draw_arena()
  end
  draw_enemies()
  draw_party()
- line(0,94,128,94)
+ line(black,94,128,94)
  draw_options()
 end
 
@@ -116,20 +116,20 @@ function draw_options()
   for e = 1,#list.l do
    local en = list.l[e]
    //local c = get_element(en.i).c
-   local c = 0
+   local c = black
    local bg = nil
    local icon = "^ "
    if (cur.s and cur.s.l == list.l and cur.s.i == e) or
     (cur.s and cur.s.l != list.l and cur.i == e and attacking and attack_ticks<20) then
-    c = 7
-    bg = 0
-    icon = "^{"
+    c = white
+    bg = black
+    icon = "^{" //diamond
    elseif cur.l == list.l and cur.i != e and turn == arena.party and not attacking then
     icon = "^]" //notch
    elseif cur.l == list.l and cur.i == e and not attacking then
     icon = "^[" //arrow
    end
-   print(icon..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, false, bg)
+   print(icon..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, bg)
   end
  end
 end
