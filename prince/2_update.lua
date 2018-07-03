@@ -15,28 +15,32 @@ function _update()
   if attacking then
    update_attack()
   else
-   if turn == "party" then
-    if btnp(⬅️) or btnp(➡️) then
-     //toggle_cursor()
-     //cap_cursor()
-     //draw_arena()
-     //draw_cursor()
-    elseif btnp(⬆️) then
-     cur.i -= 1
-     cap_cursor()
-     draw_arena()
-     draw_options()
-    elseif btnp(⬇️) then
-     cur.i += 1
-     cap_cursor()
-     draw_arena()
-     draw_options()
-    elseif btnp(🅾️) then
-     select()
-    elseif btnp(❎) then
-     deselect()
-   	end
-   elseif turn == "enemies" then
+   if turn == arena.party then
+    if not auto then
+     if btnp(⬅️) or btnp(➡️) then
+      //toggle_cursor()
+      //cap_cursor()
+      //draw_arena()
+      //draw_cursor()
+     elseif btnp(⬆️) then
+      cur.i -= 1
+      cap_cursor()
+      draw_arena()
+      draw_options()
+     elseif btnp(⬇️) then
+      cur.i += 1
+      cap_cursor()
+      draw_arena()
+      draw_options()
+     elseif btnp(🅾️) then
+      select()
+     elseif btnp(❎) then
+      deselect()
+    	end
+    else
+     update_auto_turn()
+    end
+   elseif turn == arena.enemies then
     update_enemy_turn()
    else
     assert(false, turn)
@@ -47,38 +51,46 @@ function _update()
  end
 end
 
+function opposition(list)
+
+ if list == arena.enemies then
+  return arena.party
+ else
+  return arena.enemies
+ end
+
+end
+
 function toggle_turn()
- if turn == "party" then
+ if turn == arena.party then
   enemy_turn()
  else
-  turn = "party"
+  turn = arena.party
+  if auto then
+   auto_turn()
+  end
  end
  cap_cursor()
 end
 
 function select()
- local sets = {{"party", "enemies"},
-               {"enemies", "party"}}
 
- for set in all(sets) do
-  if turn == set[1] then
-   if cur.l == set[1] then
-    cur.s = {l=cur.l, i=cur.i}
-    toggle_cursor()
-    draw_arena()
-    draw_options()
-    return
-   else
-    attack()
-    return
-   end
-  end
+ if cur.l == turn then
+  // select attacker
+  cur.s = {l=cur.l, i=cur.i}
+  toggle_cursor()
+  draw_arena()
+  draw_options()
+
+ else
+  // attack target
+  attack()
  end
 end
 
 function deselect()
- if cur.s.l and cur.s.i then
-  cur.s = {l=nil, i=nil}
+ if cur.s then
+  cur.s = nil
   toggle_cursor()
   draw_arena()
   draw_options()
@@ -86,24 +98,18 @@ function deselect()
 end
 
 function toggle_cursor()
- if cur.l == "enemies" then
-  cur.l = "party"
- else
-  cur.l = "enemies"
- end
+ cur.l = opposition(cur.l)
  cap_cursor()
 end
 
 function cap_cursor()
- local sets = {{n="enemies", l=arena.enemies},
-               {n="party", l=arena.party}}
+ local sets = {arena.enemies,
+               arena.party}
  for set in all(sets) do
-  if cur.l == set.n then
-   if cur.i < 1 then
-    cur.i = 1
-   elseif cur.i > #set.l then
-    cur.i = #set.l
-   end
+  if cur.i < 1 then
+   cur.i = 1
+  elseif cur.i > #set then
+   cur.i = #set
   end
  end
 end
@@ -117,13 +123,9 @@ function attack()
  attacker = nil
  target = nil
 
- if turn == "party" then
-  a_id = arena.party[cur.s.i].i+1
-  t_id = arena.enemies[cur.i].i+1
- else
-  a_id = arena.enemies[cur.s.i].i+1
-  t_id = arena.party[cur.i].i+1
- end
+ a_id = turn[cur.s.i].i+1
+ t_id = opposition(turn)[cur.i].i+1
+
  attacker = enemy.stats[a_id].n
  target = enemy.stats[t_id].n
 
@@ -138,7 +140,7 @@ function update_attack()
 
  elseif attack_ticks == 30 then
 
-  cur.s = {l=nil, i=nil}
+  cur.s = nil
 
   local hit = rnd(2) > 1
   local text = "^but it missed!"
@@ -152,7 +154,7 @@ function update_attack()
   print(text, 0, 0, 7, false, 0)
 
  elseif attack_ticks == 60 then
-  cur.s = {l=nil, i=nil}
+  cur.s = nil
   attacking = false
   toggle_turn()
   draw_arena()
@@ -163,16 +165,12 @@ function update_attack()
 end
 
 function eliminate()
- if cur.l == "enemies" then
-  del(arena.enemies, arena.enemies[cur.i])
- else
-  del(arena.party, arena.party[cur.i])
- end
+ del(cur.l, cur.l[cur.i])
 end
 
 function enemy_turn()
  enemy_ticks = 0
- turn = "enemies"
+ turn = arena.enemies
 end
 
 function update_enemy_turn()
@@ -189,6 +187,29 @@ function update_enemy_turn()
   draw_arena()
   draw_options()
  elseif enemy_ticks == 80 then
+  select()
+ end
+end
+
+
+function auto_turn()
+ auto_ticks = 0
+end
+
+function update_auto_turn()
+ auto_ticks += 1
+
+ if auto_ticks == 20 then
+  cur.i = flr(rnd(#cur.l)) + 1
+  draw_arena()
+  draw_options()
+ elseif auto_ticks == 40 then
+  select()
+ elseif auto_ticks == 60 then
+  cur.i = flr(rnd(#cur.l)) + 1
+  draw_arena()
+  draw_options()
+ elseif auto_ticks == 80 then
   select()
  end
 end

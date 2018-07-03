@@ -3,6 +3,8 @@
 clear = 13
 cls(clear)
 
+auto = true
+
 ⬅️ = 0
 ➡️ = 1
 ⬆️ = 2
@@ -102,7 +104,7 @@ arena = nil
 function set_up_arena()
  state = "arena"
  arena = {}
- arena.enemies = {}
+ arena.enemies = {n="enemies"}
  for s=0,4 do
   if rnd(5) > 2 then
    local id = flr(rnd(102))
@@ -115,7 +117,7 @@ function set_up_arena()
  	end
  end
 
- arena.party = {}
+ arena.party = {n="party"}
  for s = 0,4 do
   local id
   if s == 2 then
@@ -138,7 +140,8 @@ function set_up_arena()
  	end
  end
 
- turn = "party"
- cur = {l="party", i=1,
-        s={l=nil, i=nil}}
+ turn = arena.party
+ cur = {l=arena.party, i=1,
+        s=nil}
+ if auto then auto_turn() end
 end

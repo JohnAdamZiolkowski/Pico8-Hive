@@ -1,7 +1,11 @@
 -- draw
 
 function print(string, x, y, pc, caps, bg_col)
- assert(type(string)=="string")
+ assert(type(string)=="string",type(string))
+ assert(type(x)=="number")
+ assert(type(y)=="number")
+ assert(type(pc)=="number")
+
  local offset = 0
  local shift = false
  for char=1,#string do
@@ -79,7 +83,9 @@ function draw_enemy(i, x, y, flipx)
 end
 
 function draw_arena()
- cls(13)
+ cls(clear)
+
+ //draw stones
  for x = 0,15 do
   spr(192, x*8, 0)
  end
@@ -102,8 +108,8 @@ function draw_party()
 end
 
 function draw_options()
- local lists = {{l=arena.enemies, n="enemies", x=2},
-          {l=arena.party, n="party", x=80}}
+ local lists = {{l=arena.enemies, x=2},
+                {l=arena.party, x=80}}
 
  for l = 1,#lists do
   local list = lists[l]
@@ -113,14 +119,14 @@ function draw_options()
    local c = 0
    local bg = nil
    local icon = "^ "
-   if (cur.s.l == list.n and cur.s.i == e) or
-    (cur.s.l != list.n and cur.i == e and attacking and attack_ticks<20) then
+   if (cur.s and cur.s.l == list.l and cur.s.i == e) or
+    (cur.s and cur.s.l != list.l and cur.i == e and attacking and attack_ticks<20) then
     c = 7
     bg = 0
     icon = "^{"
-   elseif cur.l == list.n and cur.i != e and turn == "party" and not attacking then
+   elseif cur.l == list.l and cur.i != e and turn == arena.party and not attacking then
     icon = "^]" //notch
-   elseif cur.l == list.n and cur.i == e and not attacking then
+   elseif cur.l == list.l and cur.i == e and not attacking then
     icon = "^[" //arrow
    end
    print(icon..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, false, bg)
