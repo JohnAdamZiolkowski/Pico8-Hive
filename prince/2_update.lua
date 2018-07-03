@@ -41,7 +41,7 @@ function _update()
      update_auto_turn()
     end
    elseif turn == arena.enemies then
-    update_enemy_turn()
+    update_auto_turn()
    else
     assert(false, turn)
    end
@@ -63,7 +63,8 @@ end
 
 function toggle_turn()
  if turn == arena.party then
-  enemy_turn()
+  turn = arena.enemies
+  auto_turn()
  else
   turn = arena.party
   if auto then
@@ -167,30 +168,6 @@ end
 function eliminate()
  del(cur.l, cur.l[cur.i])
 end
-
-function enemy_turn()
- enemy_ticks = 0
- turn = arena.enemies
-end
-
-function update_enemy_turn()
- enemy_ticks += 1
-
- if enemy_ticks == 20 then
-  cur.i = flr(rnd(#arena.enemies)) + 1
-  draw_arena()
-  draw_options()
- elseif enemy_ticks == 40 then
-  select()
- elseif enemy_ticks == 60 then
-  cur.i = flr(rnd(#arena.party)) + 1
-  draw_arena()
-  draw_options()
- elseif enemy_ticks == 80 then
-  select()
- end
-end
-
 
 function auto_turn()
  auto_ticks = 0
