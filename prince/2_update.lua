@@ -104,14 +104,10 @@ function toggle_cursor()
 end
 
 function cap_cursor()
- local sets = {arena.enemies,
-               arena.party}
- for set in all(sets) do
-  if cur.i < 1 then
-   cur.i = 1
-  elseif cur.i > #set then
-   cur.i = #set
-  end
+ if cur.i < 1 then
+  cur.i = 1
+ elseif cur.i > #cur.l then
+  cur.i = #cur.l
  end
 end
 
