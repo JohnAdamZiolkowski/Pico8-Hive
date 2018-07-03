@@ -2,10 +2,10 @@
 
 function check_over()
  if #arena.enemies == 0 then
-  print("^no more enemies remain!", 2, 118, white, black)
+  print("^no more enemies remain!", note.x, note.y, white, black)
   state = "over"
  elseif #arena.party == 0 then
-  print("^no more party members remain!", 2, 118, red, black)
+  print("^no more party members remain!", note.x, note.y, red, black)
   state = "over"
  end
 end
@@ -133,7 +133,7 @@ end
 function update_attack()
 
  if attack_ticks == 0 then
-  print(attacker.." attacks "..target, 0,0, white, black)
+  print(attacker.." attacks "..target, note.x, note.y, white, black)
 
  elseif attack_ticks == 30 then
 
@@ -148,7 +148,7 @@ function update_attack()
 
   draw_arena()
   draw_options()
-  print(text, 0, 0, white, black)
+  print(text, note.x, note.y, white, black)
 
  elseif attack_ticks == 60 then
   cur.s = nil

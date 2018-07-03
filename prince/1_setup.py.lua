@@ -3,7 +3,7 @@
 clear = 13
 cls(clear)
 
-auto = true
+auto = false
 
 ⬅️ = 0
 ➡️ = 1
@@ -28,6 +28,8 @@ sky = 12
 pale = 13
 pink = 14
 sand = 15
+
+note = {x=2, y=87}
 
 function inttobin(b)
  local t={}

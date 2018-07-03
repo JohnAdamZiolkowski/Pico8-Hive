@@ -8,9 +8,12 @@ function print(string, x, y, pc, bg_col, caps)
 
  local offset = 0
  local shift = false
+ local elem = false
  for char=1,#string do
   if sub(string,char,char) == "^" then
    shift = true
+  elseif sub(string,char,char) == "@" then
+   elem = true
   else
    if shift or caps then
     sheet = wide
@@ -21,9 +24,15 @@ function print(string, x, y, pc, bg_col, caps)
    if bg_col != nil then
     rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th, bg_col)
    end
+   if elem then
+    ci = -1 //space
+    local element = element_by_n(sub(string,char,char))
+    draw_element(x + offset+2, y+2, element, pc, shift or caps)
+   end
    render(sheet, ci, x + offset, y, pc, bg_col)
   	offset += sheet.tw + 1
   	shift = false
+  	elem = false
   end
  end
 end
@@ -115,21 +124,56 @@ function draw_options()
   local list = lists[l]
   for e = 1,#list.l do
    local en = list.l[e]
-   //local c = get_element(en.i).c
+   local element = get_element(en.i)
+   assert(element)
+   local elm_n = sub(element.n, 1, 1)
    local c = black
    local bg = nil
    local icon = "^ "
+   local gem = "@"..elm_n
    if (cur.s and cur.s.l == list.l and cur.s.i == e) or
     (cur.s and cur.s.l != list.l and cur.i == e and attacking and attack_ticks<20) then
     c = white
     bg = black
-    icon = "^{" //diamond
+    icon = "^[" //diamond
+    gem = "^"..gem
    elseif cur.l == list.l and cur.i != e and turn == arena.party and not attacking then
     icon = "^]" //notch
    elseif cur.l == list.l and cur.i == e and not attacking then
     icon = "^[" //arrow
+    gem = "^"..gem
    end
-   print(icon..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, bg)
+   print(icon..gem..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, bg)
   end
+ end
+end
+
+function element_by_n(n)
+ assert(n)
+ for element in all(elements) do
+	 if n == sub(element.n, 1, 1) then
+	  return element
+	 end
+	end
+end
+
+function draw_element(x, y, element, ring, wide)
+
+	assert(element)
+	local fill = element.c
+
+	if wide then
+  circfill(x, y, 1.5, fill)
+  if ring != white then
+   pset(x, y-1, white)
+   pset(x-1, y, white)
+  end
+  line(x-2, y, x, y-2, ring)
+  line(x, y-2, x+2, y, ring)
+  line(x+2, y, x, y+2, ring)
+  line(x, y+2, x-2, y, ring)
+ else
+  circ(x-1, y, 1, ring)
+  pset(x-1, y, fill)
  end
 end
