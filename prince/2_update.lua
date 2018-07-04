@@ -120,8 +120,8 @@ function attack()
  attacker = nil
  target = nil
 
- a_id = turn[cur.s.i].i+1
- t_id = opposition(turn)[cur.i].i+1
+ a_id = turn[cur.s.i].i
+ t_id = opposition(turn)[cur.i].i
 
  attacker = enemy.stats[a_id].n
  target = enemy.stats[t_id].n
@@ -173,13 +173,13 @@ function update_auto_turn()
  auto_ticks += 1
 
  if auto_ticks == 20 then
-  cur.i = flr(rnd(#cur.l)) + 1
+  cur.i = ceil(rnd(#cur.l))
   draw_arena()
   draw_options()
  elseif auto_ticks == 40 then
   select()
  elseif auto_ticks == 60 then
-  cur.i = flr(rnd(#cur.l)) + 1
+  cur.i = ceil(rnd(#cur.l))
   draw_arena()
   draw_options()
  elseif auto_ticks == 80 then

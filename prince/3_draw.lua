@@ -88,7 +88,7 @@ end
 function draw_enemy(i, x, y, flipx)
  local sheet = enemy
  local c = get_element(i).c
- render(sheet, i, x, y, nil, black, nil, white, flipx)
+ render(sheet, i-1, x, y, nil, black, nil, white, flipx)
 end
 
 function draw_arena()
@@ -124,18 +124,17 @@ function draw_options()
   local list = lists[l]
   for e = 1,#list.l do
    local en = list.l[e]
-   local element = get_element(en.i)
+   local element = list.l[e].stats.e
    assert(element)
-   local elm_n = sub(element.n, 1, 1)
    local c = black
    local bg = nil
    local icon = "^ "
-   local gem = "@"..elm_n
+   local gem = "@"..element
    if (cur.s and cur.s.l == list.l and cur.s.i == e) or
     (cur.s and cur.s.l != list.l and cur.i == e and attacking and attack_ticks<20) then
     c = white
     bg = black
-    icon = "^[" //diamond
+    icon = "^[" //arrow
     gem = "^"..gem
    elseif cur.l == list.l and cur.i != e and turn == arena.party and not attacking then
     icon = "^]" //notch
@@ -143,23 +142,24 @@ function draw_options()
     icon = "^[" //arrow
     gem = "^"..gem
    end
-   print(icon..gem..enemy.stats[en.i+1].n, list.x, 6*e + 91, c, bg)
+   print(icon..gem..enemy.stats[en.i].n, list.x, 6*e + 91, c, bg)
   end
  end
 end
 
 function element_by_n(n)
- assert(n)
+ assert(type(n)=="string")
  for element in all(elements) do
 	 if n == sub(element.n, 1, 1) then
 	  return element
 	 end
 	end
+	assert(false, "unknown element: "..n)
 end
 
 function draw_element(x, y, element, ring, wide)
 
-	assert(element)
+	assert(element, x.." "..y.." "..ring)
 	local fill = element.c
 
 	if wide then

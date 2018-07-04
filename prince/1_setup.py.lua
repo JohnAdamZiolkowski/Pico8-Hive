@@ -3,7 +3,7 @@
 clear = 13
 cls(clear)
 
-auto = false
+auto = true
 
 ⬅️ = 0
 ➡️ = 1
@@ -54,7 +54,7 @@ function get_chars(sheet)
 end
 
 function get_element(eni)
- local en_el_c=enemy.stats[eni+1].e
+ local en_el_c=enemy.stats[eni].e
  for element in all(elements) do
   if sub(element.n, 1, 1) == en_el_c then
    return element
@@ -126,11 +126,13 @@ function set_up_arena()
  arena.enemies = {n="enemies"}
  for s=0,4 do
   if rnd(5) > 2 then
-   local id = flr(rnd(102))
+   local id = ceil(rnd(#enemy.stats))
+   local e = enemy.stats[id].e
   	local enemy = {
   		i = id,
-  		x = 16 + (s % 2) * 12 ,
-  		y = s * 16 + 16
+  		x = 16 + (s % 2) * 12,
+  		y = s * 16 + 16,
+  		stats = {e=e}
   	}
   	add(arena.enemies, enemy)
  	end
@@ -140,20 +142,25 @@ function set_up_arena()
  for s = 0,4 do
   local id
   if s == 2 then
-   id = 21
+   id = 22
   elseif rnd(5) > 2 then
    id = flr(rnd(2))
    if id == 0 then
-    id = 24
+    id = 25
    else
-    id = 27
+    id = 28
    end
  	end
  	if id != nil then
+ 	 //assign random element but not variable
+ 	 local e = ceil(rnd(#elements-1))
+ 	 local element_n = sub(elements[e].n,1,1)
+ 	 assert(e)
   	local member = {
   		i = id,
   		x = 96 - (s % 2) * 12,
-  		y = s * 16 + 16
+  		y = s * 16 + 16,
+  		stats = {e=element_n}
   	}
   	add(arena.party, member)
  	end
