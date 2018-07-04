@@ -3,7 +3,7 @@
 clear = 13
 cls(clear)
 
-auto = true
+auto = false
 
 ⬅️ = 0
 ➡️ = 1
@@ -152,8 +152,8 @@ function set_up_arena()
    end
  	end
  	if id != nil then
- 	 //assign random element but not variable
- 	 local e = ceil(rnd(#elements-1))
+ 	 //assign random element of basic 8
+ 	 local e = ceil(rnd(8))+4
  	 local element_n = sub(elements[e].n,1,1)
  	 assert(e)
   	local member = {

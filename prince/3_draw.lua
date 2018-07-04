@@ -177,3 +177,48 @@ function draw_element(x, y, element, ring, wide)
   pset(x-1, y, fill)
  end
 end
+
+function draw_element_chart()
+ cls(clear)
+ state = "element_chart"
+
+ local chart =
+ {{x=-3, y=-1},{x=-3, y=1},
+  {x=3, y=-1},{x=3, y=1},
+  {x=0, y=-2},{x=1, y=-1},
+  {x=2, y=-0},{x=1, y=1},
+  {x=0, y=2},{x=-1, y=1},
+  {x=-2, y=0},{x=-1, y=-1}}
+
+ local chart_x = 80
+ local chart_y = 48
+
+ print("^elements",2,2,0)
+ print("^opposition ^chart",49,20,0)
+ for e=1,#elements-1 do
+  local element = elements[e]
+  local e_n_c = sub(element.n,1,1)
+  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
+
+  //draw chart
+  local offset = chart[e]
+  print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
+ end
+
+ local line_x = chart_x+2
+ local line_y = chart_y+2
+
+ line(line_x, line_y-15, line_x, line_y+15, black)
+ line(line_x-15, line_y, line_x+15, line_y, black)
+
+ line(line_x-6, line_y-6, line_x+6, line_y+6, black)
+ line(line_x-6, line_y+6, line_x+6, line_y-6, black)
+
+ line(line_x+30, line_y+6, line_x+30, line_y-6, black)
+
+ print("^opposing elements hurt enemies",2,94,0)
+ print("more often. ^same elements will",2,100,0)
+ print("rarely hit. ^choose target well!",2,106,0)
+ print("^none has no bonus or weakness.",2,114,0)
+ print("^holy is good against all!",2,120,0)
+end

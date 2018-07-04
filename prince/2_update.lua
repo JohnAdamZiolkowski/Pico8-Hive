@@ -18,10 +18,7 @@ function _update()
    if turn == arena.party then
     if not auto then
      if btnp(⬅️) or btnp(➡️) then
-      //toggle_cursor()
-      //cap_cursor()
-      //draw_arena()
-      //draw_cursor()
+      draw_element_chart()
      elseif btnp(⬆️) then
       cur.i -= 1
       cap_cursor()
@@ -45,6 +42,14 @@ function _update()
    else
     assert(false, turn)
    end
+  end
+ elseif state == "element_chart" then
+  if btnp(🅾️) or btnp(❎)
+   or btnp(⬅️) or btnp(➡️)
+   or btnp(⬆️) or btnp(⬇️) then
+   draw_arena()
+   draw_options()
+   state = "arena"
   end
  elseif state == "over" then
 
