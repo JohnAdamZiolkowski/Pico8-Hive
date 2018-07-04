@@ -2,18 +2,20 @@
 
 function check_over()
  if #arena.enemies == 0 then
-  print("^no more enemies remain!", note.x, note.y, white, black)
-  state = "over"
+  battle_over()
  elseif #arena.party == 0 then
-  print("^no more party members remain!", note.x, note.y, red, black)
-  state = "over"
+  game_over()
  end
 end
 
 function _update()
  if state == "arena" then
-  if attacking then
+  if attack_ticks then
    update_attack()
+  elseif over_ticks then
+   update_battle_over()
+  elseif game_over_ticks then
+   update_game_over()
   else
    if turn == arena.party then
     if not auto then
@@ -51,8 +53,6 @@ function _update()
    draw_options()
    state = "arena"
   end
- elseif state == "over" then
-
  end
 end
 
@@ -117,7 +117,6 @@ function cap_cursor()
 end
 
 function attack()
- attacking = true
  attack_ticks = 0
 
  a_id = nil
@@ -137,8 +136,10 @@ end
 
 function update_attack()
 
- if attack_ticks == 0 then
-  print(attacker.." attacks "..target, note.x, note.y, white, black)
+ attack_ticks += 1
+
+ if attack_ticks == 1 then
+  note(attacker.." attacks "..target)
 
  elseif attack_ticks == 30 then
 
@@ -153,17 +154,16 @@ function update_attack()
 
   draw_arena()
   draw_options()
-  print(text, note.x, note.y, white, black)
+  note(text)
 
  elseif attack_ticks == 60 then
   cur.s = nil
-  attacking = false
+  attack_ticks = nil
   toggle_turn()
   draw_arena()
   draw_options()
   check_over()
  end
- attack_ticks += 1
 end
 
 function eliminate()
@@ -189,5 +189,58 @@ function update_auto_turn()
   draw_options()
  elseif auto_ticks == 80 then
   select()
+ end
+end
+
+function battle_over()
+ over_ticks = 0
+end
+
+function update_battle_over()
+ over_ticks += 1
+
+ if over_ticks == 20 then
+  draw_arena()
+  note("^no more enemies remain!")
+ elseif over_ticks == 50 then
+  draw_arena()
+  battles += 1
+  local s = ""
+  if battles > 1 then s = "s" end
+  note("^finished "..battles.." battle"..s)
+ elseif over_ticks == 100 then
+  set_up_enemies()
+  draw_arena()
+  draw_options()
+  note("^new enemies appeared!")
+ elseif over_ticks == 130 then
+  over_ticks = nil
+ end
+end
+
+function game_over()
+ game_over_ticks = 0
+end
+
+function update_game_over()
+ game_over_ticks += 1
+
+ if game_over_ticks == 20 then
+  draw_arena()
+  note("^your entire party is down!", red)
+ elseif game_over_ticks == 50 then
+  draw_arena()
+  local s = "s"
+  if battles == 1 then s = "" end
+  note("^finished "..battles.." battle"..s, red)
+ elseif game_over_ticks == 100 then
+  set_up_party()
+  draw_arena()
+  draw_options()
+  note("^a new party appeared!")
+ elseif game_over_ticks == 130 then
+  game_over_ticks = nil
+  draw_arena()
+  draw_options()
  end
 end

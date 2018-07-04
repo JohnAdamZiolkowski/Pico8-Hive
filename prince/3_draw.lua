@@ -1,5 +1,15 @@
 -- draw
 
+function note(string, col1)
+ col2 = black
+
+ if not col1 then
+  col1 = white
+  col2 = black
+ end
+ print(string, note_pos.x, note_pos.y, col1, col2)
+end
+
 function print(string, x, y, pc, bg_col, caps)
  assert(type(string)=="string",type(string))
  assert(type(x)=="number")
@@ -131,12 +141,12 @@ function draw_options()
    local icon = "^ "
    local gem = "@"..element
    if (cur.s and cur.s.l == list.l and cur.s.i == e) or
-    (cur.s and cur.s.l != list.l and cur.i == e and attacking and attack_ticks<20) then
+    (cur.s and cur.s.l != list.l and cur.i == e and attack_ticks and attack_ticks<20) then
     c = white
     bg = black
     icon = "^[" //arrow
     gem = "^"..gem
-   elseif cur.l == list.l and cur.i != e and turn == arena.party and not attacking then
+   elseif cur.l == list.l and cur.i != e and turn == arena.party and not attack_ticks and not game_over_ticks then
     icon = "^]" //notch
    elseif cur.l == list.l and cur.i == e and not attacking then
     icon = "^[" //arrow
@@ -216,9 +226,9 @@ function draw_element_chart()
 
  line(line_x+30, line_y+6, line_x+30, line_y-6, black)
 
- print("^opposing elements hurt enemies",2,94,0)
- print("more often. ^same elements will",2,100,0)
- print("rarely hit. ^choose target well!",2,106,0)
- print("^none has no bonus or weakness.",2,114,0)
- print("^holy is good against all!",2,120,0)
+ print("^opposing elements hurt enemies",2,94,black)
+ print("more often. ^same elements will",2,100,black)
+ print("rarely hit. ^choose target well!",2,106,black)
+ print("^none has no bonus or weakness.",2,114,black)
+ print("^holy is good against all!",2,120,black)
 end

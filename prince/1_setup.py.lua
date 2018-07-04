@@ -29,7 +29,7 @@ pale = 13
 pink = 14
 sand = 15
 
-note = {x=2, y=87}
+note_pos = {x=2, y=87}
 
 function inttobin(b)
  local t={}
@@ -120,10 +120,7 @@ enemy = {
 
 arena = nil
 
-function set_up_arena()
- state = "arena"
- arena = {}
- arena.enemies = {n="enemies"}
+function set_up_enemies()
  for s=0,4 do
   if rnd(5) > 2 then
    local id = ceil(rnd(#enemy.stats))
@@ -137,8 +134,9 @@ function set_up_arena()
   	add(arena.enemies, enemy)
  	end
  end
+end
 
- arena.party = {n="party"}
+function set_up_party()
  for s = 0,4 do
   local id
   if s == 2 then
@@ -166,8 +164,20 @@ function set_up_arena()
  	end
  end
 
+ battles = 0
  turn = arena.party
  cur = {l=arena.party, i=1,
         s=nil}
+end
+
+function set_up_arena()
+ state = "arena"
+ arena = {}
+
+ arena.enemies = {n="enemies"}
+ set_up_enemies()
+
+ arena.party = {n="party"}
+ set_up_party()
  if auto then auto_turn() end
 end
