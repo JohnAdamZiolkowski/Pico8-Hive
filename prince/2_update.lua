@@ -168,6 +168,14 @@ function eliminate()
  local target = cur.l[cur.i]
  if cur.l == arena.enemies then
   arena.party.score += target.stats.l
+ 	local next_level = levels[arena.party.level]
+ 	if arena.party.score >= next_level then
+ 	 arena.party.level += 1
+ 	 //maybe: lower score on level?
+ 	 if arena.party.level > #levels then
+ 	  arena.party.level = #levels
+ 	 end
+ 	end
  end
  del(cur.l, target)
 end

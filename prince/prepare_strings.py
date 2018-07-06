@@ -9,7 +9,9 @@ with open(file_path, "r") as file:
 
         split = line.split(",")
 
-        name = split[1]
+        id = split[1]
+
+        name = split[2]
         c = 0
         while c < len(name):
             char = name[c]
@@ -18,13 +20,13 @@ with open(file_path, "r") as file:
                 c += 1
             c += 1
 
-        element = split[2][0]
+        element = split[3][0]
 
-        level = split[3]
+        level = split[4]
 
-        enemy = '{n="' + name + '",e="' + element + '",l=' + level + '},'
+        enemy = '{i=' + id + ',n="' + name + '",e="' + element + '",l=' + level + '},'
 
         print(enemy)
         output += enemy
 
-    print(output)
+    print("stats = {" + output + "}")
