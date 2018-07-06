@@ -115,7 +115,7 @@ enemy = {
  tw = 16,
  th = 12,
  layers = 2,
- stats = {{n="^bunny",e="n"},{n="^rabbit",e="n"},{n="^bunny ^girl",e="n"},{n="^horse",e="n"},{n="^unicorn",e="n"},{n="^cenitaur",e="n"},{n="^ghost",e="n"},{n="^poltergeist",e="n"},{n="^zombie",e="n"},{n="^ghoul",e="n"},{n="^skeleton",e="n"},{n="^skull ^army",e="n"},{n="^floating^eye",e="n"},{n="^eye ^beast",e="n"},{n="^willowisp",e="n"},{n="^giant ^skull",e="n"},{n="^sadness",e="n"},{n="^madness",e="n"},{n="^man",e="n"},{n="^woman",e="n"},{n="^child",e="n"},{n="^prince",e="n"},{n="^king",e="n"},{n="^emperor",e="n"},{n="^fighter",e="n"},{n="^general",e="n"},{n="^giant",e="n"},{n="^caster",e="n"},{n="^sorceror",e="n"},{n="^merlin",e="n"},{n="^lizard",e="f"},{n="^dragon",e="f"},{n="^drako",e="f"},{n="^snake",e="e"},{n="^cobra",e="e"},{n="^lamia",e="e"},{n="^bird",e="a"},{n="^crow",e="a"},{n="^harpy",e="a"},{n="^sap",e="p"},{n="^slime",e="p"},{n="^jelly ^girl",e="p"},{n="^fish",e="w"},{n="^shark",e="w"},{n="^mermaid",e="w"},{n="^mouse",e="i"},{n="^rat",e="i"},{n="^mouse^prince",e="i"},{n="^turtle",e="r"},{n="^tortise",e="r"},{n="^kapa",e="r"},{n="^bat",e="b"},{n="^vampire ^bat",e="b"},{n="^vampire",e="b"},{n="^cat",e="l"},{n="^lion",e="l"},{n="^cat ^girl",e="l"},{n="^dog",e="d"},{n="^wolf",e="d"},{n="^werewolf",e="d"},{n="^slug",e="h"},{n="^snail",e="h"},{n="^hermit",e="h"},{n="^mist",e="n"},{n="^blarg",e="n"},{n="^rude ^demon",e="n"},{n="^living^sword",e="n"},{n="^mimic",e="n"},{n="^embers",e="f"},{n="^phoenix",e="f"},{n="^bolt ^rider",e="e"},{n="^android",e="e"},{n="^wind ^rider",e="a"},{n="^marionette",e="a"},{n="^evil ^weed",e="p"},{n="^evil ^tree",e="p"},{n="^rain ^rider",e="w"},{n="^hydra",e="w"},{n="^snow ^rider",e="i"},{n="^polar ^bear",e="i"},{n="^mushroom",e="r"},{n="^golem",e="r"},{n="^death",e="b"},{n="^haunted^tree",e="b"},{n="^cactus",e="l"},{n="^mummy",e="l"},{n="^dark ^hand",e="d"},{n="^dark ^mouth",e="d"},{n="^priest",e="h"},{n="^angel",e="h"},{n="^elder^dragon",e="f"},{n="^blade^master",e="e"},{n="^puppeteer",e="a"},{n="^venus ^trap",e="p"},{n="^kraken",e="w"},{n="^frozen^mimic",e="i"},{n="^raging ^dino",e="r"},{n="^vampiress",e="b"},{n="^sphinx",e="l"},{n="^hatman",e="d"},{n="^bishop",e="h"},{n="^final^bishop",e="h"}}
+ stats = {{n="^bunny",e="n",l=1},{n="^rabbit",e="n",l=3},{n="^bunny ^girl",e="n",l=5},{n="^horse",e="n",l=2},{n="^unicorn",e="n",l=4},{n="^cenitaur",e="n",l=6},{n="^ghost",e="n",l=1},{n="^poltergeist",e="n",l=4},{n="^zombie",e="n",l=2},{n="^ghoul",e="n",l=5},{n="^skeleton",e="n",l=3},{n="^skull ^army",e="n",l=6},{n="^floating^eye",e="n",l=1},{n="^eye ^beast",e="n",l=4},{n="^willowisp",e="n",l=2},{n="^giant ^skull",e="n",l=5},{n="^sadness",e="n",l=3},{n="^madness",e="n",l=6},{n="^man",e="n",l=0},{n="^woman",e="n",l=0},{n="^child",e="n",l=0},{n="^prince",e="v",l=4},{n="^king",e="v",l=8},{n="^emperor",e="v",l=12},{n="^fighter",e="v",l=4},{n="^general",e="v",l=8},{n="^giant",e="v",l=12},{n="^caster",e="v",l=4},{n="^sorceror",e="v",l=8},{n="^merlin",e="v",l=12},{n="^lizard",e="f",l=2},{n="^dragon",e="f",l=4},{n="^drako",e="f",l=6},{n="^snake",e="e",l=2},{n="^cobra",e="e",l=4},{n="^lamia",e="e",l=6},{n="^bird",e="a",l=2},{n="^crow",e="a",l=4},{n="^harpy",e="a",l=6},{n="^sap",e="p",l=2},{n="^slime",e="p",l=4},{n="^jelly ^girl",e="p",l=6},{n="^fish",e="w",l=2},{n="^shark",e="w",l=4},{n="^mermaid",e="w",l=6},{n="^mouse",e="i",l=2},{n="^rat",e="i",l=4},{n="^mouse^prince",e="i",l=6},{n="^turtle",e="r",l=2},{n="^tortise",e="r",l=4},{n="^kapa",e="r",l=6},{n="^bat",e="b",l=2},{n="^vampire ^bat",e="b",l=4},{n="^vampire",e="b",l=6},{n="^cat",e="l",l=3},{n="^lion",e="l",l=5},{n="^cat ^girl",e="l",l=7},{n="^dog",e="d",l=3},{n="^wolf",e="d",l=5},{n="^werewolf",e="d",l=7},{n="^slug",e="h",l=4},{n="^snail",e="h",l=6},{n="^hermit",e="h",l=8},{n="^mist",e="n",l=6},{n="^blarg",e="n",l=9},{n="^rude ^demon",e="n",l=7},{n="^living^sword",e="n",l=10},{n="^mimic",e="n",l=8},{n="^embers",e="f",l=7},{n="^phoenix",e="f",l=9},{n="^bolt ^rider",e="e",l=7},{n="^android",e="e",l=9},{n="^wind ^rider",e="a",l=7},{n="^marionette",e="a",l=9},{n="^evil ^weed",e="p",l=7},{n="^evil ^tree",e="p",l=9},{n="^rain ^rider",e="w",l=7},{n="^hydra",e="w",l=9},{n="^snow ^rider",e="i",l=7},{n="^polar ^bear",e="i",l=9},{n="^mushroom",e="r",l=7},{n="^golem",e="r",l=9},{n="^death",e="b",l=7},{n="^haunted^tree",e="b",l=9},{n="^cactus",e="l",l=8},{n="^mummy",e="l",l=10},{n="^dark ^hand",e="d",l=8},{n="^dark ^mouth",e="d",l=10},{n="^priest",e="h",l=11},{n="^angel",e="h",l=11},{n="^elder^dragon",e="f",l=12},{n="^blade^master",e="e",l=12},{n="^puppeteer",e="a",l=12},{n="^venus ^trap",e="p",l=12},{n="^kraken",e="w",l=12},{n="^frozen^mimic",e="i",l=12},{n="^raging ^dino",e="r",l=12},{n="^vampiress",e="b",l=12},{n="^sphinx",e="l",l=13},{n="^hatman",e="d",l=13},{n="^bishop",e="h",l=14},{n="^final^bishop",e="h",l=15}},
 }
 
 arena = nil
@@ -125,11 +125,19 @@ function set_up_enemies()
   if rnd(5) > 2 then
    local id = ceil(rnd(#enemy.stats))
    local e = enemy.stats[id].e
+   if e == "v" then
+    //humans get random element
+    element_i = ceil(rnd(8))+4
+    element_n = sub(elements[element_i].n,1,1)
+    e = element_n
+   end
+   local n = enemy.stats[id].n
+   local l = enemy.stats[id].l
   	local enemy = {
   		i = id,
   		x = 16 + (s % 2) * 12,
   		y = s * 16 + 16,
-  		stats = {e=e}
+  		stats = {e=e, n=n, l=l}
   	}
   	add(arena.enemies, enemy)
  	end
@@ -153,18 +161,22 @@ function set_up_party()
  	 //assign random element of basic 8
  	 local e = ceil(rnd(8))+4
  	 local element_n = sub(elements[e].n,1,1)
+ 	 local n = enemy.stats[id].n
+ 	 local l = 1
  	 assert(e)
   	local member = {
   		i = id,
   		x = 96 - (s % 2) * 12,
   		y = s * 16 + 16,
-  		stats = {e=element_n}
+  		stats = {e=element_n, n=n, l=l}
   	}
   	add(arena.party, member)
  	end
  end
 
- battles = 0
+ arena.party.score = 0
+ arena.party.battles = 0
+
  turn = arena.party
  cur = {l=arena.party, i=1,
         s=nil}

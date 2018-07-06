@@ -6,7 +6,10 @@ with open(file_path, "r") as file:
     lines = file.readlines()
     output = ""
     for line in lines:
-        name = line.split(",")[1]
+
+        split = line.split(",")
+
+        name = split[1]
         c = 0
         while c < len(name):
             char = name[c]
@@ -14,8 +17,13 @@ with open(file_path, "r") as file:
                 name = name[:c] + "^" + name[c:]
                 c += 1
             c += 1
-        element = line.split(",")[2][0]
-        enemy = '{n="' + name + '",e="' + element + '"},'
+
+        element = split[2][0]
+
+        level = split[3]
+
+        enemy = '{n="' + name + '",e="' + element + '",l=' + level + '},'
+
         print(enemy)
         output += enemy
 

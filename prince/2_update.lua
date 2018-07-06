@@ -119,16 +119,10 @@ end
 function attack()
  attack_ticks = 0
 
- a_id = nil
- t_id = nil
- attacker = nil
- target = nil
-
- a_id = turn[cur.s.i].i
- t_id = opposition(turn)[cur.i].i
-
- attacker = enemy.stats[a_id].n
- target = enemy.stats[t_id].n
+ attacker = turn[cur.s.i].stats.n
+ assert(attacker)
+ target = opposition(turn)[cur.i].stats.n
+	assert(target)
 
 	draw_arena()
 	draw_options()
@@ -159,6 +153,10 @@ function update_attack()
  elseif attack_ticks == 60 then
   cur.s = nil
   attack_ticks = nil
+
+  attacker = nil
+  target = nil
+
   toggle_turn()
   draw_arena()
   draw_options()
@@ -167,7 +165,11 @@ function update_attack()
 end
 
 function eliminate()
- del(cur.l, cur.l[cur.i])
+ local target = cur.l[cur.i]
+ if cur.l == arena.enemies then
+  arena.party.score += target.stats.l
+ end
+ del(cur.l, target)
 end
 
 function auto_turn()
@@ -204,16 +206,19 @@ function update_battle_over()
   note("^no more enemies remain!")
  elseif over_ticks == 50 then
   draw_arena()
-  battles += 1
+  arena.party.battles += 1
   local s = ""
-  if battles > 1 then s = "s" end
-  note("^finished "..battles.." battle"..s)
+  if arena.party.battles > 1 then s = "s" end
+  note("^finished "..arena.party.battles.." battle"..s)
  elseif over_ticks == 100 then
+  draw_arena()
+  note("^total exp: "..arena.party.score)
+ elseif over_ticks == 150 then
   set_up_enemies()
   draw_arena()
   draw_options()
   note("^new enemies appeared!")
- elseif over_ticks == 130 then
+ elseif over_ticks == 180 then
   over_ticks = nil
  end
 end
@@ -231,14 +236,17 @@ function update_game_over()
  elseif game_over_ticks == 50 then
   draw_arena()
   local s = "s"
-  if battles == 1 then s = "" end
-  note("^finished "..battles.." battle"..s, red)
+  if arena.party.battles == 1 then s = "" end
+  note("^finished "..arena.party.battles.." battle"..s, red)
  elseif game_over_ticks == 100 then
+  draw_arena()
+  note("^total exp: "..arena.party.score, red)
+ elseif game_over_ticks == 150 then
   set_up_party()
   draw_arena()
   draw_options()
   note("^a new party appeared!")
- elseif game_over_ticks == 130 then
+ elseif game_over_ticks == 180 then
   game_over_ticks = nil
   draw_arena()
   draw_options()
