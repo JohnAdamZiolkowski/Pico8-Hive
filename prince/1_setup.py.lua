@@ -5,6 +5,7 @@ cls(clear)
 
 auto = true
 random = false
+delay = 10
 
 ⬅️ = 0
 ➡️ = 1

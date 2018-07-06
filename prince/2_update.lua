@@ -135,7 +135,7 @@ function update_attack()
  if attack_ticks == 1 then
   note(attacker.." attacks "..target)
 
- elseif attack_ticks == 30 then
+ elseif attack_ticks == 3*delay then
 
   cur.s = nil
 
@@ -150,7 +150,7 @@ function update_attack()
   draw_options()
   note(text)
 
- elseif attack_ticks == 60 then
+ elseif attack_ticks == 6*delay then
   cur.s = nil
   attack_ticks = nil
 
@@ -187,17 +187,17 @@ end
 function update_auto_turn()
  auto_ticks += 1
 
- if auto_ticks == 20 then
+ if auto_ticks == 2*delay then
   cur.i = ceil(rnd(#cur.l))
   draw_arena()
   draw_options()
- elseif auto_ticks == 40 then
+ elseif auto_ticks == 4*delay then
   select()
- elseif auto_ticks == 60 then
+ elseif auto_ticks == 6*delay then
   cur.i = ceil(rnd(#cur.l))
   draw_arena()
   draw_options()
- elseif auto_ticks == 80 then
+ elseif auto_ticks == 8*delay then
   select()
  end
 end
@@ -209,24 +209,24 @@ end
 function update_battle_over()
  over_ticks += 1
 
- if over_ticks == 20 then
+ if over_ticks == 2*delay then
   draw_arena()
   note("^no more enemies remain!")
- elseif over_ticks == 50 then
+ elseif over_ticks == 5*delay then
   draw_arena()
   arena.party.battles += 1
   local s = ""
   if arena.party.battles > 1 then s = "s" end
   note("^finished "..arena.party.battles.." battle"..s)
- elseif over_ticks == 100 then
+ elseif over_ticks == 10*delay then
   draw_arena()
   note("^total exp: "..arena.party.score)
- elseif over_ticks == 150 then
+ elseif over_ticks == 15*delay then
   set_up_enemies()
   draw_arena()
   draw_options()
   note("^new enemies appeared!")
- elseif over_ticks == 180 then
+ elseif over_ticks == 18*delay then
   over_ticks = nil
  end
 end
@@ -238,23 +238,23 @@ end
 function update_game_over()
  game_over_ticks += 1
 
- if game_over_ticks == 20 then
+ if game_over_ticks == 2*delay then
   draw_arena()
   note("^your entire party is down!", red)
- elseif game_over_ticks == 50 then
+ elseif game_over_ticks == 5*delay then
   draw_arena()
   local s = "s"
   if arena.party.battles == 1 then s = "" end
   note("^finished "..arena.party.battles.." battle"..s, red)
- elseif game_over_ticks == 100 then
+ elseif game_over_ticks == 10*delay then
   draw_arena()
   note("^total exp: "..arena.party.score, red)
- elseif game_over_ticks == 150 then
+ elseif game_over_ticks == 15*delay then
   set_up_party()
   draw_arena()
   draw_options()
   note("^a new party appeared!")
- elseif game_over_ticks == 180 then
+ elseif game_over_ticks == 18*delay then
   game_over_ticks = nil
   draw_arena()
   draw_options()
