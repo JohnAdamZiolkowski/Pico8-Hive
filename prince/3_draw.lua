@@ -110,7 +110,7 @@ function draw_arena()
  end
  draw_enemies()
  draw_party()
- line(black,94,128,94)
+ line(0,94,128,94,black)
  draw_options()
 end
 
@@ -123,6 +123,9 @@ end
 function draw_party()
  for e in all(arena.party) do
   draw_enemy(e.i, e.x, e.y, true)
+ end
+ for e in all(arena.party.dead) do
+  spr(193, e.x+6, e.y+2)
  end
 end
 
