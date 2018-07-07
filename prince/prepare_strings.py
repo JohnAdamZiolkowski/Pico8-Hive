@@ -1,4 +1,4 @@
-file_path = "C:\\Users\\johna\\Downloads\\enemies.csv"
+file_path = "enemies.csv"
 
 with open(file_path, "r") as file:
     file.readline()

@@ -3,7 +3,7 @@
 clear = 13
 cls(clear)
 
-auto = true
+auto = false
 random = false
 delay = 10
 
@@ -76,19 +76,19 @@ end
 
 palt(black, false)
 elements = {
- {n="none", c=dark},
- {n="holy", c=pink},
- {n="light", c=light},
- {n="dark", c=purple},
- {n="fire", c=orange},
- {n="elec", c=yellow},
- {n="air", c=sand},
- {n="ice", c=sky},
- {n="water", c=navy},
- {n="blood", c=red},
- {n="rock", c=brown},
- {n="plant", c=forest},
- {n="variable", c=neon}
+ {i=1, n="none", c=dark,    o="444444444444"},
+ {i=2, n="holy", c=pink,    o="418888888888"},
+ {i=3, n="light", c=light,  o="441866666666"},
+ {i=4, n="dark", c=purple,  o="448166666666"},
+ {i=5, n="fire", c=orange,  o="412212468642"},
+ {i=6, n="elec", c=yellow,  o="412221246864"},
+ {i=7, n="air", c=sand,     o="412242124686"},
+ {i=8, n="ice", c=sky,      o="412264212468"},
+ {i=9, n="water", c=navy,   o="412286421246"},
+ {i=10, n="plant", c=forest,o="412268642124"},
+ {i=11, n="rock", c=brown,  o="412246864212"},
+ {i=12, n="blood", c=red,   o="412224686421"},
+ {i=13, n="variable", c=neon}
 }
 
 wide = {
@@ -117,7 +117,7 @@ enemy = {
  tw = 16,
  th = 12,
  layers = 2,
- stats = {{i=1,n="^bunny",e="n",l=1},{i=2,n="^rabbit",e="n",l=3},{i=3,n="^bunny ^girl",e="n",l=5},{i=4,n="^horse",e="n",l=2},{i=5,n="^unicorn",e="n",l=4},{i=6,n="^cenitaur",e="n",l=6},{i=7,n="^ghost",e="n",l=1},{i=8,n="^poltergeist",e="n",l=4},{i=9,n="^zombie",e="n",l=2},{i=10,n="^ghoul",e="n",l=5},{i=11,n="^skeleton",e="n",l=3},{i=12,n="^skull ^army",e="n",l=6},{i=13,n="^floating^eye",e="n",l=1},{i=14,n="^eye ^beast",e="n",l=4},{i=15,n="^willowisp",e="n",l=2},{i=16,n="^giant ^skull",e="n",l=5},{i=17,n="^sadness",e="n",l=3},{i=18,n="^madness",e="n",l=6},{i=19,n="^man",e="n",l=0},{i=20,n="^woman",e="n",l=0},{i=21,n="^child",e="n",l=0},{i=22,n="^prince",e="v",l=4},{i=23,n="^king",e="v",l=8},{i=24,n="^emperor",e="v",l=12},{i=25,n="^fighter",e="v",l=4},{i=26,n="^general",e="v",l=8},{i=27,n="^giant",e="v",l=12},{i=28,n="^caster",e="v",l=4},{i=29,n="^sorceror",e="v",l=8},{i=30,n="^merlin",e="v",l=12},{i=31,n="^lizard",e="f",l=2},{i=32,n="^dragon",e="f",l=4},{i=33,n="^drako",e="f",l=6},{i=34,n="^snake",e="e",l=2},{i=35,n="^cobra",e="e",l=4},{i=36,n="^lamia",e="e",l=6},{i=37,n="^bird",e="a",l=2},{i=38,n="^crow",e="a",l=4},{i=39,n="^harpy",e="a",l=6},{i=40,n="^sap",e="p",l=2},{i=41,n="^slime",e="p",l=4},{i=42,n="^jelly ^girl",e="p",l=6},{i=43,n="^fish",e="w",l=2},{i=44,n="^shark",e="w",l=4},{i=45,n="^mermaid",e="w",l=6},{i=46,n="^mouse",e="i",l=2},{i=47,n="^rat",e="i",l=4},{i=48,n="^mouse^prince",e="i",l=6},{i=49,n="^turtle",e="r",l=2},{i=50,n="^tortise",e="r",l=4},{i=51,n="^kapa",e="r",l=6},{i=52,n="^bat",e="b",l=2},{i=53,n="^vampire ^bat",e="b",l=4},{i=54,n="^vampire",e="b",l=6},{i=55,n="^cat",e="l",l=3},{i=56,n="^lion",e="l",l=5},{i=57,n="^cat ^girl",e="l",l=7},{i=58,n="^dog",e="d",l=3},{i=59,n="^wolf",e="d",l=5},{i=60,n="^werewolf",e="d",l=7},{i=61,n="^slug",e="h",l=4},{i=62,n="^snail",e="h",l=6},{i=63,n="^hermit",e="h",l=8},{i=64,n="^mist",e="n",l=6},{i=65,n="^blarg",e="n",l=9},{i=66,n="^rude ^demon",e="n",l=7},{i=67,n="^living^sword",e="n",l=10},{i=68,n="^mimic",e="n",l=8},{i=69,n="^embers",e="f",l=7},{i=70,n="^phoenix",e="f",l=9},{i=71,n="^bolt ^rider",e="e",l=7},{i=72,n="^android",e="e",l=9},{i=73,n="^wind ^rider",e="a",l=7},{i=74,n="^marionette",e="a",l=9},{i=75,n="^evil ^weed",e="p",l=7},{i=76,n="^evil ^tree",e="p",l=9},{i=77,n="^rain ^rider",e="w",l=7},{i=78,n="^hydra",e="w",l=9},{i=79,n="^snow ^rider",e="i",l=7},{i=80,n="^polar ^bear",e="i",l=9},{i=81,n="^mushroom",e="r",l=7},{i=82,n="^golem",e="r",l=9},{i=83,n="^death",e="b",l=7},{i=84,n="^haunted^tree",e="b",l=9},{i=85,n="^cactus",e="l",l=8},{i=86,n="^mummy",e="l",l=10},{i=87,n="^dark ^hand",e="d",l=8},{i=88,n="^dark ^mouth",e="d",l=10},{i=89,n="^priest",e="h",l=11},{i=90,n="^angel",e="h",l=11},{i=91,n="^elder^dragon",e="f",l=12},{i=92,n="^blade^master",e="e",l=12},{i=93,n="^puppeteer",e="a",l=12},{i=94,n="^venus ^trap",e="p",l=12},{i=95,n="^kraken",e="w",l=12},{i=96,n="^frozen^mimic",e="i",l=12},{i=97,n="^raging ^dino",e="r",l=12},{i=98,n="^vampiress",e="b",l=12},{i=99,n="^sphinx",e="l",l=13},{i=100,n="^hatman",e="d",l=13},{i=101,n="^bishop",e="h",l=14},{i=102,n="^final^bishop",e="h",l=15},}
+ stats = {{i=1,n="^bunny",e="n",l=1},{i=2,n="^rabbit",e="n",l=3},{i=3,n="^bunny ^girl",e="n",l=5},{i=4,n="^horse",e="n",l=2},{i=5,n="^unicorn",e="n",l=4},{i=6,n="^cenitaur",e="n",l=6},{i=7,n="^ghost",e="n",l=1},{i=8,n="^poltergeist",e="n",l=4},{i=9,n="^zombie",e="n",l=2},{i=10,n="^ghoul",e="n",l=5},{i=11,n="^skeleton",e="n",l=3},{i=12,n="^skull ^army",e="n",l=6},{i=13,n="^floating^eye",e="n",l=1},{i=14,n="^eye ^beast",e="n",l=4},{i=15,n="^willowisp",e="n",l=2},{i=16,n="^giant ^skull",e="n",l=5},{i=17,n="^sadness",e="n",l=3},{i=18,n="^madness",e="n",l=6},{i=19,n="^man",e="n",l=0},{i=20,n="^woman",e="n",l=0},{i=21,n="^child",e="n",l=0},{i=22,n="^prince",e="v",l=4},{i=23,n="^king",e="v",l=8},{i=24,n="^emperor",e="v",l=12},{i=25,n="^fighter",e="v",l=4},{i=26,n="^general",e="v",l=8},{i=27,n="^giant",e="v",l=12},{i=28,n="^caster",e="v",l=4},{i=29,n="^sorceror",e="v",l=8},{i=30,n="^merlin",e="v",l=12},{i=31,n="^lizard",e="f",l=2},{i=32,n="^dragon",e="f",l=4},{i=33,n="^drako",e="f",l=6},{i=34,n="^snake",e="e",l=2},{i=35,n="^cobra",e="e",l=4},{i=36,n="^lamia",e="e",l=6},{i=37,n="^bird",e="a",l=2},{i=38,n="^crow",e="a",l=4},{i=39,n="^harpy",e="a",l=6},{i=40,n="^sap",e="p",l=2},{i=41,n="^slime",e="p",l=4},{i=42,n="^jelly ^girl",e="p",l=6},{i=43,n="^fish",e="w",l=2},{i=44,n="^shark",e="w",l=4},{i=45,n="^mermaid",e="w",l=6},{i=46,n="^mouse",e="i",l=2},{i=47,n="^rat",e="i",l=4},{i=48,n="^mouse^prince",e="i",l=6},{i=49,n="^turtle",e="r",l=2},{i=50,n="^tortise",e="r",l=4},{i=51,n="^kapa",e="r",l=6},{i=52,n="^bat",e="b",l=2},{i=53,n="^vampire ^bat",e="b",l=4},{i=54,n="^vampire",e="b",l=6},{i=55,n="^cat",e="l",l=3},{i=56,n="^lion",e="l",l=5},{i=57,n="^cat ^girl",e="l",l=7},{i=58,n="^dog",e="d",l=3},{i=59,n="^wolf",e="d",l=5},{i=60,n="^werewolf",e="d",l=7},{i=61,n="^slug",e="h",l=4},{i=62,n="^snail",e="h",l=6},{i=63,n="^hermit",e="h",l=8},{i=64,n="^mist",e="n",l=6},{i=65,n="^blarg",e="n",l=9},{i=66,n="^rude ^demon",e="n",l=7},{i=67,n="^living^sword",e="n",l=10},{i=68,n="^mimic",e="n",l=8},{i=69,n="^embers",e="f",l=7},{i=70,n="^phoenix",e="f",l=9},{i=71,n="^bolt ^rider",e="e",l=7},{i=72,n="^android",e="e",l=9},{i=73,n="^wind ^rider",e="a",l=7},{i=74,n="^marionette",e="a",l=9},{i=75,n="^evil ^weed",e="p",l=7},{i=76,n="^evil ^tree",e="p",l=9},{i=77,n="^rain ^rider",e="w",l=7},{i=78,n="^hydra",e="w",l=9},{i=79,n="^snow ^rider",e="i",l=7},{i=80,n="^polar ^bear",e="i",l=9},{i=81,n="^mushroom",e="r",l=7},{i=82,n="^golem",e="r",l=9},{i=83,n="^death",e="b",l=7},{i=84,n="^haunted^tree",e="b",l=9},{i=85,n="^cactus",e="l",l=8},{i=86,n="^mummy",e="l",l=10},{i=87,n="^dark ^hand",e="d",l=8},{i=88,n="^dark ^mouth",e="d",l=10},{i=89,n="^priest",e="h",l=11},{i=90,n="^angel",e="h",l=11},{i=91,n="^elder^dragon",e="f",l=12},{i=92,n="^blade^master",e="e",l=12},{i=93,n="^puppeteer",e="a",l=12},{i=94,n="^venus ^trap",e="p",l=12},{i=95,n="^kraken",e="w",l=12},{i=96,n="^frozen^mimic",e="i",l=12},{i=97,n="^raging ^dino",e="r",l=12},{i=98,n="^vampiress",e="b",l=12},{i=99,n="^sphinx",e="l",l=13},{i=100,n="^hatman",e="d",l=13},{i=101,n="^bishop",e="h",l=14},{i=102,n="^final^bishop",e="h",l=15}}
 }
 
 arena = nil
@@ -138,7 +138,7 @@ end
 
 function set_up_enemies()
  for s=0,4 do
-  if rnd(4) > 2 then
+  if rnd(1) < 0.33 then
    local id
    local e
    if random then
@@ -181,12 +181,16 @@ function set_up_party()
   local id
   if s == 2 then
    id = 22
-  elseif rnd(6) > 2 then
-   id = flr(rnd(2))
-   if id == 0 then
-    id = 25
-   else
-    id = 28
+  else
+   local filled = true
+   if random then filled = rnd(6) > 2 end
+   if filled then
+    id = flr(rnd(2))
+    if id == 0 then
+     id = 25
+    else
+     id = 28
+    end
    end
  	end
  	if id != nil then
@@ -219,10 +223,11 @@ function set_up_arena()
  state = "arena"
  arena = {}
 
+ arena.party = {n="party"}
+ set_up_party()
+
  arena.enemies = {n="enemies"}
  set_up_enemies()
 
- arena.party = {n="party"}
- set_up_party()
  if auto then auto_turn() end
 end

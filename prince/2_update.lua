@@ -119,10 +119,31 @@ end
 function attack()
  attack_ticks = 0
 
- attacker = turn[cur.s.i].stats.n
+ attacker = turn[cur.s.i]
+ attacker_n = attacker.stats.n
  assert(attacker)
- target = opposition(turn)[cur.i].stats.n
+ target = opposition(turn)[cur.i]
+	target_n = target.stats.n
 	assert(target)
+
+	local attack_element = element_by_n(attacker.stats.e)
+	local target_element = element_by_n(target.stats.e)
+	local t_e_i = target_element.i
+	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
+
+	if multiplier_char == "1" then
+	 chance = 0.25
+	elseif multiplier_char == "2" then
+	 chance = 0.375
+	elseif multiplier_char == "4" then
+	 chance = 0.5
+	elseif multiplier_char == "6" then
+	 chance = 0.625
+	elseif multiplier_char == "8" then
+	 chance = 0.75
+	else
+	 assert(false, chance)
+	end
 
 	draw_arena()
 	draw_options()
@@ -133,16 +154,16 @@ function update_attack()
  attack_ticks += 1
 
  if attack_ticks == 1 then
-  note(attacker.." attacks "..target)
+  note(attacker_n.." attacks "..target_n)
 
  elseif attack_ticks == 3*delay then
 
   cur.s = nil
 
-  local hit = rnd(2) > 1
+  local hit = rnd(1) < chance
   local text = "^but it missed!"
   if hit then
-   text = "^hit! "..target.." is gone"
+   text = "^hit! "..target_n.." is gone"
    eliminate()
   end
 
@@ -156,6 +177,10 @@ function update_attack()
 
   attacker = nil
   target = nil
+  attacker_n = nil
+  target_n = nil
+
+  chance = nil
 
   toggle_turn()
   draw_arena()
