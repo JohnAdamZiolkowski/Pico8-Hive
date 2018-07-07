@@ -196,13 +196,38 @@ function eliminate()
  	local next_level = levels[arena.party.level]
  	if arena.party.score >= next_level then
  	 arena.party.level += 1
+ 	 did_level_up = true
  	 //maybe: lower score on level?
  	 if arena.party.level > #levels then
  	  arena.party.level = #levels
  	 end
  	end
+ elseif cur.l == arena.party then
+  add(arena.party.dead, target)
  end
  del(cur.l, target)
+end
+
+function revive()
+ local unsorted = {}
+ for member in all(arena.party) do
+  add(unsorted, member)
+  del(arena.party, member)
+  // i know this will be out of order
+ end
+ //scared to do it in one loop
+ for member in all(arena.party.dead) do
+  add(unsorted, member)
+  del(arena.party.dead, member)
+ end
+ for i=1,5 do
+  for u=1,5 do
+   member = unsorted[u]
+   if member.s == i then
+    add(arena.party, member)
+   end
+  end
+ end
 end
 
 function auto_turn()
@@ -247,11 +272,23 @@ function update_battle_over()
   draw_arena()
   note("^total exp: "..arena.party.score)
  elseif over_ticks == 15*delay then
+  if did_level_up then
+   revive()
+   did_level_up = nil
+   text = "^level up!! ^now at "..arena.party.level
+  else
+   text = "^currnent level: "..arena.party.level
+  end
+  draw_arena()
+  draw_options()
+  note(text)
+
+ elseif over_ticks == 20*delay then
   set_up_enemies()
   draw_arena()
   draw_options()
   note("^new enemies appeared!")
- elseif over_ticks == 18*delay then
+ elseif over_ticks == 23*delay then
   over_ticks = nil
  end
 end
@@ -273,7 +310,7 @@ function update_game_over()
   note("^finished "..arena.party.battles.." battle"..s, red)
  elseif game_over_ticks == 10*delay then
   draw_arena()
-  note("^total exp: "..arena.party.score, red)
+  note("^final level: "..arena.party.level, red)
  elseif game_over_ticks == 15*delay then
   set_up_party()
   draw_arena()

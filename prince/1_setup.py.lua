@@ -137,7 +137,7 @@ for e in all(enemy.stats) do
 end
 
 function set_up_enemies()
- for s=0,4 do
+ for s=1,5 do
   if rnd(1) < 0.33 then
    local id
    local e
@@ -163,9 +163,10 @@ function set_up_enemies()
    local n = enemy.stats[id].n
    local l = enemy.stats[id].l
   	local enemy = {
+  	 s = s,
   		i = id,
-  		x = 16 + (s % 2) * 12,
-  		y = s * 16 + 16,
+  		x = 16 + ((s-1) % 2) * 12,
+  		y = (s-1) * 16 + 16,
   		stats = {e=e, n=n, l=l}
   	}
   	add(arena.enemies, enemy)
@@ -177,9 +178,9 @@ function set_up_enemies()
 end
 
 function set_up_party()
- for s = 0,4 do
+ for s = 1,5 do
   local id
-  if s == 2 then
+  if s == 3 then
    id = 22
   else
    local filled = true
@@ -201,9 +202,10 @@ function set_up_party()
  	 local l = 1
  	 assert(e)
   	local member = {
+  	 s = s,
   		i = id,
-  		x = 96 - (s % 2) * 12,
-  		y = s * 16 + 16,
+  		x = 96 - ((s-1) % 2) * 12,
+  		y = (s-1) * 16 + 16,
   		stats = {e=element_n, n=n, l=l}
   	}
   	add(arena.party, member)
@@ -213,6 +215,7 @@ function set_up_party()
  arena.party.score = 0
  arena.party.battles = 0
  arena.party.level = 1
+ arena.party.dead = {}
 
  turn = arena.party
  cur = {l=arena.party, i=1,
