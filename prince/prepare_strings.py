@@ -22,7 +22,7 @@ with open(file_path, "r") as file:
 
         element = split[3][0]
 
-        level = split[4]
+        level = split[5]
 
         enemy = '{i=' + id + ',n="' + name + '",e="' + element + '",l=' + level + '},'
 

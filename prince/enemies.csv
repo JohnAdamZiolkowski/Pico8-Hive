@@ -18,9 +18,9 @@ Wilo,15,Willowisp,none,2,2,16,1,1,1,1,1,1,1,None,0,None,0,Hant,Bite,None,None
 Skul,16,Giant Skull,none,5,5,1,1,1,1,1,1,1,1,None,0,None,0,Hant,Bite,None,None
 Sdns,17,Sadness,none,3,3,1,1,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
 Mdns,18,Madness,none,6,7,1,1,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
-Man-,19,Man,none,0,,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
-Wman,20,Woman,none,0,,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
-Chld,21,Child,none,0,,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
+Man-,19,Man,none,0,0,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
+Wman,20,Woman,none,0,0,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
+Chld,21,Child,none,0,0,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
 Prin,22,Prince,variable,4,6,1,1,1,1,1,1,1,1,None,0,None,0,Stab,None,None,None
 King,23,King,variable,8,8,1,1,1,1,1,1,1,1,None,0,None,0,Stab,DStb,None,None
 Empr,24,Emperor,variable,12,10,1,1,1,1,1,1,1,1,None,0,None,0,Stab,DStb,PStb,None
