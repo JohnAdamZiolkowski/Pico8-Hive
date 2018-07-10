@@ -9,6 +9,7 @@ cls(clear)
 auto = false
 random = false
 delay = 10
+round = true
 
 ⬅️ = 0
 ➡️ = 1
@@ -34,7 +35,11 @@ pale = 13
 pink = 14
 sand = 15
 
-note_pos = {x=2, y=87}
+prince = 22
+fighter = 25
+caster = 28
+
+note_pos = {x=2, y=83}
 
 function inttobin(b)
  local t={}
@@ -95,7 +100,7 @@ elements = {
 }
 
 wide = {
- chars = " abcdefghijklmnopqrstuvwxyz0123456789.,!?:'+-*/(){}[]",
+ chars = " abcdefghijklmnopqrstuvwxyz0123456789.,!?:'+-*/(){}[]>",
  x = 0,
  y = 0,
  tw = 5,
@@ -169,7 +174,7 @@ function set_up_enemies()
   	 s = s,
   		i = id,
   		x = 16 + ((s-1) % 2) * 12,
-  		y = (s-1) * 16 + 16,
+  		y = (s-1) * 14 + 13,
   		stats = {e=e, n=n, l=l}
   	}
   	add(arena.enemies, enemy)
@@ -184,16 +189,16 @@ function set_up_party()
  for s = 1,5 do
   local id
   if s == 3 then
-   id = 22
+   id = prince
   else
    local filled = true
    if random then filled = rnd(6) > 2 end
    if filled then
     id = flr(rnd(2))
     if id == 0 then
-     id = 25
+     id = fighter
     else
-     id = 28
+     id = caster
     end
    end
  	end
@@ -208,7 +213,7 @@ function set_up_party()
   	 s = s,
   		i = id,
   		x = 96 - ((s-1) % 2) * 12,
-  		y = (s-1) * 16 + 16,
+  		y = (s-1) * 14 + 13,
   		stats = {e=element_n, n=n, l=l}
   	}
   	add(arena.party, member)
@@ -359,33 +364,66 @@ end
 
 function attack()
  attack_ticks = 0
-
+ 
  attacker = turn[cur.s.i]
  attacker_n = attacker.stats.n
  assert(attacker)
- target = opposition(turn)[cur.i]
-	target_n = target.stats.n
-	assert(target)
+ targets = {}
+ main_target = {t=opposition(turn)[cur.i]}
+ main_target_n = main_target.t.stats.n
+ add(targets, main_target)
+ 
+ if attacker.i == caster or
+  attacker.i == caster +1 or
+  attacker.i == caster +2 then
+  for p_target in all(opposition(turn)) do
+   if p_target.s == main_target.t.s +1 or
+    p_target.s == main_target.t.s -1 then
+    add(targets, {t=p_target})
+   end
+  end
+ end
+ 
+ for target in all(targets) do
+ 	assert(target)
 	
-	local attack_element = element_by_n(attacker.stats.e)
-	local target_element = element_by_n(target.stats.e)
-	local t_e_i = target_element.i
-	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
-	
-	if multiplier_char == "1" then
-	 chance = 0.25
-	elseif multiplier_char == "2" then
-	 chance = 0.375  
-	elseif multiplier_char == "4" then
-	 chance = 0.5
-	elseif multiplier_char == "6" then
-	 chance = 0.625
-	elseif multiplier_char == "8" then
-	 chance = 0.75
-	else
-	 assert(false, chance)
-	end
+ 	local attack_element = element_by_n(attacker.stats.e)
+ 	local target_element = element_by_n(target.t.stats.e)
+ 	local t_e_i = target_element.i
+ 	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
+ 	
+ 	if multiplier_char == "1" then
+ 	 chance = 0.25
+ 	elseif multiplier_char == "2" then
+ 	 chance = 0.375  
+ 	elseif multiplier_char == "4" then
+ 	 chance = 0.5
+ 	elseif multiplier_char == "6" then
+ 	 chance = 0.625
+ 	elseif multiplier_char == "8" then
+ 	 chance = 0.75
+ 	else
+ 	 assert(false, chance)
+ 	end
 
+  local hit = rnd(1) < chance
+  if attacker.i == fighter or
+   attacker.i == fighter +1 or
+   attacker.i == fighter +2 then
+   if not hit then
+    hit = rnd(1) < chance
+   end
+  elseif attacker.i == prince or
+   attacker.i == prince +1 or
+   attacker.i == prince +2 then
+   if hit then
+    attacker.stats.e = target.t.stats.e
+   end
+  end
+  
+  target.h = hit
+ end
+ 
 	draw_arena()
 	draw_options()
 end
@@ -395,17 +433,42 @@ function update_attack()
  attack_ticks += 1
  
  if attack_ticks == 1 then
-  note(attacker_n.." attacks "..target_n)
+  local name = main_target_n
+  if #targets > 1 then
+   name = #targets.." targets"
+  end
+  note(attacker_n.." attacks "..name)
  
  elseif attack_ticks == 3*delay then
   
   cur.s = nil
   
-  local hit = rnd(1) < chance
   local text = "^but it missed!"
-  if hit then
-   text = "^hit! "..target_n.." is gone"
-   eliminate()
+  if #targets==1 then
+   if targets[1].h then
+    text = "^hit! "..main_target_n.." is gone"
+    eliminate(opposition(turn), main_target.t)
+   end
+  else
+   local miss_count=0
+   local hit_count=0
+   local all_count=0
+   for target in all(targets) do
+    all_count +=1
+    if target.h then
+     hit_count += 1
+     eliminate(opposition(turn), target.t)
+    else
+     miss_count += 1
+    end
+   end
+   if miss_count == all_count then
+    text = "^magic missed all "..all_count.." targets"
+   elseif hit_count == all_count then
+    text = "^magic hit all "..all_count.." targets"
+   else
+    text = "^magic hit "..hit_count.." of "..all_count.." targets"
+   end
   end
  
   draw_arena()
@@ -417,11 +480,12 @@ function update_attack()
   attack_ticks = nil
   
   attacker = nil
-  target = nil
   attacker_n = nil
-  target_n = nil
   
   chance = nil
+  main_target = nil
+  main_target_n = nil
+  targets = nil
   
   toggle_turn()
   draw_arena()
@@ -430,9 +494,9 @@ function update_attack()
  end
 end
 
-function eliminate()
- local target = cur.l[cur.i]
- if cur.l == arena.enemies then
+function eliminate(list, target)
+
+ if list == arena.enemies then
   arena.party.score += target.stats.l 
  	local next_level = levels[arena.party.level]
  	if arena.party.score >= next_level then
@@ -443,10 +507,10 @@ function eliminate()
  	  arena.party.level = #levels
  	 end
  	end
- elseif cur.l == arena.party then
+ elseif list == arena.party then
   add(arena.party.dead, target)
  end
- del(cur.l, target)
+ del(list, target)
 end
 
 function revive()
@@ -454,7 +518,6 @@ function revive()
  for member in all(arena.party) do
   add(unsorted, member)
   del(arena.party, member)
-  // i know this will be out of order
  end
  //scared to do it in one loop
  for member in all(arena.party.dead) do
@@ -528,7 +591,11 @@ function update_battle_over()
   set_up_enemies()
   draw_arena()
   draw_options()
-  note("^new enemies appeared!")
+  text = "^new enemies"
+  if #arena.enemies == 1 then
+   text = "^single "..arena.enemies[1].stats.n
+  end
+  note(text.." appeared!")
  elseif over_ticks == 23*delay then
   over_ticks = nil
  end
@@ -676,7 +743,7 @@ function draw_arena()
  end
  draw_enemies()
  draw_party()
- line(0,94,128,94,black)
+ line(0,90,128,90,black)
  draw_options()
 end
 
@@ -709,19 +776,57 @@ function draw_options()
    local bg = nil
    local icon = "^ "
    local gem = "@"..element
+   local subtarget = false
+   local attacker = nil
+   if cur.s and cur.s.l and cur.s.l[cur.s.i] then
+    attacker = cur.s.l[cur.s.i]
+    
+    if attacker.i == caster or
+     attacker.i == caster +1 or
+      attacker.i == caster +2 then
+     if
+     list.l[e].s == cur.l[cur.i].s +1 or
+     list.l[e].s == cur.l[cur.i].s -1 then
+      subtarget = true
+     end
+    end
+   end
    if (cur.s and cur.s.l == list.l and cur.s.i == e) or
-    (cur.s and cur.s.l != list.l and cur.i == e and attack_ticks and attack_ticks<20) then
+    (cur.s and cur.s.l != list.l and (cur.i == e or subtarget) and attack_ticks and attack_ticks<20) then
     c = white
     bg = black
-    icon = "^[" //arrow
+     if turn == arena.enemies or
+      auto then 
+      icon = "^>" //hollow
+     else
+      icon = "^[" //arrow
+     end
     gem = "^"..gem
-   elseif cur.l == list.l and cur.i != e and turn == arena.party and not attack_ticks and not game_over_ticks then
-    icon = "^]" //notch
-   elseif cur.l == list.l and cur.i == e and not attacking then 
-    icon = "^[" //arrow
+   elseif cur.l == list.l
+    and cur.i != e
+     and turn == arena.party
+      and not attack_ticks
+       and not game_over_ticks 
+        and (not auto
+         and subtarget) then
+    if subtarget then
+     icon = "^>"
+     gem = "^"..gem
+    else
+     icon = "^]" //notch
+    end
+   elseif cur.l == list.l
+    and (cur.i == e or subtarget)
+     and not attack_ticks then
+     if turn == arena.enemies or
+      auto then
+      icon = "^>" //hollow
+     else
+      icon = "^[" //arrow
+     end
     gem = "^"..gem
    end
-   print(icon..gem..enemy.stats[en.i].n, list.x, 6*e + 91, c, bg)
+   print(icon..gem..enemy.stats[en.i].n, list.x, 7*e + 86, c, bg)
   end
  end
 end
@@ -741,7 +846,10 @@ function draw_element(x, y, element, ring, wide)
 	assert(element, x.." "..y.." "..ring)
 	local fill = element.c
 	
-	if wide then
+ if wide then
+	 if round then
+   circfill(x, y, 2, fill)
+  end
   circfill(x, y, 1.5, fill)
   if ring != white then
    pset(x, y-1, white)
@@ -754,6 +862,12 @@ function draw_element(x, y, element, ring, wide)
  else
   circ(x-1, y, 1, ring)
   pset(x-1, y, fill)
+  if round then
+   pset(x-2, y-1, fill)
+   pset(x-2, y+1, fill)
+   pset(x, y-1, fill)
+   pset(x, y+1, fill)
+  end
  end
 end
 
@@ -815,11 +929,11 @@ check_over()
 // draw_element(32 + 4*e, 64, element.c, black)
 //end
 __gfx__
-affd0b777fdbb37bccc3afffcf000f36e638bff82fff20cac1ceafd2ecf302702000000000000000000000000000000000000000000000000000000000000000
-5a02dc3008481427b01fd280b7808769874b4043f000e2c6d2e0d0fe031f65f50000000000000000000000000000000000000000000000000000000000000000
-5b339cbbcc4c50278b8716e615282540f04c89f01ddf8f696eb7e7ac6b747fcf7000000000000000000000000000000000000000000000000000000000000000
-5a00fc300c6814a78027128165a4a5469066544e5020de120ee1f0e6fce645f52000000000000000000000000000000000000000000000000000000000000000
-beee1b775ddbbbdbcc436ffc385358afffa9bbf10fdd07efe63ede27484620720000000000000000000000000000000000000000000000000000000000000000
+affd0b777fdbb37bccc3afffcf000f36e638bff82fff20cac1ceafd2ecf302702001000000000000000000000000000000000000000000000000000000000000
+5a02dc3008481427b01fd280b7808769874b4043f000e2c6d2e0d0fe031f65f50110100000000000000000000000000000000000000000000000000000000000
+5b339cbbcc4c50278b8716e615282540f04c89f01ddf8f696eb7e7ac6b747fcf7100010000000000000000000000000000000000000000000000000000000000
+5a00fc300c6814a78027128165a4a5469066544e5020de120ee1f0e6fce645f52110100000000000000000000000000000000000000000000000000000000000
+beee1b775ddbbbdbcc436ffc385358afffa9bbf10fdd07efe63ede27484620720001000000000000000000000000000000000000000000000000000000000000
 218872c920008440007e7fbffffcc033080600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 24df05484be1c91707d87c07d0e4c83701c300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 6b9bf55d2f1f963f0f4b5dffdffee0ecc0f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
