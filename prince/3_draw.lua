@@ -143,6 +143,22 @@ function draw_options()
    local bg = nil
    local icon = "^ "
    local gem = "@"..element
+   local subtarget = false
+   local attacker = nil
+   if cur.s and cur.s.l and cur.s.l[cur.s.i] then
+    //assert(false, cur.s.l[cur.s.i])
+    attacker = cur.s.l[cur.s.i]
+
+    if attacker.i == caster or
+     attacker.i == caster +1 or
+      attacker.i == caster +2 then
+     if
+     list.l[e].s == cur.l[cur.i].s +1 or
+     list.l[e].s == cur.l[cur.i].s -1 then
+      subtarget = true
+     end
+    end
+   end
    if (cur.s and cur.s.l == list.l and cur.s.i == e) or
     (cur.s and cur.s.l != list.l and cur.i == e and attack_ticks and attack_ticks<20) then
     c = white
@@ -160,7 +176,12 @@ function draw_options()
       and not attack_ticks
        and not game_over_ticks
         and not auto then
-    icon = "^]" //notch
+    if subtarget then
+     icon = "^>"
+     gem = "^"..gem
+    else
+     icon = "^]" //notch
+    end
    elseif cur.l == list.l
     and cur.i == e
      and not attack_ticks then
