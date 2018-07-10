@@ -122,28 +122,55 @@ function attack()
  attacker = turn[cur.s.i]
  attacker_n = attacker.stats.n
  assert(attacker)
- target = opposition(turn)[cur.i]
-	target_n = target.stats.n
-	assert(target)
+ targets = {}
+ main_target = {t=opposition(turn)[cur.i]}
+ main_target_n = main_target.t.stats.n
+ add(targets, main_target)
 
-	local attack_element = element_by_n(attacker.stats.e)
-	local target_element = element_by_n(target.stats.e)
-	local t_e_i = target_element.i
-	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
+ if attacker.i == caster then
+  for p_target in all(opposition(turn)) do
+   if p_target.s == main_target.t.s +1 or
+    p_target.s == main_target.t.s -1 then
+    add(targets, {t=p_target})
+   end
+  end
+ end
 
-	if multiplier_char == "1" then
-	 chance = 0.25
-	elseif multiplier_char == "2" then
-	 chance = 0.375
-	elseif multiplier_char == "4" then
-	 chance = 0.5
-	elseif multiplier_char == "6" then
-	 chance = 0.625
-	elseif multiplier_char == "8" then
-	 chance = 0.75
-	else
-	 assert(false, chance)
-	end
+ for target in all(targets) do
+ 	assert(target)
+
+ 	local attack_element = element_by_n(attacker.stats.e)
+ 	local target_element = element_by_n(target.t.stats.e)
+ 	local t_e_i = target_element.i
+ 	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
+
+ 	if multiplier_char == "1" then
+ 	 chance = 0.25
+ 	elseif multiplier_char == "2" then
+ 	 chance = 0.375
+ 	elseif multiplier_char == "4" then
+ 	 chance = 0.5
+ 	elseif multiplier_char == "6" then
+ 	 chance = 0.625
+ 	elseif multiplier_char == "8" then
+ 	 chance = 0.75
+ 	else
+ 	 assert(false, chance)
+ 	end
+
+  local hit = rnd(1) < chance
+  if attacker.i == fighter then
+   if not hit then
+    hit = rnd(1) < chance
+   end
+  elseif attacker.i == prince then
+   if hit then
+    attacker.stats.e = target.t.stats.e
+   end
+  end
+
+  target.h = hit
+ end
 
 	draw_arena()
 	draw_options()
@@ -154,17 +181,38 @@ function update_attack()
  attack_ticks += 1
 
  if attack_ticks == 1 then
-  note(attacker_n.." attacks "..target_n)
+  note(attacker_n.." attacks "..main_target_n)
 
  elseif attack_ticks == 3*delay then
 
   cur.s = nil
 
-  local hit = rnd(1) < chance
   local text = "^but it missed!"
-  if hit then
-   text = "^hit! "..target_n.." is gone"
-   eliminate()
+  if #targets==1 then
+   if targets[1].h then
+    text = "^hit! "..main_target_n.." is gone"
+    eliminate(opposition(turn), main_target.t)
+   end
+  else
+   local miss_count=0
+   local hit_count=0
+   local all_count=0
+   for target in all(targets) do
+    all_count +=1
+    if target.h then
+     hit_count += 1
+     eliminate(opposition(turn), target.t)
+    else
+     miss_count += 1
+    end
+   end
+   if miss_count == all_count then
+    text = "^magic missed "..all_count
+   elseif hit_count == all_count then
+    text = "^magic hit all "..all_count.." targets"
+   else
+    text = "^magic hit "..hit_count.." of "..all_count
+   end
   end
 
   draw_arena()
@@ -176,11 +224,12 @@ function update_attack()
   attack_ticks = nil
 
   attacker = nil
-  target = nil
   attacker_n = nil
-  target_n = nil
 
   chance = nil
+  main_target = nil
+  main_target_n = nil
+  targets = nil
 
   toggle_turn()
   draw_arena()
@@ -189,9 +238,9 @@ function update_attack()
  end
 end
 
-function eliminate()
- local target = cur.l[cur.i]
- if cur.l == arena.enemies then
+function eliminate(list, target)
+
+ if list == arena.enemies then
   arena.party.score += target.stats.l
  	local next_level = levels[arena.party.level]
  	if arena.party.score >= next_level then
@@ -202,10 +251,10 @@ function eliminate()
  	  arena.party.level = #levels
  	 end
  	end
- elseif cur.l == arena.party then
+ elseif list == arena.party then
   add(arena.party.dead, target)
  end
- del(cur.l, target)
+ del(list, target)
 end
 
 function revive()
@@ -213,7 +262,6 @@ function revive()
  for member in all(arena.party) do
   add(unsorted, member)
   del(arena.party, member)
-  // i know this will be out of order
  end
  //scared to do it in one loop
  for member in all(arena.party.dead) do

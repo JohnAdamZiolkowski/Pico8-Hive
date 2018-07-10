@@ -31,6 +31,10 @@ pale = 13
 pink = 14
 sand = 15
 
+prince = 22
+fighter = 25
+caster = 28
+
 note_pos = {x=2, y=87}
 
 function inttobin(b)
@@ -166,7 +170,7 @@ function set_up_enemies()
   	 s = s,
   		i = id,
   		x = 16 + ((s-1) % 2) * 12,
-  		y = (s-1) * 16 + 16,
+  		y = (s-1) * 14 + 15,
   		stats = {e=e, n=n, l=l}
   	}
   	add(arena.enemies, enemy)
@@ -205,7 +209,7 @@ function set_up_party()
   	 s = s,
   		i = id,
   		x = 96 - ((s-1) % 2) * 12,
-  		y = (s-1) * 16 + 16,
+  		y = (s-1) * 14 + 15,
   		stats = {e=element_n, n=n, l=l}
   	}
   	add(arena.party, member)

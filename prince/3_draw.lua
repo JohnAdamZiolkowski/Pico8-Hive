@@ -149,9 +149,15 @@ function draw_options()
     bg = black
     icon = "^[" //arrow
     gem = "^"..gem
-   elseif cur.l == list.l and cur.i != e and turn == arena.party and not attack_ticks and not game_over_ticks then
+   elseif cur.l == list.l
+    and cur.i != e
+     and turn == arena.party
+      and not attack_ticks
+       and not game_over_ticks then
     icon = "^]" //notch
-   elseif cur.l == list.l and cur.i == e and not attacking then
+   elseif cur.l == list.l
+    and cur.i == e
+     and not attack_ticks then
     icon = "^[" //arrow
     gem = "^"..gem
    end
