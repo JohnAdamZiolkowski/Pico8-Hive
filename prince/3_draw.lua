@@ -192,7 +192,10 @@ function draw_element(x, y, element, ring, wide)
 	assert(element, x.." "..y.." "..ring)
 	local fill = element.c
 
-	if wide then
+ if wide then
+	 if round then
+   circfill(x, y, 2, fill)
+  end
   circfill(x, y, 1.5, fill)
   if ring != white then
    pset(x, y-1, white)
@@ -205,6 +208,12 @@ function draw_element(x, y, element, ring, wide)
  else
   circ(x-1, y, 1, ring)
   pset(x-1, y, fill)
+  if round then
+   pset(x-2, y-1, fill)
+   pset(x-2, y+1, fill)
+   pset(x, y-1, fill)
+   pset(x, y+1, fill)
+  end
  end
 end
 
