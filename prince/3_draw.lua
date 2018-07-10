@@ -110,7 +110,7 @@ function draw_arena()
  end
  draw_enemies()
  draw_party()
- line(0,94,128,94,black)
+ line(0,90,128,90,black)
  draw_options()
 end
 
@@ -146,7 +146,6 @@ function draw_options()
    local subtarget = false
    local attacker = nil
    if cur.s and cur.s.l and cur.s.l[cur.s.i] then
-    //assert(false, cur.s.l[cur.s.i])
     attacker = cur.s.l[cur.s.i]
 
     if attacker.i == caster or
@@ -160,7 +159,7 @@ function draw_options()
     end
    end
    if (cur.s and cur.s.l == list.l and cur.s.i == e) or
-    (cur.s and cur.s.l != list.l and cur.i == e and attack_ticks and attack_ticks<20) then
+    (cur.s and cur.s.l != list.l and (cur.i == e or subtarget) and attack_ticks and attack_ticks<20) then
     c = white
     bg = black
      if turn == arena.enemies or
@@ -175,7 +174,8 @@ function draw_options()
      and turn == arena.party
       and not attack_ticks
        and not game_over_ticks
-        and not auto then
+        and (not auto
+         and subtarget) then
     if subtarget then
      icon = "^>"
      gem = "^"..gem
@@ -183,7 +183,7 @@ function draw_options()
      icon = "^]" //notch
     end
    elseif cur.l == list.l
-    and cur.i == e
+    and (cur.i == e or subtarget)
      and not attack_ticks then
      if turn == arena.enemies or
       auto then
@@ -193,7 +193,7 @@ function draw_options()
      end
     gem = "^"..gem
    end
-   print(icon..gem..enemy.stats[en.i].n, list.x, 6*e + 91, c, bg)
+   print(icon..gem..enemy.stats[en.i].n, list.x, 7*e + 86, c, bg)
   end
  end
 end

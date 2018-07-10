@@ -36,7 +36,7 @@ prince = 22
 fighter = 25
 caster = 28
 
-note_pos = {x=2, y=87}
+note_pos = {x=2, y=83}
 
 function inttobin(b)
  local t={}
@@ -171,7 +171,7 @@ function set_up_enemies()
   	 s = s,
   		i = id,
   		x = 16 + ((s-1) % 2) * 12,
-  		y = (s-1) * 14 + 15,
+  		y = (s-1) * 14 + 13,
   		stats = {e=e, n=n, l=l}
   	}
   	add(arena.enemies, enemy)
@@ -186,16 +186,16 @@ function set_up_party()
  for s = 1,5 do
   local id
   if s == 3 then
-   id = 22
+   id = prince
   else
    local filled = true
    if random then filled = rnd(6) > 2 end
    if filled then
     id = flr(rnd(2))
     if id == 0 then
-     id = 25
+     id = fighter
     else
-     id = 28
+     id = caster
     end
    end
  	end
@@ -210,7 +210,7 @@ function set_up_party()
   	 s = s,
   		i = id,
   		x = 96 - ((s-1) % 2) * 12,
-  		y = (s-1) * 14 + 15,
+  		y = (s-1) * 14 + 13,
   		stats = {e=element_n, n=n, l=l}
   	}
   	add(arena.party, member)

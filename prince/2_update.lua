@@ -187,7 +187,11 @@ function update_attack()
  attack_ticks += 1
 
  if attack_ticks == 1 then
-  note(attacker_n.." attacks "..main_target_n)
+  local name = main_target_n
+  if #targets > 1 then
+   name = #targets.." targets"
+  end
+  note(attacker_n.." attacks "..name)
 
  elseif attack_ticks == 3*delay then
 
@@ -213,11 +217,11 @@ function update_attack()
     end
    end
    if miss_count == all_count then
-    text = "^magic missed "..all_count
+    text = "^magic missed all "..all_count.." targets"
    elseif hit_count == all_count then
     text = "^magic hit all "..all_count.." targets"
    else
-    text = "^magic hit "..hit_count.." of "..all_count
+    text = "^magic hit "..hit_count.." of "..all_count.." targets"
    end
   end
 
@@ -341,7 +345,11 @@ function update_battle_over()
   set_up_enemies()
   draw_arena()
   draw_options()
-  note("^new enemies appeared!")
+  text = "^new enemies"
+  if #arena.enemies == 1 then
+   text = "^single "..arena.enemies[1].stats.n
+  end
+  note(text.." appeared!")
  elseif over_ticks == 23*delay then
   over_ticks = nil
  end
