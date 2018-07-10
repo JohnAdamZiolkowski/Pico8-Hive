@@ -147,18 +147,29 @@ function draw_options()
     (cur.s and cur.s.l != list.l and cur.i == e and attack_ticks and attack_ticks<20) then
     c = white
     bg = black
-    icon = "^[" //arrow
+     if turn == arena.enemies or
+      auto then
+      icon = "^>" //hollow
+     else
+      icon = "^[" //arrow
+     end
     gem = "^"..gem
    elseif cur.l == list.l
     and cur.i != e
      and turn == arena.party
       and not attack_ticks
-       and not game_over_ticks then
+       and not game_over_ticks
+        and not auto then
     icon = "^]" //notch
    elseif cur.l == list.l
     and cur.i == e
      and not attack_ticks then
-    icon = "^[" //arrow
+     if turn == arena.enemies or
+      auto then
+      icon = "^>" //hollow
+     else
+      icon = "^[" //arrow
+     end
     gem = "^"..gem
    end
    print(icon..gem..enemy.stats[en.i].n, list.x, 6*e + 91, c, bg)

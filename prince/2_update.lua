@@ -127,7 +127,9 @@ function attack()
  main_target_n = main_target.t.stats.n
  add(targets, main_target)
 
- if attacker.i == caster then
+ if attacker.i == caster or
+  attacker.i == caster +1 or
+  attacker.i == caster +2 then
   for p_target in all(opposition(turn)) do
    if p_target.s == main_target.t.s +1 or
     p_target.s == main_target.t.s -1 then
@@ -159,11 +161,15 @@ function attack()
  	end
 
   local hit = rnd(1) < chance
-  if attacker.i == fighter then
+  if attacker.i == fighter or
+   attacker.i == fighter +1 or
+   attacker.i == fighter +2 then
    if not hit then
     hit = rnd(1) < chance
    end
-  elseif attacker.i == prince then
+  elseif attacker.i == prince or
+   attacker.i == prince +1 or
+   attacker.i == prince +2 then
    if hit then
     attacker.stats.e = target.t.stats.e
    end

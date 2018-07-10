@@ -96,7 +96,7 @@ elements = {
 }
 
 wide = {
- chars = " abcdefghijklmnopqrstuvwxyz0123456789.,!?:'+-*/(){}[]",
+ chars = " abcdefghijklmnopqrstuvwxyz0123456789.,!?:'+-*/(){}[]>",
  x = 0,
  y = 0,
  tw = 5,
