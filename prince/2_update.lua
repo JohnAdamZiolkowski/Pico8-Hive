@@ -119,11 +119,11 @@ end
 function attack()
  attack_ticks = 0
 
- attacker = turn[cur.s.i]
+ attacker = tget(turn,cur.s.i)
  attacker_n = attacker.stats.n
  assert(attacker)
  targets = {}
- main_target = {t=opposition(turn)[cur.i]}
+ main_target = {t=tget(opposition(turn),cur.i)}
  main_target_n = main_target.t.stats.n
  add(targets, main_target)
 
@@ -199,7 +199,7 @@ function update_attack()
 
   local text = "^but it missed!"
   if #targets==1 then
-   if targets[1].h then
+   if tget(targets,1).h then
     text = "^hit! "..main_target_n.." is gone"
     eliminate(opposition(turn), main_target.t)
    end
@@ -252,7 +252,7 @@ function eliminate(list, target)
 
  if list == arena.enemies then
   arena.party.score += target.stats.l
- 	local next_level = levels[arena.party.level]
+ 	local next_level = tget(levels,arena.party.level)
  	if arena.party.score >= next_level then
  	 arena.party.level += 1
  	 did_level_up = true
@@ -280,7 +280,7 @@ function revive()
  end
  for i=1,5 do
   for u=1,5 do
-   member = unsorted[u]
+   member = tget(unsorted,u)
    if member.s == i then
     add(arena.party, member)
    end
@@ -296,13 +296,13 @@ function update_auto_turn()
  auto_ticks += 1
 
  if auto_ticks == 2*delay then
-  cur.i = ceil(rnd(#cur.l))
+  cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
  elseif auto_ticks == 4*delay then
   select()
  elseif auto_ticks == 6*delay then
-  cur.i = ceil(rnd(#cur.l))
+  cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
  elseif auto_ticks == 8*delay then
@@ -347,7 +347,7 @@ function update_battle_over()
   draw_options()
   text = "^new enemies"
   if #arena.enemies == 1 then
-   text = "^single "..arena.enemies[1].stats.n
+   text = "^single "..tget(arena.enemies,1).stats.n
   end
   note(text.." appeared!")
  elseif over_ticks == 23*delay then

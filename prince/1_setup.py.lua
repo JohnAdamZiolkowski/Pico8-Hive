@@ -8,6 +8,10 @@ random = false
 delay = 10
 round = true
 
+table = "table"
+number = "number"
+string = "string"
+
 ⬅️ = 0
 ➡️ = 1
 ⬆️ = 2
@@ -38,6 +42,42 @@ caster = 28
 
 note_pos = {x=2, y=83}
 
+function rnd_int(min_in, max_in)
+ assert(type(min_in)==number)
+ assert(flr(min_in)==min_in)
+ assert(type(max_in)==number)
+ assert(flr(max_in)==max_in)
+ assert(min_in<=max_in)
+ int = flr(rnd(1) * (max_in-min_in+1))+min_in
+ assert(int <= max_in, int.." "..max_in)
+ assert(int >= min_in, int.." "..min_in)
+ return int
+end
+
+function tget(list, index, not_nil)
+ assert(type(list)==table)
+ assert(type(index)==number)
+ assert(flr(index)==index)
+ assert(index!=0)
+ assert(index<=#list, index.." "..#list)
+ value = list[index]
+ //if not_nil then
+  assert(value, "value is nil")
+ //end
+ return value
+end
+
+function tset(list, index, value, not_nil)
+ assert(type(list)==table)
+ assert(type(index)==number)
+ assert(flr(index)==index)
+ assert(index!=0)
+ if not_nil then
+  assert(value, "value is nil")
+ end
+ list[index] = value
+end
+
 function inttobin(b)
  local t={}
  local a=0
@@ -49,7 +89,7 @@ function inttobin(b)
 end
 
 function get_chars(sheet)
-	assert(type(sheet)=="table")
+	assert(type(sheet)==table)
  sheet.s2c={}
  sheet.c2s={}
  for i=1,#sheet.chars do
@@ -61,7 +101,7 @@ function get_chars(sheet)
 end
 
 function get_element(eni)
- local en_el_c=enemy.stats[eni].e
+ local en_el_c=tget(enemy.stats,eni).e
  for element in all(elements) do
   if sub(element.n, 1, 1) == en_el_c then
    return element
@@ -71,9 +111,9 @@ function get_element(eni)
 end
 
 function ord(sheet, s, i)
- assert(type(sheet)=="table")
- assert(type(s)=="string")
- assert(type(i)=="number")
+ assert(type(sheet)==table)
+ assert(type(s)==string)
+ assert(type(i)==number)
  local ci = sheet.s2c[sub(s,i or 1,i or 1)]
  assert(ci, s..".."..i)
  return ci
@@ -130,15 +170,18 @@ arena = nil
 levels = {  4,  12,  24,  40,
            64,  84, 108, 136,
           168, 204, 244, 288,
-          336, 388, 444}
+          336, 388, 444, 512}
 
 enemies_by_level = {}
 for l=1,#levels do
- enemies_by_level[l] = {}
+ tset(enemies_by_level,l,{})
 end
 for e in all(enemy.stats) do
  l = e.l
- add(enemies_by_level[l],e)
+ if l != 0 then
+  //skip man, woman, child
+  add(tget(enemies_by_level,l),e)
+ end
 end
 
 function set_up_enemies()
@@ -147,26 +190,27 @@ function set_up_enemies()
    local id
    local e
    if random then
-    id = ceil(rnd(#enemy.stats))
+    id = rnd_int(1,#enemy.stats)
    else
     local l = 1
     if arena and arena.party and arena.party.level then
      l = arena.party.level
     end
     if l > #enemies_by_level then l = #enemies_by_level end
-    local e_l = ceil(rnd(#enemies_by_level[l]))
-    local enemy = enemies_by_level[l][e_l]
+    local enemies_at_level = tget(enemies_by_level,l)
+    local e_l = rnd_int(1,#enemies_at_level)
+    local enemy = tget(enemies_at_level,e_l)
     id = enemy.i
    end
-   e = enemy.stats[id].e
+   e = tget(enemy.stats,id).e
    if e == "v" then
     //humans get random element
-    element_i = ceil(rnd(8))+4
-    element_n = sub(elements[element_i].n,1,1)
+    element_i = rnd_int(5,12)
+    element_n = sub(tget(elements,element_i).n,1,1)
     e = element_n
    end
-   local n = enemy.stats[id].n
-   local l = enemy.stats[id].l
+   local n = tget(enemy.stats,id).n
+   local l = tget(enemy.stats,id).l
   	local enemy = {
   	 s = s,
   		i = id,
@@ -191,7 +235,7 @@ function set_up_party()
    local filled = true
    if random then filled = rnd(6) > 2 end
    if filled then
-    id = flr(rnd(2))
+    id = rnd_int(0,2)
     if id == 0 then
      id = fighter
     else
@@ -201,9 +245,9 @@ function set_up_party()
  	end
  	if id != nil then
  	 //assign random element of basic 8
- 	 local e = ceil(rnd(8))+4
- 	 local element_n = sub(elements[e].n,1,1)
- 	 local n = enemy.stats[id].n
+ 	 local e = rnd_int(5,12)
+ 	 local element_n = sub(tget(elements,e).n,1,1)
+ 	 local n = tget(enemy.stats,id).n
  	 local l = 1
  	 assert(e)
   	local member = {

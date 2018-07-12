@@ -10,19 +10,19 @@ function note(string, col1)
  print(string, note_pos.x, note_pos.y, col1, col2)
 end
 
-function print(string, x, y, pc, bg_col, caps)
- assert(type(string)=="string",type(string))
- assert(type(x)=="number")
- assert(type(y)=="number")
- assert(type(pc)=="number")
+function print(s, x, y, pc, bg_col, caps)
+ assert(type(s)==string,type(s))
+ assert(type(x)==number)
+ assert(type(y)==number)
+ assert(type(pc)==number)
 
  local offset = 0
  local shift = false
  local elem = false
- for char=1,#string do
-  if sub(string,char,char) == "^" then
+ for char=1,#s do
+  if sub(s,char,char) == "^" then
    shift = true
-  elseif sub(string,char,char) == "@" then
+  elseif sub(s,char,char) == "@" then
    elem = true
   else
    if shift or caps then
@@ -30,13 +30,13 @@ function print(string, x, y, pc, bg_col, caps)
    else
     sheet = slim
    end
-   local ci = ord(sheet, string, char)
+   local ci = ord(sheet, s, char)
    if bg_col != nil then
     rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th, bg_col)
    end
    if elem then
     ci = -1 //space
-    local element = element_by_n(sub(string,char,char))
+    local element = element_by_n(sub(s,char,char))
     draw_element(x + offset+2, y+2, element, pc, shift or caps)
    end
    render(sheet, ci, x + offset, y, pc, bg_col)
@@ -134,26 +134,25 @@ function draw_options()
                 {l=arena.party, x=80}}
 
  for l = 1,#lists do
-  local list = lists[l]
+  local list = tget(lists,l)
   for e = 1,#list.l do
-   local en = list.l[e]
-   local element = list.l[e].stats.e
-   assert(element)
+   local en = tget(list.l,e)
+   local element = tget(list.l,e).stats.e
    local c = black
    local bg = nil
    local icon = "^ "
    local gem = "@"..element
    local subtarget = false
    local attacker = nil
-   if cur.s and cur.s.l and cur.s.l[cur.s.i] then
-    attacker = cur.s.l[cur.s.i]
+   if cur.s and cur.s.l and tget(cur.s.l,cur.s.i) then
+    attacker = tget(cur.s.l,cur.s.i)
 
     if attacker.i == caster or
      attacker.i == caster +1 or
       attacker.i == caster +2 then
      if
-     list.l[e].s == cur.l[cur.i].s +1 or
-     list.l[e].s == cur.l[cur.i].s -1 then
+     tget(list.l,e).s == tget(cur.l,cur.i).s +1 or
+     tget(list.l,e).s == tget(cur.l,cur.i).s -1 then
       subtarget = true
      end
     end
@@ -193,13 +192,13 @@ function draw_options()
      end
     gem = "^"..gem
    end
-   print(icon..gem..enemy.stats[en.i].n, list.x, 7*e + 86, c, bg)
+   print(icon..gem..tget(enemy.stats,en.i).n, list.x, 7*e + 86, c, bg)
   end
  end
 end
 
 function element_by_n(n)
- assert(type(n)=="string")
+ assert(type(n)==string)
  for element in all(elements) do
 	 if n == sub(element.n, 1, 1) then
 	  return element
@@ -256,12 +255,12 @@ function draw_element_chart()
  print("^elements",2,2,0)
  print("^opposition ^chart",49,20,0)
  for e=1,#elements-1 do
-  local element = elements[e]
+  local element = tget(elements,e)
   local e_n_c = sub(element.n,1,1)
   print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
 
   //draw chart
-  local offset = chart[e]
+  local offset = tget(chart,e)
   print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
  end
 
