@@ -96,6 +96,7 @@ end
 
 function deselect()
  if cur.s then
+  cur.i = cur.s.i
   cur.s = nil
   toggle_cursor()
   draw_arena()
