@@ -250,18 +250,8 @@ function update_attack()
 end
 
 function eliminate(list, target)
-
  if list == arena.enemies then
   arena.party.score += target.stats.l
- 	local next_level = tget(levels,arena.party.level)
- 	if arena.party.score >= next_level then
- 	 arena.party.level += 1
- 	 did_level_up = true
- 	 //maybe: lower score on level?
- 	 if arena.party.level > #levels then
- 	  arena.party.level = #levels
- 	 end
- 	end
  elseif list == arena.party then
   add(arena.party.dead, target)
  end
@@ -331,9 +321,14 @@ function update_battle_over()
   draw_arena()
   note("^total exp: "..arena.party.score)
  elseif over_ticks == 15*delay then
-  if did_level_up then
+  local next_level = tget(levels,arena.party.level)
+ 	if arena.party.score >= next_level then
+ 	 arena.party.level += 1
+ 	 //maybe: lower score on level?
+ 	 if arena.party.level > #levels then
+ 	  arena.party.level = #levels
+ 	 end
    revive()
-   did_level_up = nil
    text = "^level up!! ^now at "..arena.party.level
   else
    text = "^currnent level: "..arena.party.level
