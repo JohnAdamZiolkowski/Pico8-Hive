@@ -19,8 +19,10 @@ function _update()
   else
    if turn == arena.party then
     if not auto then
-     if btnp(⬅️) or btnp(➡️) then
+     if btnp(⬅️) then
       draw_element_chart()
+     elseif btnp(➡️) then
+      enter_settings()
      elseif btnp(⬆️) then
       cur.i -= 1
       cap_cursor()
@@ -52,6 +54,23 @@ function _update()
    draw_arena()
    draw_options()
    state = "arena"
+  end
+ elseif state == "settings" then
+  if btnp(❎) then
+   draw_arena()
+   draw_options()
+   state = "arena"
+   s_cur = nil
+  elseif btnp(🅾️) then
+   save_settings()
+  elseif btnp(⬅️) then
+   change_options(-1)
+  elseif btnp(➡️) then
+   change_options(1)
+  elseif btnp(⬆️) then
+   change_settings(-1)
+  elseif  btnp(⬇️) then
+   change_settings(1)
   end
  end
 end

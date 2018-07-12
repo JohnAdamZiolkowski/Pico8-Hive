@@ -3,10 +3,35 @@
 clear = 13
 cls(clear)
 
-auto = false
+
+settings = {
+	{n="^auto ^turn",
+ 	o={"off", "on"},
+ 	v={false, true},
+ 	s=1},
+	{n="^text ^delay",
+	 o={"1", "5", "10", "15"},
+ 	v={1, 5, 10, 15},
+	 s=3},
+	{n="^round ^icon",
+	 o={"off", "on"},
+ 	v={false, true},
+	 s=2},
+}
+
+function set_up_settings()
+ auto = set_up_setting(1)
+ delay = set_up_setting(2)
+ round = set_up_setting(3)
+end
+function set_up_setting(index)
+ local setting = tget(settings,index)
+ local options = setting.v
+ local selected = tget(options,setting.s)
+ return selected
+end
+
 random = false
-delay = 10
-round = true
 
 table = "table"
 number = "number"
@@ -62,7 +87,7 @@ function tget(list, index, not_nil)
  assert(index<=#list, index.." "..#list)
  value = list[index]
  //if not_nil then
-  assert(value, "value is nil")
+  assert(value!=nil, "value is nil "..index)
  //end
  return value
 end

@@ -162,7 +162,7 @@ function draw_options()
     c = white
     bg = black
      if turn == arena.enemies or
-      auto then
+      settings.auto then
       icon = "^>" //hollow
      else
       icon = "^[" //arrow
@@ -173,7 +173,7 @@ function draw_options()
      and turn == arena.party
       and not attack_ticks
        and not game_over_ticks
-        and (not auto
+        and (not settings.auto
          and subtarget) then
     if subtarget then
      icon = "^>"
@@ -185,7 +185,7 @@ function draw_options()
     and (cur.i == e or subtarget)
      and not attack_ticks then
      if turn == arena.enemies or
-      auto then
+      settings.auto then
       icon = "^>" //hollow
      else
       icon = "^[" //arrow
@@ -280,4 +280,123 @@ function draw_element_chart()
  print("rarely hit. ^choose target well!",2,106,black)
  print("^none has no bonus or weakness.",2,114,black)
  print("^holy is good against all!",2,120,black)
+end
+
+function enter_settings()
+ cls(clear)
+ state = "settings"
+ s_cur = {s=#settings+1, o=1}
+ for s=1,#settings do
+  setting = tget(settings,s)
+  setting.c = setting.s
+ end
+ draw_settings()
+end
+
+function cap(value_in, min_in, max_in)
+ assert(type(value_in)==number)
+ assert(type(min_in)==number)
+ assert(type(max_in)==number)
+
+ local value_out = value_in
+ if value_out < min_in then
+  value_out = min_in
+ elseif value_out > max_in then
+  value_out = max_in
+ end
+ assert(value_out >= min_in, value_out)
+ assert(value_out <= max_in, value_out)
+ return value_out
+end
+
+function change_settings(d)
+ s_cur.s += d
+ s_cur.s = cap(s_cur.s, 1, #settings+1)
+ if s_cur.s > #settings then
+  s_cur.o = 1
+ else
+  s_cur.o = tget(settings,s_cur.s).s
+ end
+	draw_settings()
+end
+
+function change_options(d)
+ s_cur.o += d
+ if s_cur.s > #settings then
+ s_cur.o = cap(s_cur.o, 1, 2)
+ else
+  setting = tget(settings, s_cur.s)
+  options = setting.o
+  s_cur.o = cap(s_cur.o, 1, #options)
+		setting.c = s_cur.o
+	end
+	draw_settings()
+end
+
+function save_settings()
+ if s_cur.s == #settings + 1 then
+  if s_cur.o == 2 then
+   for s=1,#settings do
+    setting = tget(settings,s)
+    setting.s = setting.c
+   end
+   set_up_settings()
+  else
+
+  end
+  s_cur = nil
+  draw_arena()
+  draw_options()
+  state = "arena"
+  //possible bug if auto
+  //already on
+  if auto then auto_turn() end
+ end
+end
+
+function draw_settings()
+ cls(clear)
+
+ print("^settings",2,2,black)
+ local bc=nil
+ local fc=black
+ if s_cur.s == #settings+1 and
+  s_cur.o == 1 then
+  bc=black
+  fc=white
+ end
+ print("^cancel",50,120,fc,bc)
+ bc=nil
+ fc=black
+ if s_cur.s == #settings+1 and
+  s_cur.o == 2 then
+  bc=black
+  fc=white
+ end
+ print("^accept",86,120,fc,bc)
+
+ for s=1,#settings do
+  local setting = tget(settings,s)
+  bc=nil
+  fc=black
+  if s_cur.s == s then
+   bc=black
+   fc=white
+  end
+  print(setting.n..":",2,s*7+2,fc,bc)
+
+  for o=1,#setting.o do
+   local option = tget(setting.o,o)
+   bc=nil
+   fc=black
+   if setting.c == o then
+    bc=black
+    fc=white
+   end
+   print(option,20*(o-1)+54+2,s*7+2,fc,bc)
+
+  end
+
+ end
+
 end

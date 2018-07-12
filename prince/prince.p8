@@ -6,10 +6,39 @@ __lua__
 clear = 13
 cls(clear)
 
-auto = false
+
+settings = {
+	{n="^auto ^turn", 
+ 	o={"off", "on"},
+ 	v={false, true},
+ 	s=1},
+	{n="^text ^delay",
+	 o={"1", "5", "10", "15"},
+ 	v={1, 5, 10, 15},
+	 s=3},
+	{n="^round ^icon",
+	 o={"off", "on"},
+ 	v={false, true},
+	 s=2},
+}
+
+function set_up_settings()
+ auto = set_up_setting(1)
+ delay = set_up_setting(2)
+ round = set_up_setting(3)
+end
+function set_up_setting(index)
+ local setting = tget(settings,index)
+ local options = setting.v
+ local selected = tget(options,setting.s)
+ return selected
+end
+
 random = false
-delay = 10
-round = true
+
+table = "table"
+number = "number"
+string = "string"
 
 ⬅️ = 0
 ➡️ = 1
@@ -41,6 +70,42 @@ caster = 28
 
 note_pos = {x=2, y=83}
 
+function rnd_int(min_in, max_in)
+ assert(type(min_in)==number)
+ assert(flr(min_in)==min_in)
+ assert(type(max_in)==number)
+ assert(flr(max_in)==max_in)
+ assert(min_in<=max_in)
+ int = flr(rnd(1) * (max_in-min_in+1))+min_in
+ assert(int <= max_in, int.." "..max_in)
+ assert(int >= min_in, int.." "..min_in)
+ return int
+end
+
+function tget(list, index, not_nil)
+ assert(type(list)==table)
+ assert(type(index)==number)
+ assert(flr(index)==index)
+ assert(index!=0)
+ assert(index<=#list, index.." "..#list)
+ value = list[index]
+ //if not_nil then
+  assert(value!=nil, "value is nil "..index)
+ //end
+ return value
+end
+
+function tset(list, index, value, not_nil)
+ assert(type(list)==table)
+ assert(type(index)==number)
+ assert(flr(index)==index)
+ assert(index!=0)
+ if not_nil then
+  assert(value, "value is nil")
+ end
+ list[index] = value
+end
+
 function inttobin(b)
  local t={}
  local a=0
@@ -52,7 +117,7 @@ function inttobin(b)
 end
 
 function get_chars(sheet)
-	assert(type(sheet)=="table")
+	assert(type(sheet)==table)
  sheet.s2c={}
  sheet.c2s={}
  for i=1,#sheet.chars do
@@ -64,7 +129,7 @@ function get_chars(sheet)
 end
 
 function get_element(eni)
- local en_el_c=enemy.stats[eni].e
+ local en_el_c=tget(enemy.stats,eni).e
  for element in all(elements) do
   if sub(element.n, 1, 1) == en_el_c then
    return element
@@ -74,9 +139,9 @@ function get_element(eni)
 end
 
 function ord(sheet, s, i)
- assert(type(sheet)=="table")
- assert(type(s)=="string")
- assert(type(i)=="number")
+ assert(type(sheet)==table)
+ assert(type(s)==string)
+ assert(type(i)==number)
  local ci = sheet.s2c[sub(s,i or 1,i or 1)]
  assert(ci, s..".."..i)
  return ci
@@ -133,15 +198,18 @@ arena = nil
 levels = {  4,  12,  24,  40,
            64,  84, 108, 136,
           168, 204, 244, 288,
-          336, 388, 444}
+          336, 388, 444, 512}
           
 enemies_by_level = {}
 for l=1,#levels do
- enemies_by_level[l] = {}
+ tset(enemies_by_level,l,{})
 end
 for e in all(enemy.stats) do
  l = e.l
- add(enemies_by_level[l],e)
+ if l != 0 then
+  //skip man, woman, child
+  add(tget(enemies_by_level,l),e)
+ end
 end
 
 function set_up_enemies()
@@ -150,26 +218,27 @@ function set_up_enemies()
    local id
    local e
    if random then
-    id = ceil(rnd(#enemy.stats))
+    id = rnd_int(1,#enemy.stats)
    else
     local l = 1
     if arena and arena.party and arena.party.level then
      l = arena.party.level
     end
     if l > #enemies_by_level then l = #enemies_by_level end
-    local e_l = ceil(rnd(#enemies_by_level[l]))
-    local enemy = enemies_by_level[l][e_l]
+    local enemies_at_level = tget(enemies_by_level,l)
+    local e_l = rnd_int(1,#enemies_at_level)
+    local enemy = tget(enemies_at_level,e_l)
     id = enemy.i
    end
-   e = enemy.stats[id].e
+   e = tget(enemy.stats,id).e
    if e == "v" then
     //humans get random element
-    element_i = ceil(rnd(8))+4
-    element_n = sub(elements[element_i].n,1,1)
+    element_i = rnd_int(5,12)
+    element_n = sub(tget(elements,element_i).n,1,1)
     e = element_n
    end
-   local n = enemy.stats[id].n
-   local l = enemy.stats[id].l
+   local n = tget(enemy.stats,id).n
+   local l = tget(enemy.stats,id).l
   	local enemy = {
   	 s = s,
   		i = id,
@@ -194,7 +263,7 @@ function set_up_party()
    local filled = true
    if random then filled = rnd(6) > 2 end
    if filled then
-    id = flr(rnd(2))
+    id = rnd_int(0,2)
     if id == 0 then
      id = fighter
     else
@@ -204,9 +273,9 @@ function set_up_party()
  	end
  	if id != nil then
  	 //assign random element of basic 8
- 	 local e = ceil(rnd(8))+4
- 	 local element_n = sub(elements[e].n,1,1)
- 	 local n = enemy.stats[id].n
+ 	 local e = rnd_int(5,12)
+ 	 local element_n = sub(tget(elements,e).n,1,1)
+ 	 local n = tget(enemy.stats,id).n
  	 local l = 1
  	 assert(e)
   	local member = {
@@ -265,8 +334,10 @@ function _update()
   else
    if turn == arena.party then
     if not auto then
-     if btnp(⬅️) or btnp(➡️) then
+     if btnp(⬅️) then
       draw_element_chart()
+     elseif btnp(➡️) then
+      enter_settings()
      elseif btnp(⬆️) then
       cur.i -= 1
       cap_cursor()
@@ -298,6 +369,23 @@ function _update()
    draw_arena()
    draw_options()
    state = "arena"
+  end
+ elseif state == "settings" then
+  if btnp(❎) then
+   draw_arena()
+   draw_options()
+   state = "arena"
+   s_cur = nil
+  elseif btnp(🅾️) then
+   save_settings()
+  elseif btnp(⬅️) then
+   change_options(-1)
+  elseif btnp(➡️) then
+   change_options(1)
+  elseif btnp(⬆️) then
+   change_settings(-1)
+  elseif  btnp(⬇️) then
+   change_settings(1)
   end
  end
 end
@@ -342,6 +430,7 @@ end
 
 function deselect()
  if cur.s then
+  cur.i = cur.s.i
   cur.s = nil
   toggle_cursor()
   draw_arena()
@@ -365,11 +454,11 @@ end
 function attack()
  attack_ticks = 0
  
- attacker = turn[cur.s.i]
+ attacker = tget(turn,cur.s.i)
  attacker_n = attacker.stats.n
  assert(attacker)
  targets = {}
- main_target = {t=opposition(turn)[cur.i]}
+ main_target = {t=tget(opposition(turn),cur.i)}
  main_target_n = main_target.t.stats.n
  add(targets, main_target)
  
@@ -445,7 +534,7 @@ function update_attack()
   
   local text = "^but it missed!"
   if #targets==1 then
-   if targets[1].h then
+   if tget(targets,1).h then
     text = "^hit! "..main_target_n.." is gone"
     eliminate(opposition(turn), main_target.t)
    end
@@ -495,18 +584,8 @@ function update_attack()
 end
 
 function eliminate(list, target)
-
  if list == arena.enemies then
-  arena.party.score += target.stats.l 
- 	local next_level = levels[arena.party.level]
- 	if arena.party.score >= next_level then
- 	 arena.party.level += 1
- 	 did_level_up = true
- 	 //maybe: lower score on level?
- 	 if arena.party.level > #levels then
- 	  arena.party.level = #levels
- 	 end
- 	end
+  arena.party.score += target.stats.l
  elseif list == arena.party then
   add(arena.party.dead, target)
  end
@@ -526,7 +605,7 @@ function revive()
  end
  for i=1,5 do
   for u=1,5 do
-   member = unsorted[u]
+   member = tget(unsorted,u)
    if member.s == i then
     add(arena.party, member)
    end
@@ -542,13 +621,13 @@ function update_auto_turn()
  auto_ticks += 1
  
  if auto_ticks == 2*delay then
-  cur.i = ceil(rnd(#cur.l))
+  cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
  elseif auto_ticks == 4*delay then
   select()
  elseif auto_ticks == 6*delay then
-  cur.i = ceil(rnd(#cur.l))
+  cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
  elseif auto_ticks == 8*delay then
@@ -576,9 +655,14 @@ function update_battle_over()
   draw_arena()
   note("^total exp: "..arena.party.score)
  elseif over_ticks == 15*delay then
-  if did_level_up then
+  local next_level = tget(levels,arena.party.level)
+ 	if arena.party.score >= next_level then
+ 	 arena.party.level += 1
+ 	 //maybe: lower score on level?
+ 	 if arena.party.level > #levels then
+ 	  arena.party.level = #levels
+ 	 end
    revive()
-   did_level_up = nil
    text = "^level up!! ^now at "..arena.party.level 
   else
    text = "^currnent level: "..arena.party.level 
@@ -593,7 +677,7 @@ function update_battle_over()
   draw_options()
   text = "^new enemies"
   if #arena.enemies == 1 then
-   text = "^single "..arena.enemies[1].stats.n
+   text = "^single "..tget(arena.enemies,1).stats.n
   end
   note(text.." appeared!")
  elseif over_ticks == 23*delay then
@@ -643,19 +727,19 @@ function note(string, col1)
  print(string, note_pos.x, note_pos.y, col1, col2)
 end
 
-function print(string, x, y, pc, bg_col, caps)
- assert(type(string)=="string",type(string))
- assert(type(x)=="number")
- assert(type(y)=="number")
- assert(type(pc)=="number")
+function print(s, x, y, pc, bg_col, caps)
+ assert(type(s)==string,type(s))
+ assert(type(x)==number)
+ assert(type(y)==number)
+ assert(type(pc)==number)
  
  local offset = 0
  local shift = false
  local elem = false
- for char=1,#string do
-  if sub(string,char,char) == "^" then
+ for char=1,#s do
+  if sub(s,char,char) == "^" then
    shift = true
-  elseif sub(string,char,char) == "@" then
+  elseif sub(s,char,char) == "@" then
    elem = true
   else
    if shift or caps then
@@ -663,13 +747,13 @@ function print(string, x, y, pc, bg_col, caps)
    else
     sheet = slim
    end
-   local ci = ord(sheet, string, char)
+   local ci = ord(sheet, s, char)
    if bg_col != nil then
     rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th, bg_col)
    end
    if elem then
     ci = -1 //space
-    local element = element_by_n(sub(string,char,char))
+    local element = element_by_n(sub(s,char,char))
     draw_element(x + offset+2, y+2, element, pc, shift or caps)
    end
    render(sheet, ci, x + offset, y, pc, bg_col)
@@ -767,26 +851,25 @@ function draw_options()
                 {l=arena.party, x=80}}
 
  for l = 1,#lists do
-  local list = lists[l]
+  local list = tget(lists,l)
   for e = 1,#list.l do 
-   local en = list.l[e]
-   local element = list.l[e].stats.e
-   assert(element)
+   local en = tget(list.l,e)
+   local element = tget(list.l,e).stats.e
    local c = black
    local bg = nil
    local icon = "^ "
    local gem = "@"..element
    local subtarget = false
    local attacker = nil
-   if cur.s and cur.s.l and cur.s.l[cur.s.i] then
-    attacker = cur.s.l[cur.s.i]
+   if cur.s and cur.s.l and tget(cur.s.l,cur.s.i) then
+    attacker = tget(cur.s.l,cur.s.i)
     
     if attacker.i == caster or
      attacker.i == caster +1 or
       attacker.i == caster +2 then
      if
-     list.l[e].s == cur.l[cur.i].s +1 or
-     list.l[e].s == cur.l[cur.i].s -1 then
+     tget(list.l,e).s == tget(cur.l,cur.i).s +1 or
+     tget(list.l,e).s == tget(cur.l,cur.i).s -1 then
       subtarget = true
      end
     end
@@ -796,7 +879,7 @@ function draw_options()
     c = white
     bg = black
      if turn == arena.enemies or
-      auto then 
+      settings.auto then 
       icon = "^>" //hollow
      else
       icon = "^[" //arrow
@@ -807,7 +890,7 @@ function draw_options()
      and turn == arena.party
       and not attack_ticks
        and not game_over_ticks 
-        and (not auto
+        and (not settings.auto
          and subtarget) then
     if subtarget then
      icon = "^>"
@@ -819,20 +902,20 @@ function draw_options()
     and (cur.i == e or subtarget)
      and not attack_ticks then
      if turn == arena.enemies or
-      auto then
+      settings.auto then
       icon = "^>" //hollow
      else
       icon = "^[" //arrow
      end
     gem = "^"..gem
    end
-   print(icon..gem..enemy.stats[en.i].n, list.x, 7*e + 86, c, bg)
+   print(icon..gem..tget(enemy.stats,en.i).n, list.x, 7*e + 86, c, bg)
   end
  end
 end
 
 function element_by_n(n)
- assert(type(n)=="string")
+ assert(type(n)==string)
  for element in all(elements) do
 	 if n == sub(element.n, 1, 1) then
 	  return element
@@ -889,12 +972,12 @@ function draw_element_chart()
  print("^elements",2,2,0)
  print("^opposition ^chart",49,20,0)
  for e=1,#elements-1 do
-  local element = elements[e]
+  local element = tget(elements,e)
   local e_n_c = sub(element.n,1,1)
   print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
   
   //draw chart
-  local offset = chart[e]
+  local offset = tget(chart,e)
   print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
  end
 
@@ -915,19 +998,132 @@ function draw_element_chart()
  print("^none has no bonus or weakness.",2,114,black)
  print("^holy is good against all!",2,120,black)
 end
+
+function enter_settings()
+ cls(clear)
+ state = "settings"
+ s_cur = {s=#settings+1, o=1}
+ for s=1,#settings do
+  setting = tget(settings,s)
+  setting.c = setting.s
+ end
+ draw_settings()
+end
+
+function cap(value_in, min_in, max_in)
+ assert(type(value_in)==number)
+ assert(type(min_in)==number)
+ assert(type(max_in)==number)
+ 
+ local value_out = value_in
+ if value_out < min_in then
+  value_out = min_in
+ elseif value_out > max_in then
+  value_out = max_in
+ end
+ assert(value_out >= min_in, value_out)
+ assert(value_out <= max_in, value_out)
+ return value_out
+end
+
+function change_settings(d)
+ s_cur.s += d
+ s_cur.s = cap(s_cur.s, 1, #settings+1)
+ if s_cur.s > #settings then
+  s_cur.o = 1
+ else
+  s_cur.o = tget(settings,s_cur.s).s
+ end
+	draw_settings()
+end
+
+function change_options(d)
+ s_cur.o += d
+ if s_cur.s > #settings then
+ s_cur.o = cap(s_cur.o, 1, 2)
+ else
+  setting = tget(settings, s_cur.s)
+  options = setting.o
+  s_cur.o = cap(s_cur.o, 1, #options)
+		setting.c = s_cur.o
+	end
+	draw_settings()
+end
+
+function save_settings()
+ if s_cur.s == #settings + 1 then
+  if s_cur.o == 2 then
+   for s=1,#settings do
+    setting = tget(settings,s)
+    setting.s = setting.c
+   end
+   set_up_settings()
+  else
+   
+  end
+  s_cur = nil 
+  draw_arena()
+  draw_options()
+  state = "arena"
+  //possible bug if auto
+  //already on
+  if auto then auto_turn() end
+ end
+end
+
+function draw_settings()
+ cls(clear)
+ 
+ print("^settings",2,2,black)
+ local bc=nil
+ local fc=black
+ if s_cur.s == #settings+1 and
+  s_cur.o == 1 then
+  bc=black
+  fc=white
+ end
+ print("^cancel",50,120,fc,bc)
+ bc=nil
+ fc=black
+ if s_cur.s == #settings+1 and
+  s_cur.o == 2 then
+  bc=black
+  fc=white
+ end
+ print("^accept",86,120,fc,bc)
+ 
+ for s=1,#settings do
+  local setting = tget(settings,s)
+  bc=nil
+  fc=black
+  if s_cur.s == s then
+   bc=black
+   fc=white
+  end
+  print(setting.n..":",2,s*7+2,fc,bc)
+  
+  for o=1,#setting.o do
+   local option = tget(setting.o,o)
+   bc=nil
+   fc=black
+   if setting.c == o then
+    bc=black
+    fc=white
+   end
+   print(option,20*(o-1)+54+2,s*7+2,fc,bc)
+  
+  end
+ 
+ end
+ 
+end
 -->8
 -- go
 
+set_up_settings()
 set_up_arena()
 draw_arena()
-check_over()
 
-//print("@ftest", 64, 64, black)
-//print("^@ftest", 64, 70, black)
-//for e=1,13 do
-// element = elements[e]
-// draw_element(32 + 4*e, 64, element.c, black)
-//end
 __gfx__
 affd0b777fdbb37bccc3afffcf000f36e638bff82fff20cac1ceafd2ecf302702001000000000000000000000000000000000000000000000000000000000000
 5a02dc3008481427b01fd280b7808769874b4043f000e2c6d2e0d0fe031f65f50110100000000000000000000000000000000000000000000000000000000000
