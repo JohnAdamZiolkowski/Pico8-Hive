@@ -31,6 +31,7 @@ function set_up_setting(index)
  return selected
 end
 
+boss = true
 random = false
 
 table = "table"
@@ -190,6 +191,21 @@ enemy = {
  stats = {{i=1,n="^bunny",e="n",l=1},{i=2,n="^rabbit",e="n",l=3},{i=3,n="^bunny ^girl",e="n",l=5},{i=4,n="^horse",e="n",l=2},{i=5,n="^unicorn",e="n",l=4},{i=6,n="^cenitaur",e="n",l=6},{i=7,n="^ghost",e="n",l=1},{i=8,n="^poltergeist",e="n",l=4},{i=9,n="^zombie",e="n",l=2},{i=10,n="^ghoul",e="n",l=5},{i=11,n="^skeleton",e="n",l=3},{i=12,n="^skull ^army",e="n",l=6},{i=13,n="^floating^eye",e="n",l=1},{i=14,n="^eye ^beast",e="n",l=4},{i=15,n="^willowisp",e="n",l=2},{i=16,n="^giant ^skull",e="n",l=5},{i=17,n="^sadness",e="n",l=3},{i=18,n="^madness",e="n",l=7},{i=19,n="^man",e="n",l=0},{i=20,n="^woman",e="n",l=0},{i=21,n="^child",e="n",l=0},{i=22,n="^prince",e="v",l=6},{i=23,n="^king",e="v",l=8},{i=24,n="^emperor",e="v",l=10},{i=25,n="^fighter",e="v",l=7},{i=26,n="^general",e="v",l=9},{i=27,n="^giant",e="v",l=11},{i=28,n="^caster",e="v",l=8},{i=29,n="^sorceror",e="v",l=10},{i=30,n="^merlin",e="v",l=12},{i=31,n="^lizard",e="f",l=2},{i=32,n="^dragon",e="f",l=4},{i=33,n="^drako",e="f",l=6},{i=34,n="^snake",e="e",l=3},{i=35,n="^cobra",e="e",l=5},{i=36,n="^lamia",e="e",l=7},{i=37,n="^bird",e="a",l=2},{i=38,n="^crow",e="a",l=4},{i=39,n="^harpy",e="a",l=6},{i=40,n="^sap",e="p",l=3},{i=41,n="^slime",e="p",l=5},{i=42,n="^jelly ^girl",e="p",l=7},{i=43,n="^fish",e="w",l=2},{i=44,n="^shark",e="w",l=4},{i=45,n="^mermaid",e="w",l=6},{i=46,n="^mouse",e="i",l=3},{i=47,n="^rat",e="i",l=5},{i=48,n="^mouse^prince",e="i",l=7},{i=49,n="^turtle",e="r",l=2},{i=50,n="^tortise",e="r",l=4},{i=51,n="^kapa",e="r",l=6},{i=52,n="^bat",e="b",l=3},{i=53,n="^vampire ^bat",e="b",l=5},{i=54,n="^vampire",e="b",l=7},{i=55,n="^cat",e="l",l=4},{i=56,n="^lion",e="l",l=6},{i=57,n="^cat ^girl",e="l",l=8},{i=58,n="^dog",e="d",l=4},{i=59,n="^wolf",e="d",l=6},{i=60,n="^werewolf",e="d",l=8},{i=61,n="^slug",e="h",l=5},{i=62,n="^snail",e="h",l=7},{i=63,n="^hermit",e="h",l=9},{i=64,n="^mist",e="n",l=7},{i=65,n="^blarg",e="n",l=8},{i=66,n="^rude ^demon",e="n",l=9},{i=67,n="^living^sword",e="n",l=11},{i=68,n="^mimic",e="n",l=10},{i=69,n="^embers",e="f",l=8},{i=70,n="^phoenix",e="f",l=10},{i=71,n="^bolt ^rider",e="e",l=9},{i=72,n="^android",e="e",l=11},{i=73,n="^wind ^rider",e="a",l=8},{i=74,n="^marionette",e="a",l=10},{i=75,n="^evil ^weed",e="p",l=9},{i=76,n="^evil ^tree",e="p",l=11},{i=77,n="^rain ^rider",e="w",l=8},{i=78,n="^hydra",e="w",l=10},{i=79,n="^snow ^rider",e="i",l=9},{i=80,n="^polar ^bear",e="i",l=11},{i=81,n="^mushroom",e="r",l=8},{i=82,n="^golem",e="r",l=10},{i=83,n="^death",e="b",l=9},{i=84,n="^haunted^tree",e="b",l=11},{i=85,n="^cactus",e="l",l=10},{i=86,n="^mummy",e="l",l=12},{i=87,n="^dark ^hand",e="d",l=10},{i=88,n="^dark ^mouth",e="d",l=12},{i=89,n="^priest",e="h",l=11},{i=90,n="^angel",e="h",l=13},{i=91,n="^elder^dragon",e="f",l=12},{i=92,n="^blade^master",e="e",l=13},{i=93,n="^puppeteer",e="a",l=12},{i=94,n="^venus ^trap",e="p",l=13},{i=95,n="^kraken",e="w",l=12},{i=96,n="^frozen^mimic",e="i",l=13},{i=97,n="^raging ^dino",e="r",l=12},{i=98,n="^vampiress",e="b",l=13},{i=99,n="^sphinx",e="l",l=14},{i=100,n="^hatman",e="d",l=14},{i=101,n="^bishop",e="h",l=15},{i=102,n="^final^bishop",e="h",l=16},}
 }
 
+boss_sets = {
+ {l=12, i={31, 32, 91, 33, 32}}, //elder dragon
+ {l=12, i={74, 74, 93, 74, 74}}, //puppeteer
+ {l=12, i={44, 78, 95, 45, 43}}, //kraken
+ {l=12, i={82, 82, 97, 82, 82}}, //dino
+ {l=13, i={35, 72, 92, 36, 34}}, //blademaster
+ {l=13, i={76, 75, 94, 75, 76}}, //venus trap
+ {l=13, i={68, 48, 96, 47, 68}}, //frozen mimic
+ {l=13, i={52, 54, 98, 83, 53}}, //vampiress
+ {l=14, i={55, 86, 99, 57, 56}}, //sphinx
+ {l=14, i={87, 88, 100, 88, 87}}, //hatman
+ {l=15, i={89, 89, 101, 89, 89}}, //bishop
+ {l=16, i={90, 90, 102, 90, 90}} //final bishop
+}
+
 arena = nil
 
 levels = {  4,  12,  24,  40,
@@ -202,14 +218,43 @@ for l=1,#levels do
  tset(enemies_by_level,l,{})
 end
 for e in all(enemy.stats) do
- l = e.l
+ local l = e.l
  if l != 0 then
   //skip man, woman, child
-  add(tget(enemies_by_level,l),e)
+  if e.i < 91 then
+   //skip bosses
+  	add(tget(enemies_by_level,l),e)
+  end
  end
 end
 
 function set_up_enemies()
+ local l = 1
+ if arena and arena.party and arena.party.level then
+  l = arena.party.level
+ end
+
+ local boss_set
+ local bosses_at_level = {}
+ for s=1,#boss_sets do
+  local set = tget(boss_sets,s)
+  local set_boss_level = set.l
+
+  if l == set_boss_level then
+   add(bosses_at_level,set)
+  end
+ end
+
+ if #bosses_at_level > 0 then
+  local b = rnd_int(1,#bosses_at_level)
+  boss_set = tget(bosses_at_level,b)
+ end
+
+ if boss_set then
+  set_up_boss(boss_set)
+ 	return
+ end
+
  for s=1,5 do
   if rnd(1) < 0.33 then
    local id
@@ -249,6 +294,26 @@ function set_up_enemies()
  if #arena.enemies == 0 then
   set_up_enemies()
  end
+end
+
+function set_up_boss(boss_set)
+ assert(boss_set)
+
+	//populate enemies
+ for s=1,5 do
+  local id = tget(boss_set.i,s)
+  local e = tget(enemy.stats,id).e
+  local n = tget(enemy.stats,id).n
+  local l = tget(enemy.stats,id).l
+ 	local enemy = {
+ 	 s = s,
+ 		i = id,
+ 		x = 16 + ((s-1) % 2) * 12,
+ 		y = (s-1) * 14 + 13,
+ 		stats = {e=e, n=n, l=l}
+ 	}
+ 	add(arena.enemies, enemy)
+	end
 end
 
 function set_up_party()
