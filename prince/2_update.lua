@@ -180,21 +180,25 @@ function attack()
  	 assert(false, chance)
  	end
 
-  local hit = rnd(1) < chance
-  if attacker.i == fighter or
-   attacker.i == fighter +1 or
-   attacker.i == fighter +2 then
-   if not hit then
-    hit = rnd(1) < chance
-   end
-  elseif attacker.i == prince or
-   attacker.i == prince +1 or
-   attacker.i == prince +2 then
-   if hit then
-    attacker.stats.e = target.t.stats.e
+  local hit
+  if hit_chance != "on" then
+   hit = hit_chance
+  else
+   hit = rnd(1) < chance
+   if attacker.i == fighter or
+    attacker.i == fighter +1 or
+    attacker.i == fighter +2 then
+    if not hit then
+     hit = rnd(1) < chance
+    end
+   elseif attacker.i == prince or
+    attacker.i == prince +1 or
+    attacker.i == prince +2 then
+    if hit then
+     attacker.stats.e = target.t.stats.e
+    end
    end
   end
-
   target.h = hit
  end
 
@@ -288,8 +292,8 @@ function revive()
   add(unsorted, member)
   del(arena.party.dead, member)
  end
- for i=1,5 do
-  for u=1,5 do
+ for i=1,#unsorted do
+  for u=1,#unsorted do
    member = tget(unsorted,u)
    if member.s == i then
     add(arena.party, member)
@@ -341,7 +345,8 @@ function update_battle_over()
   note("^total exp: "..arena.party.score)
  elseif over_ticks == 15*delay then
   local next_level = tget(levels,arena.party.level)
- 	if arena.party.score >= next_level then
+ 	if arena.party.score >= next_level and
+ 	 arena.party.level < #levels then
  	 arena.party.level += 1
  	 //maybe: lower score on level?
  	 if arena.party.level > #levels then

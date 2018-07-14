@@ -3,7 +3,6 @@
 clear = 13
 cls(clear)
 
-
 settings = {
 	{n="^auto ^turn",
  	o={"off", "on"},
@@ -17,12 +16,37 @@ settings = {
 	 o={"off", "on"},
  	v={false, true},
 	 s=2},
+	{n="^rand ^level",
+	 o={"off", "on"},
+ 	v={false, true},
+	 s=1},
+	{n="^rand ^party",
+	 o={"off", "on"},
+ 	v={false, true},
+	 s=1},
+	{n="^rand ^elem",
+	 o={"off", "on"},
+ 	v={false, true},
+	 s=1},
+	{n="^rand ^enemy",
+	 o={"off", "on"},
+ 	v={false, true},
+	 s=1},
+	{n="^hit chance",
+	 o={"on", "hit", "miss"},
+ 	v={"on", true, false},
+	 s=1},
 }
 
 function set_up_settings()
  auto = set_up_setting(1)
  delay = set_up_setting(2)
  round = set_up_setting(3)
+ random_level = set_up_setting(4)
+ random_party = set_up_setting(5)
+ random_elem = set_up_setting(6)
+ random_enemy = set_up_setting(7)
+ hit_chance = set_up_setting(8)
 end
 function set_up_setting(index)
  local setting = tget(settings,index)
@@ -31,8 +55,6 @@ function set_up_setting(index)
  return selected
 end
 
-boss = true
-random = false
 
 table = "table"
 number = "number"
@@ -250,7 +272,7 @@ function set_up_enemies()
   boss_set = tget(bosses_at_level,b)
  end
 
- if boss_set then
+ if boss_set and not random_enemy then
   set_up_boss(boss_set)
  	return
  end
@@ -259,7 +281,7 @@ function set_up_enemies()
   if rnd(1) < 0.33 then
    local id
    local e
-   if random then
+   if random_enemy then
     id = rnd_int(1,#enemy.stats)
    else
     local l = 1
@@ -323,7 +345,7 @@ function set_up_party()
    id = prince
   else
    local filled = true
-   if random then filled = rnd(6) > 2 end
+   if random_party then filled = rnd(6) > 2 end
    if filled then
     id = rnd_int(0,2)
     if id == 0 then
@@ -336,6 +358,9 @@ function set_up_party()
  	if id != nil then
  	 //assign random element of basic 8
  	 local e = rnd_int(5,12)
+ 	 if random_elem then
+ 	  e = rnd_int(1,12)
+ 	 end
  	 local element_n = sub(tget(elements,e).n,1,1)
  	 local n = tget(enemy.stats,id).n
  	 local l = 1
@@ -354,6 +379,12 @@ function set_up_party()
  arena.party.score = 0
  arena.party.battles = 0
  arena.party.level = 1
+ if random_level then
+  arena.party.level = rnd_int(1,#levels)
+  if arena.party.level > 1 then
+   arena.party.score = tget(levels,arena.party.level-1)
+ 	end
+ end
  arena.party.dead = {}
 
  turn = arena.party
