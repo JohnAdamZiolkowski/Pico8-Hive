@@ -6,18 +6,45 @@ __lua__
 clear = 13
 cls(clear)
 
-
 settings = {
-	{n="^auto ^turn", 
- 	o={"off", "on"},
+	{i=1, n="^auto ^turn", 
+ 	o={"^off", "^on"},
  	v={false, true},
  	s=1},
-	{n="^text ^delay",
+	{i=2, n="^text ^delay",
 	 o={"1", "5", "10", "15"},
  	v={1, 5, 10, 15},
 	 s=3},
-	{n="^round ^icon",
-	 o={"off", "on"},
+	{i=3, n="^round ^icon",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=2},
+	{i=4, n="^caps ^l^o^c^k",
+	 o={"^off", "^o^n"},
+ 	v={false, true},
+	 s=1},
+	{i=5, n="^rand ^level",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
+	{i=6, n="^rand ^party",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
+	{i=7, n="^rand ^elem",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
+	{i=8, n="^rand ^enemy",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
+	{i=9, n="^hit chance",
+	 o={"^on", "^hit", "^miss"},
+ 	v={"on", true, false},
+	 s=1},
+	{i=10, n="^game over",
+	 o={"^new", "^cont."},
  	v={false, true},
 	 s=2},
 }
@@ -26,15 +53,21 @@ function set_up_settings()
  auto = set_up_setting(1)
  delay = set_up_setting(2)
  round = set_up_setting(3)
+ caps_lock = set_up_setting(4)
+ random_level = set_up_setting(5)
+ random_party = set_up_setting(6)
+ random_elem = set_up_setting(7)
+ random_enemy = set_up_setting(8)
+ hit_chance = set_up_setting(9)
+ continue = set_up_setting(10)
 end
 function set_up_setting(index)
- local setting = tget(settings,index)
+ local setting = lget(settings,index)
  local options = setting.v
- local selected = tget(options,setting.s)
+ local selected = lget(options,setting.s)
  return selected
 end
 
-random = false
 
 table = "table"
 number = "number"
@@ -68,8 +101,6 @@ prince = 22
 fighter = 25
 caster = 28
 
-note_pos = {x=2, y=83}
-
 function rnd_int(min_in, max_in)
  assert(type(min_in)==number)
  assert(flr(min_in)==min_in)
@@ -82,7 +113,7 @@ function rnd_int(min_in, max_in)
  return int
 end
 
-function tget(list, index, not_nil)
+function lget(list, index, not_nil)
  assert(type(list)==table)
  assert(type(index)==number)
  assert(flr(index)==index)
@@ -95,7 +126,7 @@ function tget(list, index, not_nil)
  return value
 end
 
-function tset(list, index, value, not_nil)
+function lset(list, index, value, not_nil)
  assert(type(list)==table)
  assert(type(index)==number)
  assert(flr(index)==index)
@@ -104,6 +135,16 @@ function tset(list, index, value, not_nil)
   assert(value, "value is nil")
  end
  list[index] = value
+end
+
+function lclr(list)
+ assert(type(list)==table)
+ assert(#list>0)
+ local length = #list
+ for i=length,1,-1 do
+  local item = list[i]
+  del(list,item)
+ end
 end
 
 function inttobin(b)
@@ -129,7 +170,7 @@ function get_chars(sheet)
 end
 
 function get_element(eni)
- local en_el_c=tget(enemy.stats,eni).e
+ local en_el_c=lget(enemy.stats,eni).e
  for element in all(elements) do
   if sub(element.n, 1, 1) == en_el_c then
    return element
@@ -193,6 +234,21 @@ enemy = {
  stats = {{i=1,n="^bunny",e="n",l=1},{i=2,n="^rabbit",e="n",l=3},{i=3,n="^bunny ^girl",e="n",l=5},{i=4,n="^horse",e="n",l=2},{i=5,n="^unicorn",e="n",l=4},{i=6,n="^cenitaur",e="n",l=6},{i=7,n="^ghost",e="n",l=1},{i=8,n="^poltergeist",e="n",l=4},{i=9,n="^zombie",e="n",l=2},{i=10,n="^ghoul",e="n",l=5},{i=11,n="^skeleton",e="n",l=3},{i=12,n="^skull ^army",e="n",l=6},{i=13,n="^floating^eye",e="n",l=1},{i=14,n="^eye ^beast",e="n",l=4},{i=15,n="^willowisp",e="n",l=2},{i=16,n="^giant ^skull",e="n",l=5},{i=17,n="^sadness",e="n",l=3},{i=18,n="^madness",e="n",l=7},{i=19,n="^man",e="n",l=0},{i=20,n="^woman",e="n",l=0},{i=21,n="^child",e="n",l=0},{i=22,n="^prince",e="v",l=6},{i=23,n="^king",e="v",l=8},{i=24,n="^emperor",e="v",l=10},{i=25,n="^fighter",e="v",l=7},{i=26,n="^general",e="v",l=9},{i=27,n="^giant",e="v",l=11},{i=28,n="^caster",e="v",l=8},{i=29,n="^sorceror",e="v",l=10},{i=30,n="^merlin",e="v",l=12},{i=31,n="^lizard",e="f",l=2},{i=32,n="^dragon",e="f",l=4},{i=33,n="^drako",e="f",l=6},{i=34,n="^snake",e="e",l=3},{i=35,n="^cobra",e="e",l=5},{i=36,n="^lamia",e="e",l=7},{i=37,n="^bird",e="a",l=2},{i=38,n="^crow",e="a",l=4},{i=39,n="^harpy",e="a",l=6},{i=40,n="^sap",e="p",l=3},{i=41,n="^slime",e="p",l=5},{i=42,n="^jelly ^girl",e="p",l=7},{i=43,n="^fish",e="w",l=2},{i=44,n="^shark",e="w",l=4},{i=45,n="^mermaid",e="w",l=6},{i=46,n="^mouse",e="i",l=3},{i=47,n="^rat",e="i",l=5},{i=48,n="^mouse^prince",e="i",l=7},{i=49,n="^turtle",e="r",l=2},{i=50,n="^tortise",e="r",l=4},{i=51,n="^kapa",e="r",l=6},{i=52,n="^bat",e="b",l=3},{i=53,n="^vampire ^bat",e="b",l=5},{i=54,n="^vampire",e="b",l=7},{i=55,n="^cat",e="l",l=4},{i=56,n="^lion",e="l",l=6},{i=57,n="^cat ^girl",e="l",l=8},{i=58,n="^dog",e="d",l=4},{i=59,n="^wolf",e="d",l=6},{i=60,n="^werewolf",e="d",l=8},{i=61,n="^slug",e="h",l=5},{i=62,n="^snail",e="h",l=7},{i=63,n="^hermit",e="h",l=9},{i=64,n="^mist",e="n",l=7},{i=65,n="^blarg",e="n",l=8},{i=66,n="^rude ^demon",e="n",l=9},{i=67,n="^living^sword",e="n",l=11},{i=68,n="^mimic",e="n",l=10},{i=69,n="^embers",e="f",l=8},{i=70,n="^phoenix",e="f",l=10},{i=71,n="^bolt ^rider",e="e",l=9},{i=72,n="^android",e="e",l=11},{i=73,n="^wind ^rider",e="a",l=8},{i=74,n="^marionette",e="a",l=10},{i=75,n="^evil ^weed",e="p",l=9},{i=76,n="^evil ^tree",e="p",l=11},{i=77,n="^rain ^rider",e="w",l=8},{i=78,n="^hydra",e="w",l=10},{i=79,n="^snow ^rider",e="i",l=9},{i=80,n="^polar ^bear",e="i",l=11},{i=81,n="^mushroom",e="r",l=8},{i=82,n="^golem",e="r",l=10},{i=83,n="^death",e="b",l=9},{i=84,n="^haunted^tree",e="b",l=11},{i=85,n="^cactus",e="l",l=10},{i=86,n="^mummy",e="l",l=12},{i=87,n="^dark ^hand",e="d",l=10},{i=88,n="^dark ^mouth",e="d",l=12},{i=89,n="^priest",e="h",l=11},{i=90,n="^angel",e="h",l=13},{i=91,n="^elder^dragon",e="f",l=12},{i=92,n="^blade^master",e="e",l=13},{i=93,n="^puppeteer",e="a",l=12},{i=94,n="^venus ^trap",e="p",l=13},{i=95,n="^kraken",e="w",l=12},{i=96,n="^frozen^mimic",e="i",l=13},{i=97,n="^raging ^dino",e="r",l=12},{i=98,n="^vampiress",e="b",l=13},{i=99,n="^sphinx",e="l",l=14},{i=100,n="^hatman",e="d",l=14},{i=101,n="^bishop",e="h",l=15},{i=102,n="^final^bishop",e="h",l=16},}
 }
 
+boss_sets = {
+ {l=12, i={31, 32, 91, 33, 32}}, //elder dragon
+ {l=12, i={74, 74, 93, 74, 74}}, //puppeteer
+ {l=12, i={44, 78, 95, 45, 43}}, //kraken
+ {l=12, i={82, 82, 97, 82, 82}}, //dino
+ {l=13, i={35, 72, 92, 36, 34}}, //blademaster
+ {l=13, i={76, 75, 94, 75, 76}}, //venus trap
+ {l=13, i={68, 48, 96, 47, 68}}, //frozen mimic
+ {l=13, i={52, 54, 98, 83, 53}}, //vampiress
+ {l=14, i={55, 86, 99, 57, 56}}, //sphinx
+ {l=14, i={87, 88, 100, 88, 87}}, //hatman
+ {l=15, i={89, 89, 101, 89, 89}}, //bishop
+ {l=16, i={90, 90, 102, 90, 90}} //final bishop
+}
+
 arena = nil
 
 levels = {  4,  12,  24,  40,
@@ -202,22 +258,51 @@ levels = {  4,  12,  24,  40,
           
 enemies_by_level = {}
 for l=1,#levels do
- tset(enemies_by_level,l,{})
+ lset(enemies_by_level,l,{})
 end
 for e in all(enemy.stats) do
- l = e.l
+ local l = e.l
  if l != 0 then
   //skip man, woman, child
-  add(tget(enemies_by_level,l),e)
+  if e.i < 91 then
+   //skip bosses
+  	add(lget(enemies_by_level,l),e)
+  end
  end
 end
 
 function set_up_enemies()
+ local l = 1
+ if arena and arena.party and arena.party.level then
+  l = arena.party.level
+ end
+
+ local boss_set
+ local bosses_at_level = {}
+ for s=1,#boss_sets do
+  local set = lget(boss_sets,s)
+  local set_boss_level = set.l
+ 
+  if l == set_boss_level then
+   add(bosses_at_level,set)
+  end
+ end
+ 
+ if #bosses_at_level > 0 then
+  local b = rnd_int(1,#bosses_at_level)
+  boss_set = lget(bosses_at_level,b)
+ end
+  
+ if boss_set and not random_enemy then
+  set_up_boss(boss_set)
+ 	return
+ end
+
  for s=1,5 do
   if rnd(1) < 0.33 then
    local id
    local e
-   if random then
+   if random_enemy then
     id = rnd_int(1,#enemy.stats)
    else
     local l = 1
@@ -225,20 +310,20 @@ function set_up_enemies()
      l = arena.party.level
     end
     if l > #enemies_by_level then l = #enemies_by_level end
-    local enemies_at_level = tget(enemies_by_level,l)
+    local enemies_at_level = lget(enemies_by_level,l)
     local e_l = rnd_int(1,#enemies_at_level)
-    local enemy = tget(enemies_at_level,e_l)
+    local enemy = lget(enemies_at_level,e_l)
     id = enemy.i
    end
-   e = tget(enemy.stats,id).e
+   e = lget(enemy.stats,id).e
    if e == "v" then
     //humans get random element
     element_i = rnd_int(5,12)
-    element_n = sub(tget(elements,element_i).n,1,1)
+    element_n = sub(lget(elements,element_i).n,1,1)
     e = element_n
    end
-   local n = tget(enemy.stats,id).n
-   local l = tget(enemy.stats,id).l
+   local n = lget(enemy.stats,id).n
+   local l = lget(enemy.stats,id).l
   	local enemy = {
   	 s = s,
   		i = id,
@@ -254,6 +339,26 @@ function set_up_enemies()
  end
 end
 
+function set_up_boss(boss_set)
+ assert(boss_set)
+
+	//populate enemies
+ for s=1,5 do
+  local id = lget(boss_set.i,s)
+  local e = lget(enemy.stats,id).e
+  local n = lget(enemy.stats,id).n
+  local l = lget(enemy.stats,id).l
+ 	local enemy = {
+ 	 s = s,
+ 		i = id,
+ 		x = 16 + ((s-1) % 2) * 12,
+ 		y = (s-1) * 14 + 13,
+ 		stats = {e=e, n=n, l=l}
+ 	}
+ 	add(arena.enemies, enemy)
+	end
+end
+
 function set_up_party()
  for s = 1,5 do
   local id
@@ -261,7 +366,7 @@ function set_up_party()
    id = prince
   else
    local filled = true
-   if random then filled = rnd(6) > 2 end
+   if random_party then filled = rnd(3) > 2 end
    if filled then
     id = rnd_int(0,2)
     if id == 0 then
@@ -274,8 +379,11 @@ function set_up_party()
  	if id != nil then
  	 //assign random element of basic 8
  	 local e = rnd_int(5,12)
- 	 local element_n = sub(tget(elements,e).n,1,1)
- 	 local n = tget(enemy.stats,id).n
+ 	 if random_elem then
+ 	  e = rnd_int(1,12)
+ 	 end
+ 	 local element_n = sub(lget(elements,e).n,1,1)
+ 	 local n = lget(enemy.stats,id).n
  	 local l = 1
  	 assert(e)
   	local member = {
@@ -292,6 +400,12 @@ function set_up_party()
  arena.party.score = 0
  arena.party.battles = 0
  arena.party.level = 1
+ if random_level then
+  arena.party.level = rnd_int(1,#levels)
+  if arena.party.level > 1 then
+   arena.party.score = lget(levels,arena.party.level-1)
+ 	end
+ end
  arena.party.dead = {}
  
  turn = arena.party
@@ -354,7 +468,11 @@ function _update()
       deselect()
     	end
     else
-     update_auto_turn()
+     if btnp(❎) then
+      end_auto_turn()
+     else
+      update_auto_turn()
+     end
     end
    elseif turn == arena.enemies then
     update_auto_turn()
@@ -454,11 +572,11 @@ end
 function attack()
  attack_ticks = 0
  
- attacker = tget(turn,cur.s.i)
+ attacker = lget(turn,cur.s.i)
  attacker_n = attacker.stats.n
  assert(attacker)
  targets = {}
- main_target = {t=tget(opposition(turn),cur.i)}
+ main_target = {t=lget(opposition(turn),cur.i)}
  main_target_n = main_target.t.stats.n
  add(targets, main_target)
  
@@ -495,21 +613,25 @@ function attack()
  	 assert(false, chance)
  	end
 
-  local hit = rnd(1) < chance
-  if attacker.i == fighter or
-   attacker.i == fighter +1 or
-   attacker.i == fighter +2 then
-   if not hit then
-    hit = rnd(1) < chance
-   end
-  elseif attacker.i == prince or
-   attacker.i == prince +1 or
-   attacker.i == prince +2 then
-   if hit then
-    attacker.stats.e = target.t.stats.e
+  local hit
+  if hit_chance != "on" then
+   hit = hit_chance
+  else
+   hit = rnd(1) < chance
+   if attacker.i == fighter or
+    attacker.i == fighter +1 or
+    attacker.i == fighter +2 then
+    if not hit then
+     hit = rnd(1) < chance
+    end
+   elseif attacker.i == prince or
+    attacker.i == prince +1 or
+    attacker.i == prince +2 then
+    if hit then
+     attacker.stats.e = target.t.stats.e
+    end
    end
   end
-  
   target.h = hit
  end
  
@@ -534,7 +656,7 @@ function update_attack()
   
   local text = "^but it missed!"
   if #targets==1 then
-   if tget(targets,1).h then
+   if lget(targets,1).h then
     text = "^hit! "..main_target_n.." is gone"
     eliminate(opposition(turn), main_target.t)
    end
@@ -603,35 +725,57 @@ function revive()
   add(unsorted, member)
   del(arena.party.dead, member)
  end
- for i=1,5 do
-  for u=1,5 do
-   member = tget(unsorted,u)
-   if member.s == i then
+ for s=1,5 do
+  for u=1,#unsorted do
+   member = lget(unsorted,u)
+   if member.s == s then
     add(arena.party, member)
    end
   end
  end
 end
 
+function draw_auto_message()
+ if turn == arena.party then
+  local auto_message = "^press (^b) to end auto"
+  note(auto_message)
+ end
+end
+
 function auto_turn()
  auto_ticks = 0
+ draw_auto_message()
+end
+
+function end_auto_turn()
+	auto_ticks = nil
+ lget(settings,1).s = 1
+ set_up_settings()
+ draw_arena()
+ draw_options()
 end
 
 function update_auto_turn()
  auto_ticks += 1
- 
- if auto_ticks == 2*delay then
+ local auto_message = "^press (^b) to end auto"
+ if auto_ticks == 1 then
+  draw_auto_message()
+ elseif auto_ticks == 2*delay then
   cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
+  draw_auto_message()
  elseif auto_ticks == 4*delay then
   select()
+  draw_auto_message()
  elseif auto_ticks == 6*delay then
   cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
+  draw_auto_message()
  elseif auto_ticks == 8*delay then
   select()
+  auto_ticks = nil
  end
 end
 
@@ -655,8 +799,9 @@ function update_battle_over()
   draw_arena()
   note("^total exp: "..arena.party.score)
  elseif over_ticks == 15*delay then
-  local next_level = tget(levels,arena.party.level)
- 	if arena.party.score >= next_level then
+  local next_level = lget(levels,arena.party.level)
+ 	if arena.party.score >= next_level and
+ 	 arena.party.level < #levels then
  	 arena.party.level += 1
  	 //maybe: lower score on level?
  	 if arena.party.level > #levels then
@@ -677,7 +822,7 @@ function update_battle_over()
   draw_options()
   text = "^new enemies"
   if #arena.enemies == 1 then
-   text = "^single "..tget(arena.enemies,1).stats.n
+   text = "^single "..lget(arena.enemies,1).stats.n
   end
   note(text.." appeared!")
  elseif over_ticks == 23*delay then
@@ -704,10 +849,32 @@ function update_game_over()
   draw_arena()
   note("^final level: "..arena.party.level, red)
  elseif game_over_ticks == 15*delay then
-  set_up_party()
+  local over_message
+  if continue then
+   lclr(arena.enemies)
+   revive()
+  	
+   turn = arena.party
+   cur = {l=arena.party, i=1,
+          s=nil}
+  	cap_cursor()
+  	arena.party.battles = 0
+  	old_level = arena.party.level
+  	arena.party.level = 1
+  	arena.party.score = 0
+  	if old_level > 2 then
+  	 arena.party.level = old_level-2
+  	 arena.party.score = lget(levels,arena.party.level)
+  	end
+  	set_up_enemies()
+  	over_message = "^the party is set back to "..arena.party.level.."..."
+  else
+   set_up_party()
+   over_message = "^a new party appears!"
+  end
   draw_arena()
   draw_options()
-  note("^a new party appeared!")
+  note(over_message)
  elseif game_over_ticks == 18*delay then
   game_over_ticks = nil
   draw_arena()
@@ -717,6 +884,8 @@ end
 -->8
 -- draw
 
+note_pos = {x=2, y=83}
+
 function note(string, col1)
  col2 = black
  
@@ -724,10 +893,14 @@ function note(string, col1)
   col1 = white
   col2 = black
  end
- print(string, note_pos.x, note_pos.y, col1, col2)
+ if caps_lock then
+  string = sub(string, 1, 23)
+  note_pos.x = 2
+ end
+ print(string, note_pos.x, note_pos.y, col1, col2, false, caps_lock)
 end
 
-function print(s, x, y, pc, bg_col, caps)
+function print(s, x, y, pc, bg_col, caps, caps_lock)
  assert(type(s)==string,type(s))
  assert(type(x)==number)
  assert(type(y)==number)
@@ -748,6 +921,10 @@ function print(s, x, y, pc, bg_col, caps)
     sheet = slim
    end
    local ci = ord(sheet, s, char)
+   if ci <= 26 and caps_lock then
+    sheet = wide
+    ci = ord(sheet, s, char)
+   end
    if bg_col != nil then
     rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th, bg_col)
    end
@@ -848,28 +1025,31 @@ end
 
 function draw_options()
  local lists = {{l=arena.enemies, x=2},
-                {l=arena.party, x=80}}
+                {l=arena.party, x=82}}
+ if caps_lock then
+  lists[2].x = 70
+ end
 
  for l = 1,#lists do
-  local list = tget(lists,l)
+  local list = lget(lists,l)
   for e = 1,#list.l do 
-   local en = tget(list.l,e)
-   local element = tget(list.l,e).stats.e
+   local en = lget(list.l,e)
+   local element = lget(list.l,e).stats.e
    local c = black
    local bg = nil
    local icon = "^ "
    local gem = "@"..element
    local subtarget = false
    local attacker = nil
-   if cur.s and cur.s.l and tget(cur.s.l,cur.s.i) then
-    attacker = tget(cur.s.l,cur.s.i)
+   if cur.s and cur.s.l and lget(cur.s.l,cur.s.i) then
+    attacker = lget(cur.s.l,cur.s.i)
     
     if attacker.i == caster or
      attacker.i == caster +1 or
       attacker.i == caster +2 then
      if
-     tget(list.l,e).s == tget(cur.l,cur.i).s +1 or
-     tget(list.l,e).s == tget(cur.l,cur.i).s -1 then
+     lget(list.l,e).s == lget(cur.l,cur.i).s +1 or
+     lget(list.l,e).s == lget(cur.l,cur.i).s -1 then
       subtarget = true
      end
     end
@@ -909,7 +1089,11 @@ function draw_options()
      end
     gem = "^"..gem
    end
-   print(icon..gem..tget(enemy.stats,en.i).n, list.x, 7*e + 86, c, bg)
+   local name = lget(enemy.stats,en.i).n
+   if caps_lock then
+    name = sub(name,1,10)
+   end
+   print(icon..gem..name, list.x, 7*e + 86, c, bg, false, caps_lock)
   end
  end
 end
@@ -972,12 +1156,12 @@ function draw_element_chart()
  print("^elements",2,2,0)
  print("^opposition ^chart",49,20,0)
  for e=1,#elements-1 do
-  local element = tget(elements,e)
+  local element = lget(elements,e)
   local e_n_c = sub(element.n,1,1)
   print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
   
   //draw chart
-  local offset = tget(chart,e)
+  local offset = lget(chart,e)
   print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
  end
 
@@ -1004,7 +1188,7 @@ function enter_settings()
  state = "settings"
  s_cur = {s=#settings+1, o=1}
  for s=1,#settings do
-  setting = tget(settings,s)
+  setting = lget(settings,s)
   setting.c = setting.s
  end
  draw_settings()
@@ -1032,7 +1216,7 @@ function change_settings(d)
  if s_cur.s > #settings then
   s_cur.o = 1
  else
-  s_cur.o = tget(settings,s_cur.s).s
+  s_cur.o = lget(settings,s_cur.s).s
  end
 	draw_settings()
 end
@@ -1042,7 +1226,7 @@ function change_options(d)
  if s_cur.s > #settings then
  s_cur.o = cap(s_cur.o, 1, 2)
  else
-  setting = tget(settings, s_cur.s)
+  setting = lget(settings, s_cur.s)
   options = setting.o
   s_cur.o = cap(s_cur.o, 1, #options)
 		setting.c = s_cur.o
@@ -1054,7 +1238,7 @@ function save_settings()
  if s_cur.s == #settings + 1 then
   if s_cur.o == 2 then
    for s=1,#settings do
-    setting = tget(settings,s)
+    setting = lget(settings,s)
     setting.s = setting.c
    end
    set_up_settings()
@@ -1093,7 +1277,7 @@ function draw_settings()
  print("^accept",86,120,fc,bc)
  
  for s=1,#settings do
-  local setting = tget(settings,s)
+  local setting = lget(settings,s)
   bc=nil
   fc=black
   if s_cur.s == s then
@@ -1103,7 +1287,7 @@ function draw_settings()
   print(setting.n..":",2,s*7+2,fc,bc)
   
   for o=1,#setting.o do
-   local option = tget(setting.o,o)
+   local option = lget(setting.o,o)
    bc=nil
    fc=black
    if setting.c == o then
@@ -1229,3 +1413,133 @@ ddd0dd00dd000d000000000000000000000000000000000000000000000000000000000000000000
 000d000ddd000ddd0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 d0ddd0ddd000dddd0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 d0ddd0ddd000dddd0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__label__
+d00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00d
+00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd00dd
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0
+ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00ddd0dd00
+000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d
+d0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0dd
+d0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0ddd0dd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000ddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0000dddddddddddddddddddd
+ddddddddddddddddddddd0ddd0ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00000dddddddddddddddddddd
+dddddddddddddddddddd000d000dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd07700dddddddddddddddddddd
+ddddddddddddddddddd00dd00d00ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd07770dddddddddddddddddddd
+dddddddddddddddddd0ddd0000dd0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00d0000dddddddddddddddddddd
+ddddddddddddddddddddddd00dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00000700ddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0007770ddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0d00700ddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0d00000ddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000000ddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000ddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddd000dddddddddddddddddddddddddddddddddddddddddddddddddddddd0000dddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddd00d0d00000dddddddddddddddddddddddddddddddddddddddddddddddddddd00000dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddd000d00770d0d0dddddddddddddddddddddddddddddddddddddddddddddddd07700dddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddd0dd07770dd0ddddddddddddddddddddddddddddddddddddddddddddddddd07770dddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddd0000000ddddddddddddddddddddddddddddddddddddddddddddddddd00d0000dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddd00070dddddddddddddddddddddddddddddddddddddddddddddddddd00000700ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddd00070ddddddddddddddddddddddddddddddddddddddddddddddddddd0007770ddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddd000dddddddddddddddddddddddddddddddddddddddddddddddddddd0d00700ddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddd000dddddddddddddddddddddddddddddddddddddddddddddddddddd0d00000ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddd00000dddddddddddddddddddddddddddddddddddddddddddddddddddd000000ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddd0dd00dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0d0d0dddddddddddddddddddd
+ddddddddddddddddddddd00d0070d0ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00000dddddddddddddddddddd
+dddddddddddddddddddd00000770d00dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00000dddddddddddddddddddd
+dddddddddddddddddddd0dd0000d0d0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd07700dddddddddddddddddddd
+dddddddddddddddddddddddd0770ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd07770dddddddddddddddddddd
+ddddddddddddddddd00d0dd000000dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00d0000dddddddddddddddddddd
+dddddddddddddddddd000d00d00d0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0700000dddddddddddddddddddd
+ddddddddddddddddddd0ddddd00ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000700dddddddddddddddddddd
+dddddddddddddddddddddddd000ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0d0700dddddddddddddddddddd
+dddddddddddddddddddddd000000dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0d0000dddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddd0000dddddddddddddddddddddddddddddddddddddddddddddddddddddd0000dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd0000dd0dddddddddddddddddddddddddddddddddddddddddddddddddddd00000dddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddd0700dddddddddddddddddddddddddddddddddddddddddddddddddddddddd07700dddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddd000ddddddddddddddddddddddddddddddddddddddddddddddddddddddddd07770dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddd0d0ddd00ddddddddddddddddddddddddddddddddddddddddddddddddddd00d0000dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd0dd0000dddddddddddddddddddddddddddddddddddddddddddddddddd00000700ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd00007070dddddddddddddddddddddddddddddddddddddddddddddddddd0007770ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd0000000ddddddddddddddddddddddddddddddddddddddddddddddddddd0d00700ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd0d0000dddddddddddddddddddddddddddddddddddddddddddddddddddd0d00000ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd0d00000dddddddddddddddddddddddddddddddddddddddddddddddddddd000000ddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000ddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0000dddddddddddddddddddd
+dddddddddddddddddd0ddddd0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00000dddddddddddddddddddd
+dddddddddddddddddd000dd00dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd07700dddddddddddddddddddd
+dddddddddddddddddd0000000d00d0ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd07770dddddddddddddddddddd
+dddddddddddddddddd00d00d0dd000ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00d0000dddddddddddddddddddd
+dddddddddddddddddd00dddd0ddd0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00000700ddddddddddddddddddd
+ddddddddddddddddddd00dd0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0007770ddddddddddddddddddd
+ddddddddddddddddddddddddd0d0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0d00700ddddddddddddddddddd
+dddddddddddddddddddddddddd0ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0d00000ddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000000ddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddd000dddd0dd0ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0dddd909ddd000ddd0ddd00d0dddd0dddddddddddddddd
+dddddddd808dd0d0dddd0d00dddddddddddddddddddddddddddddddddddddddddddddddddddddddd0000dd90709d0ddd0ddd0d0ddd00dd0d0ddddddddddddddd
+dddddddd080dd000ddd00d0ddddddddddddddddddddddddddddddddddddddddddddddddddddddddd00000d07990d0dddddd00dd0dd0ddd000dd00ddddddddddd
+dddddddd808dd0dd0d0d0d0d0ddddddddddddddddddddddddddddddddddddddddddddddddddddddd0000dd90909d0ddd0d0d0ddd0d0d0d0ddd0ddddddddddddd
+dddddddddddd0000ddd00dd0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd0dddd909ddd000ddd00d00ddd0ddd00d0ddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddd0ddd0dd0ddddddddddd0ddddddd0ddddddddddddddddddddddddddddddddddddddddddddddddddd000ddd0ddd00d0dddd0dddddddddddddddddd
+dddddddd808d0ddd0ddd0d0d0d00dddddddddd0d0dddddddddddddddddddddddddddddddddddddddddddddf0fd0ddd0ddd0d0ddd00dd0d0ddddddddddddddddd
+dddddddd080dd0d0ddd00d000d0d0d00ddd00d000ddddddddddddddddddddddddddddddddddddddddddddd0f0d0dddddd00dd0dd0ddd000dd00ddddddddddddd
+dddddddd808dd0d0dd0d0d0d0d00ddd0dd0ddd0dddddddddddddddddddddddddddddddddddddddddddddddf0fd0ddd0d0d0ddd0d0d0d0ddd0ddddddddddddddd
+dddddddddddddd0dddd00d0d0d0ddd000d0dddd00dddddddddddddddddddddddddddddddddddddddddddddddddd000ddd00d00ddd0ddd00d0ddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddd0ddd0dd0ddddddddddd0ddddddd0ddd00dd00ddddddddddddddddddddddddddddddddddddddddd0000ddddddd0ddddddddddd0dddddddddddddd
+dddddddd808d0ddd0ddd0d0d0d00dddddddddd0d0d0ddd0ddddddddddddddddddddddddddddddddddddddda0add0dd0ddddddddd00ddd00d0d0ddddddddddddd
+dddddddd080dd0d0ddd00d000d0d0d00ddd00d000dd0ddd0dddddddddddddddddddddddddddddddddddddd0a0dd000ddd00d00dd0d0d0ddd000ddddddddddddd
+dddddddd808dd0d0dd0d0d0d0d00ddd0dd0ddd0ddddd0ddd0ddddddddddddddddddddddddddddddddddddda0add0dddd0dddd0dd0d0d0ddd0ddddddddddddddd
+dddddddddddddd0dddd00d0d0d0ddd000d0dddd00d00dd00dddddddddddddddddddddddddddddddddddddddddd000ddd0ddd000d0d0dd00dd00ddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddd0000ddd0ddd0dd0ddd0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000ddd0ddd00d0dddd0dddddddddddddddddd
+dddddddd808dd0dd0d0d0ddd0d00dd0ddddddddddddddddddddddddddddddddddddddddddddddddddddddd404d0ddd0ddd0d0ddd00dd0d0ddddddddddddddddd
+dddddddd080dd0dd0d000dd00d0ddd00dddddddddddddddddddddddddddddddddddddddddddddddddddddd040d0dddddd00dd0dd0ddd000dd00ddddddddddddd
+dddddddd808dd0dd0d0ddd0d0d0d0d0d0ddddddddddddddddddddddddddddddddddddddddddddddddddddd404d0ddd0d0d0ddd0d0d0d0ddd0ddddddddddddddd
+dddddddddddd0000ddd00dd00dd0dd0d0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd000ddd00d00ddd0ddd00d0ddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddd0ddd0dd0ddddddddddd0ddddddd0dddddd000dddd0dd0dddddddddddddddddddddddddddddddddd000ddd0ddd00d0dddd0dddddddddddddddddd
+dddddddd808d0ddd0ddd0d0d0d00dddddddddd0d0dddddd0d0dddd0d00dddddddddddddddddddddddddddd808d0ddd0ddd0d0ddd00dd0d0ddddddddddddddddd
+dddddddd080dd0d0ddd00d000d0d0d00ddd00d000dddddd000ddd00d0ddddddddddddddddddddddddddddd080d0dddddd00dd0dd0ddd000dd00ddddddddddddd
+dddddddd808dd0d0dd0d0d0d0d00ddd0dd0ddd0dddddddd0dd0d0d0d0d0ddddddddddddddddddddddddddd808d0ddd0d0d0ddd0d0d0d0ddd0ddddddddddddddd
+dddddddddddddd0dddd00d0d0d0ddd000d0dddd00ddddd0000ddd00dd0ddddddddddddddddddddddddddddddddd000ddd00d00ddd0ddd00d0ddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+
