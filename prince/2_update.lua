@@ -39,7 +39,11 @@ function _update()
       deselect()
     	end
     else
-     update_auto_turn()
+     if btnp(❎) then
+      end_auto_turn()
+     else
+      update_auto_turn()
+     end
     end
    elseif turn == arena.enemies then
     update_auto_turn()
@@ -302,23 +306,44 @@ function revive()
  end
 end
 
+function draw_auto_message()
+ if turn == arena.party then
+  local auto_message = "^press (^b) to end auto"
+  note(auto_message)
+ end
+end
+
 function auto_turn()
  auto_ticks = 0
+ draw_auto_message()
+end
+
+function end_auto_turn()
+	auto_ticks = nil
+ tget(settings,1).s = 1
+ set_up_settings()
+ draw_arena()
+ draw_options()
 end
 
 function update_auto_turn()
  auto_ticks += 1
-
- if auto_ticks == 2*delay then
+ local auto_message = "^press (^b) to end auto"
+ if auto_ticks == 1 then
+  draw_auto_message()
+ elseif auto_ticks == 2*delay then
   cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
+  draw_auto_message()
  elseif auto_ticks == 4*delay then
   select()
+  draw_auto_message()
  elseif auto_ticks == 6*delay then
   cur.i = rnd_int(1,#cur.l)
   draw_arena()
   draw_options()
+  draw_auto_message()
  elseif auto_ticks == 8*delay then
   select()
  end
