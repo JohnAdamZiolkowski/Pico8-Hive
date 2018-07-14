@@ -5,7 +5,7 @@ cls(clear)
 
 settings = {
 	{n="^auto ^turn",
- 	o={"off", "on"},
+ 	o={"^off", "^on"},
  	v={false, true},
  	s=1},
 	{n="^text ^delay",
@@ -13,27 +13,31 @@ settings = {
  	v={1, 5, 10, 15},
 	 s=3},
 	{n="^round ^icon",
-	 o={"off", "on"},
+	 o={"^off", "^on"},
  	v={false, true},
 	 s=2},
+	{n="^caps ^l^o^c^k",
+	 o={"^off", "^o^n"},
+ 	v={false, true},
+	 s=1},
 	{n="^rand ^level",
-	 o={"off", "on"},
+	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
 	{n="^rand ^party",
-	 o={"off", "on"},
+	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
 	{n="^rand ^elem",
-	 o={"off", "on"},
+	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
 	{n="^rand ^enemy",
-	 o={"off", "on"},
+	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
 	{n="^hit chance",
-	 o={"on", "hit", "miss"},
+	 o={"^on", "^hit", "^miss"},
  	v={"on", true, false},
 	 s=1},
 }
@@ -42,11 +46,12 @@ function set_up_settings()
  auto = set_up_setting(1)
  delay = set_up_setting(2)
  round = set_up_setting(3)
- random_level = set_up_setting(4)
- random_party = set_up_setting(5)
- random_elem = set_up_setting(6)
- random_enemy = set_up_setting(7)
- hit_chance = set_up_setting(8)
+ caps_lock = set_up_setting(4)
+ random_level = set_up_setting(5)
+ random_party = set_up_setting(6)
+ random_elem = set_up_setting(7)
+ random_enemy = set_up_setting(8)
+ hit_chance = set_up_setting(9)
 end
 function set_up_setting(index)
  local setting = tget(settings,index)
@@ -87,8 +92,6 @@ sand = 15
 prince = 22
 fighter = 25
 caster = 28
-
-note_pos = {x=2, y=83}
 
 function rnd_int(min_in, max_in)
  assert(type(min_in)==number)

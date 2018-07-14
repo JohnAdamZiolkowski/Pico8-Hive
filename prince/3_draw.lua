@@ -1,5 +1,7 @@
 -- draw
 
+note_pos = {x=2, y=83}
+
 function note(string, col1)
  col2 = black
 
@@ -7,10 +9,14 @@ function note(string, col1)
   col1 = white
   col2 = black
  end
- print(string, note_pos.x, note_pos.y, col1, col2)
+ if caps_lock then
+  string = sub(string, 1, 23)
+  note_pos.x = 2
+ end
+ print(string, note_pos.x, note_pos.y, col1, col2, false, caps_lock)
 end
 
-function print(s, x, y, pc, bg_col, caps)
+function print(s, x, y, pc, bg_col, caps, caps_lock)
  assert(type(s)==string,type(s))
  assert(type(x)==number)
  assert(type(y)==number)
@@ -31,6 +37,10 @@ function print(s, x, y, pc, bg_col, caps)
     sheet = slim
    end
    local ci = ord(sheet, s, char)
+   if ci <= 26 and caps_lock then
+    sheet = wide
+    ci = ord(sheet, s, char)
+   end
    if bg_col != nil then
     rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th, bg_col)
    end
@@ -131,7 +141,10 @@ end
 
 function draw_options()
  local lists = {{l=arena.enemies, x=2},
-                {l=arena.party, x=80}}
+                {l=arena.party, x=82}}
+ if caps_lock then
+  lists[2].x = 70
+ end
 
  for l = 1,#lists do
   local list = tget(lists,l)
@@ -192,7 +205,11 @@ function draw_options()
      end
     gem = "^"..gem
    end
-   print(icon..gem..tget(enemy.stats,en.i).n, list.x, 7*e + 86, c, bg)
+   local name = tget(enemy.stats,en.i).n
+   if caps_lock then
+    name = sub(name,1,10)
+   end
+   print(icon..gem..name, list.x, 7*e + 86, c, bg, false, caps_lock)
   end
  end
 end
