@@ -143,11 +143,11 @@ end
 function attack()
  attack_ticks = 0
 
- attacker = tget(turn,cur.s.i)
+ attacker = lget(turn,cur.s.i)
  attacker_n = attacker.stats.n
  assert(attacker)
  targets = {}
- main_target = {t=tget(opposition(turn),cur.i)}
+ main_target = {t=lget(opposition(turn),cur.i)}
  main_target_n = main_target.t.stats.n
  add(targets, main_target)
 
@@ -227,7 +227,7 @@ function update_attack()
 
   local text = "^but it missed!"
   if #targets==1 then
-   if tget(targets,1).h then
+   if lget(targets,1).h then
     text = "^hit! "..main_target_n.." is gone"
     eliminate(opposition(turn), main_target.t)
    end
@@ -296,10 +296,10 @@ function revive()
   add(unsorted, member)
   del(arena.party.dead, member)
  end
- for i=1,#unsorted do
+ for s=1,5 do
   for u=1,#unsorted do
-   member = tget(unsorted,u)
-   if member.s == i then
+   member = lget(unsorted,u)
+   if member.s == s then
     add(arena.party, member)
    end
   end
@@ -320,7 +320,7 @@ end
 
 function end_auto_turn()
 	auto_ticks = nil
- tget(settings,1).s = 1
+ lget(settings,1).s = 1
  set_up_settings()
  draw_arena()
  draw_options()
@@ -346,6 +346,7 @@ function update_auto_turn()
   draw_auto_message()
  elseif auto_ticks == 8*delay then
   select()
+  auto_ticks = nil
  end
 end
 
@@ -369,7 +370,7 @@ function update_battle_over()
   draw_arena()
   note("^total exp: "..arena.party.score)
  elseif over_ticks == 15*delay then
-  local next_level = tget(levels,arena.party.level)
+  local next_level = lget(levels,arena.party.level)
  	if arena.party.score >= next_level and
  	 arena.party.level < #levels then
  	 arena.party.level += 1
@@ -392,7 +393,7 @@ function update_battle_over()
   draw_options()
   text = "^new enemies"
   if #arena.enemies == 1 then
-   text = "^single "..tget(arena.enemies,1).stats.n
+   text = "^single "..lget(arena.enemies,1).stats.n
   end
   note(text.." appeared!")
  elseif over_ticks == 23*delay then
@@ -419,10 +420,32 @@ function update_game_over()
   draw_arena()
   note("^final level: "..arena.party.level, red)
  elseif game_over_ticks == 15*delay then
-  set_up_party()
+  local over_message
+  if continue then
+   lclr(arena.enemies)
+   revive()
+
+   turn = arena.party
+   cur = {l=arena.party, i=1,
+          s=nil}
+  	cap_cursor()
+  	arena.party.battles = 0
+  	old_level = arena.party.level
+  	arena.party.level = 1
+  	arena.party.score = 0
+  	if old_level > 2 then
+  	 arena.party.level = old_level-2
+  	 arena.party.score = lget(levels,arena.party.level)
+  	end
+  	set_up_enemies()
+  	over_message = "^the party is set back to "..arena.party.level.."..."
+  else
+   set_up_party()
+   over_message = "^a new party appears!"
+  end
   draw_arena()
   draw_options()
-  note("^a new party appeared!")
+  note(over_message)
  elseif game_over_ticks == 18*delay then
   game_over_ticks = nil
   draw_arena()

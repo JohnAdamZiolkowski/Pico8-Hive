@@ -147,25 +147,25 @@ function draw_options()
  end
 
  for l = 1,#lists do
-  local list = tget(lists,l)
+  local list = lget(lists,l)
   for e = 1,#list.l do
-   local en = tget(list.l,e)
-   local element = tget(list.l,e).stats.e
+   local en = lget(list.l,e)
+   local element = lget(list.l,e).stats.e
    local c = black
    local bg = nil
    local icon = "^ "
    local gem = "@"..element
    local subtarget = false
    local attacker = nil
-   if cur.s and cur.s.l and tget(cur.s.l,cur.s.i) then
-    attacker = tget(cur.s.l,cur.s.i)
+   if cur.s and cur.s.l and lget(cur.s.l,cur.s.i) then
+    attacker = lget(cur.s.l,cur.s.i)
 
     if attacker.i == caster or
      attacker.i == caster +1 or
       attacker.i == caster +2 then
      if
-     tget(list.l,e).s == tget(cur.l,cur.i).s +1 or
-     tget(list.l,e).s == tget(cur.l,cur.i).s -1 then
+     lget(list.l,e).s == lget(cur.l,cur.i).s +1 or
+     lget(list.l,e).s == lget(cur.l,cur.i).s -1 then
       subtarget = true
      end
     end
@@ -205,7 +205,7 @@ function draw_options()
      end
     gem = "^"..gem
    end
-   local name = tget(enemy.stats,en.i).n
+   local name = lget(enemy.stats,en.i).n
    if caps_lock then
     name = sub(name,1,10)
    end
@@ -272,12 +272,12 @@ function draw_element_chart()
  print("^elements",2,2,0)
  print("^opposition ^chart",49,20,0)
  for e=1,#elements-1 do
-  local element = tget(elements,e)
+  local element = lget(elements,e)
   local e_n_c = sub(element.n,1,1)
   print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
 
   //draw chart
-  local offset = tget(chart,e)
+  local offset = lget(chart,e)
   print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
  end
 
@@ -304,7 +304,7 @@ function enter_settings()
  state = "settings"
  s_cur = {s=#settings+1, o=1}
  for s=1,#settings do
-  setting = tget(settings,s)
+  setting = lget(settings,s)
   setting.c = setting.s
  end
  draw_settings()
@@ -332,7 +332,7 @@ function change_settings(d)
  if s_cur.s > #settings then
   s_cur.o = 1
  else
-  s_cur.o = tget(settings,s_cur.s).s
+  s_cur.o = lget(settings,s_cur.s).s
  end
 	draw_settings()
 end
@@ -342,7 +342,7 @@ function change_options(d)
  if s_cur.s > #settings then
  s_cur.o = cap(s_cur.o, 1, 2)
  else
-  setting = tget(settings, s_cur.s)
+  setting = lget(settings, s_cur.s)
   options = setting.o
   s_cur.o = cap(s_cur.o, 1, #options)
 		setting.c = s_cur.o
@@ -354,7 +354,7 @@ function save_settings()
  if s_cur.s == #settings + 1 then
   if s_cur.o == 2 then
    for s=1,#settings do
-    setting = tget(settings,s)
+    setting = lget(settings,s)
     setting.s = setting.c
    end
    set_up_settings()
@@ -393,7 +393,7 @@ function draw_settings()
  print("^accept",86,120,fc,bc)
 
  for s=1,#settings do
-  local setting = tget(settings,s)
+  local setting = lget(settings,s)
   bc=nil
   fc=black
   if s_cur.s == s then
@@ -403,7 +403,7 @@ function draw_settings()
   print(setting.n..":",2,s*7+2,fc,bc)
 
   for o=1,#setting.o do
-   local option = tget(setting.o,o)
+   local option = lget(setting.o,o)
    bc=nil
    fc=black
    if setting.c == o then

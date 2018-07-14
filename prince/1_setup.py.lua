@@ -4,42 +4,46 @@ clear = 13
 cls(clear)
 
 settings = {
-	{n="^auto ^turn",
+	{i=1, n="^auto ^turn",
  	o={"^off", "^on"},
  	v={false, true},
  	s=1},
-	{n="^text ^delay",
+	{i=2, n="^text ^delay",
 	 o={"1", "5", "10", "15"},
  	v={1, 5, 10, 15},
 	 s=3},
-	{n="^round ^icon",
+	{i=3, n="^round ^icon",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=2},
-	{n="^caps ^l^o^c^k",
+	{i=4, n="^caps ^l^o^c^k",
 	 o={"^off", "^o^n"},
  	v={false, true},
 	 s=1},
-	{n="^rand ^level",
+	{i=5, n="^rand ^level",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{n="^rand ^party",
+	{i=6, n="^rand ^party",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{n="^rand ^elem",
+	{i=7, n="^rand ^elem",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{n="^rand ^enemy",
+	{i=8, n="^rand ^enemy",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{n="^hit chance",
+	{i=9, n="^hit chance",
 	 o={"^on", "^hit", "^miss"},
  	v={"on", true, false},
 	 s=1},
+	{i=10, n="^game over",
+	 o={"^new", "^cont."},
+ 	v={false, true},
+	 s=2},
 }
 
 function set_up_settings()
@@ -52,11 +56,12 @@ function set_up_settings()
  random_elem = set_up_setting(7)
  random_enemy = set_up_setting(8)
  hit_chance = set_up_setting(9)
+ continue = set_up_setting(10)
 end
 function set_up_setting(index)
- local setting = tget(settings,index)
+ local setting = lget(settings,index)
  local options = setting.v
- local selected = tget(options,setting.s)
+ local selected = lget(options,setting.s)
  return selected
 end
 
@@ -105,7 +110,7 @@ function rnd_int(min_in, max_in)
  return int
 end
 
-function tget(list, index, not_nil)
+function lget(list, index, not_nil)
  assert(type(list)==table)
  assert(type(index)==number)
  assert(flr(index)==index)
@@ -118,7 +123,7 @@ function tget(list, index, not_nil)
  return value
 end
 
-function tset(list, index, value, not_nil)
+function lset(list, index, value, not_nil)
  assert(type(list)==table)
  assert(type(index)==number)
  assert(flr(index)==index)
@@ -127,6 +132,16 @@ function tset(list, index, value, not_nil)
   assert(value, "value is nil")
  end
  list[index] = value
+end
+
+function lclr(list)
+ assert(type(list)==table)
+ assert(#list>0)
+ local length = #list
+ for i=length,1,-1 do
+  local item = list[i]
+  del(list,item)
+ end
 end
 
 function inttobin(b)
@@ -152,7 +167,7 @@ function get_chars(sheet)
 end
 
 function get_element(eni)
- local en_el_c=tget(enemy.stats,eni).e
+ local en_el_c=lget(enemy.stats,eni).e
  for element in all(elements) do
   if sub(element.n, 1, 1) == en_el_c then
    return element
@@ -240,7 +255,7 @@ levels = {  4,  12,  24,  40,
 
 enemies_by_level = {}
 for l=1,#levels do
- tset(enemies_by_level,l,{})
+ lset(enemies_by_level,l,{})
 end
 for e in all(enemy.stats) do
  local l = e.l
@@ -248,7 +263,7 @@ for e in all(enemy.stats) do
   //skip man, woman, child
   if e.i < 91 then
    //skip bosses
-  	add(tget(enemies_by_level,l),e)
+  	add(lget(enemies_by_level,l),e)
   end
  end
 end
@@ -262,7 +277,7 @@ function set_up_enemies()
  local boss_set
  local bosses_at_level = {}
  for s=1,#boss_sets do
-  local set = tget(boss_sets,s)
+  local set = lget(boss_sets,s)
   local set_boss_level = set.l
 
   if l == set_boss_level then
@@ -272,7 +287,7 @@ function set_up_enemies()
 
  if #bosses_at_level > 0 then
   local b = rnd_int(1,#bosses_at_level)
-  boss_set = tget(bosses_at_level,b)
+  boss_set = lget(bosses_at_level,b)
  end
 
  if boss_set and not random_enemy then
@@ -292,20 +307,20 @@ function set_up_enemies()
      l = arena.party.level
     end
     if l > #enemies_by_level then l = #enemies_by_level end
-    local enemies_at_level = tget(enemies_by_level,l)
+    local enemies_at_level = lget(enemies_by_level,l)
     local e_l = rnd_int(1,#enemies_at_level)
-    local enemy = tget(enemies_at_level,e_l)
+    local enemy = lget(enemies_at_level,e_l)
     id = enemy.i
    end
-   e = tget(enemy.stats,id).e
+   e = lget(enemy.stats,id).e
    if e == "v" then
     //humans get random element
     element_i = rnd_int(5,12)
-    element_n = sub(tget(elements,element_i).n,1,1)
+    element_n = sub(lget(elements,element_i).n,1,1)
     e = element_n
    end
-   local n = tget(enemy.stats,id).n
-   local l = tget(enemy.stats,id).l
+   local n = lget(enemy.stats,id).n
+   local l = lget(enemy.stats,id).l
   	local enemy = {
   	 s = s,
   		i = id,
@@ -326,10 +341,10 @@ function set_up_boss(boss_set)
 
 	//populate enemies
  for s=1,5 do
-  local id = tget(boss_set.i,s)
-  local e = tget(enemy.stats,id).e
-  local n = tget(enemy.stats,id).n
-  local l = tget(enemy.stats,id).l
+  local id = lget(boss_set.i,s)
+  local e = lget(enemy.stats,id).e
+  local n = lget(enemy.stats,id).n
+  local l = lget(enemy.stats,id).l
  	local enemy = {
  	 s = s,
  		i = id,
@@ -348,7 +363,7 @@ function set_up_party()
    id = prince
   else
    local filled = true
-   if random_party then filled = rnd(6) > 2 end
+   if random_party then filled = rnd(3) > 2 end
    if filled then
     id = rnd_int(0,2)
     if id == 0 then
@@ -364,8 +379,8 @@ function set_up_party()
  	 if random_elem then
  	  e = rnd_int(1,12)
  	 end
- 	 local element_n = sub(tget(elements,e).n,1,1)
- 	 local n = tget(enemy.stats,id).n
+ 	 local element_n = sub(lget(elements,e).n,1,1)
+ 	 local n = lget(enemy.stats,id).n
  	 local l = 1
  	 assert(e)
   	local member = {
@@ -385,7 +400,7 @@ function set_up_party()
  if random_level then
   arena.party.level = rnd_int(1,#levels)
   if arena.party.level > 1 then
-   arena.party.score = tget(levels,arena.party.level-1)
+   arena.party.score = lget(levels,arena.party.level-1)
  	end
  end
  arena.party.dead = {}
