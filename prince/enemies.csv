@@ -1,104 +1,104 @@
-code,id,name,element,level,level 2,ppow,pdef,mpow,mdef,hp,ep,xp,gp,item1,rarity1,item2,rarity2,skill1,skill2,skill3,skill4
-None,,no enemy,None,,,1,3,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Buny,1,Bunny,none,1,1,2,7,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Rabt,2,Rabbit,none,3,3,3,7,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-BGrl,3,Bunny Girl,none,5,5,4,9,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Hors,4,Horse,none,2,2,5,8,1,1,1,1,1,1,None,0,None,0,Stmp,None,None,None
-Unic,5,Unicorn,none,4,4,6,9,1,1,1,1,1,1,None,0,None,0,Stmp,Stab,None,None
-Cent,6,Cenitaur,none,6,6,7,8,1,1,1,1,1,1,None,0,None,0,Stmp,Pnch,None,None
-Ghst,7,Ghost,none,1,1,8,9,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
-Pltr,8,Poltergeist,none,4,4,9,7,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
-Zomb,9,Zombie,none,2,2,10,9,1,1,1,1,1,1,None,0,None,0,Pnch,Bite,None,None
-Ghul,10,Ghoul,none,5,5,11,7,1,1,1,1,1,1,None,0,None,0,Pnch,Bite,None,None
-Skel,11,Skeleton,none,3,3,12,7,1,1,1,1,1,1,None,0,None,0,Pnch,Bite,None,None
-SklF,12,Skull Army,none,6,6,13,5,1,1,1,1,1,1,None,0,None,0,Slsh,Blok,None,None
-FEye,13,FloatingEye,none,1,1,14,2,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-EyeB,14,Eye Beast,none,4,4,15,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Wilo,15,Willowisp,none,2,2,16,1,1,1,1,1,1,1,None,0,None,0,Hant,Bite,None,None
-Skul,16,Giant Skull,none,5,5,1,1,1,1,1,1,1,1,None,0,None,0,Hant,Bite,None,None
-Sdns,17,Sadness,none,3,3,1,1,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
-Mdns,18,Madness,none,6,7,1,1,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
-Man-,19,Man,none,0,0,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
-Wman,20,Woman,none,0,0,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
-Chld,21,Child,none,0,0,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
-Prin,22,Prince,variable,4,6,1,1,1,1,1,1,1,1,None,0,None,0,Stab,None,None,None
-King,23,King,variable,8,8,1,1,1,1,1,1,1,1,None,0,None,0,Stab,DStb,None,None
-Empr,24,Emperor,variable,12,10,1,1,1,1,1,1,1,1,None,0,None,0,Stab,DStb,PStb,None
-Fitr,25,Fighter,variable,4,7,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,None,None,None
-Gnrl,26,General,variable,8,9,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,DSls,None,None
-Gint,27,Giant,variable,12,11,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,DSls,PSls,None
-Cstr,28,Caster,variable,4,8,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Srcr,29,Sorceror,variable,8,10,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Mrln,30,Merlin,variable,12,12,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Lzrd,31,Lizard,fire,2,2,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
-Drgn,32,Dragon,fire,4,4,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
-Drkn,33,Drako,fire,6,6,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
-Snak,34,Snake,elec,2,3,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Cbra,35,Cobra,elec,4,5,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Naga,36,Lamia,elec,6,7,1,1,1,1,1,1,1,1,None,0,None,0,Bite,Pnch,None,None
-Bird,37,Bird,air,2,2,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Flap,None,None
-Crow,38,Crow,air,4,4,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Flap,None,None
-Hrpy,39,Harpy,air,6,6,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,Flap,None
-Sap-,40,Sap,plant,2,3,1,1,1,1,1,1,1,1,None,0,None,0,Heal,None,None,None
-Slim,41,Slime,plant,4,5,1,1,1,1,1,1,1,1,None,0,None,0,Heal,None,None,None
-Jely,42,Jelly Girl,plant,6,7,1,1,1,1,1,1,1,1,None,0,None,0,Heal,None,None,None
-Fish,43,Fish,water,2,2,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Shrk,44,Shark,water,4,4,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Mrmd,45,Mermaid,water,6,6,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Mous,46,Mouse,ice,2,3,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Rat-,47,Rat,ice,4,5,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-MPri,48,MousePrince,ice,6,7,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Trtl,49,Turtle,rock,2,2,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
-Trts,50,Tortise,rock,4,4,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
-Kapa,51,Kapa,rock,6,6,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
-Bat-,52,Bat,blood,2,3,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Vbat,53,Vampire Bat,blood,4,5,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Vamp,54,Vampire,blood,6,7,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Cat-,55,Cat,light,3,4,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
-Lion,56,Lion,light,5,6,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
-CGrl,57,Cat Girl,light,7,8,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
-Dog-,58,Dog,dark,3,4,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Wolf,59,Wolf,dark,5,6,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-WWlf,60,Werewolf,dark,7,8,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Slug,61,Slug,holy,4,5,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Snal,62,Snail,holy,6,7,1,1,1,1,1,1,1,1,None,0,None,0,None,Blok,None,None
-Hrmt,63,Hermit,holy,8,9,1,1,1,1,1,1,1,1,None,0,None,0,None,Blok,Shin,None
-Mist,64,Mist,none,6,7,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Blrg,65,Blarg,none,9,8,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Rude,66,Rude Demon,none,7,9,1,1,1,1,1,1,1,1,None,0,None,0,Spit,None,None,None
-Swrd,67,LivingSword,none,10,11,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,DSls,PSls,None
-Mimc,68,Mimic,none,8,10,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Embr,69,Embers,fire,7,8,1,1,1,1,1,1,1,1,None,0,None,0,Burn,None,None,None
-Phnx,70,Phoenix,fire,9,10,1,1,1,1,1,1,1,1,None,0,None,0,Burn,Rviv,None,None
-Bolt,71,Bolt Rider,elec,7,9,1,1,1,1,1,1,1,1,None,0,None,0,Bolt,None,None,None
-Robt,72,Android,elec,9,11,1,1,1,1,1,1,1,1,None,0,None,0,Bolt,Slsh,None,None
-Wind,73,Wind Rider,air,7,8,1,1,1,1,1,1,1,1,None,0,None,0,Gust,None,None,None
-Pupt,74,Marionette,air,9,10,1,1,1,1,1,1,1,1,None,0,None,0,Gust,Slsh,None,None
-Weed,75,Evil Weed,plant,7,9,1,1,1,1,1,1,1,1,None,0,None,0,Spit,Bite,None,None
-Tree,76,Evil Tree,plant,9,11,1,1,1,1,1,1,1,1,None,0,None,0,Frut,None,None,None
-Rain,77,Rain Rider,water,7,8,1,1,1,1,1,1,1,1,None,0,None,0,Rain,None,None,None
-Hydr,78,Hydra,water,9,10,1,1,1,1,1,1,1,1,None,0,None,0,Rain,Bite,DBit,None
-Snow,79,Snow Rider,ice,7,9,1,1,1,1,1,1,1,1,None,0,None,0,Snow,None,None,None
-Bear,80,Polar Bear,ice,9,11,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
-Shrm,81,Mushroom,rock,7,8,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Golm,82,Golem,rock,9,10,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
-Deth,83,Death,blood,7,9,1,1,1,1,1,1,1,1,None,0,None,0,Kill,Slsh,None,None
-Htre,84,HauntedTree,blood,9,11,1,1,1,1,1,1,1,1,None,0,None,0,Kill,None,None,None
-Cact,85,Cactus,light,8,10,1,1,1,1,1,1,1,1,None,0,None,0,Stab,None,None,None
-Mumy,86,Mummy,light,10,12,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Hand,87,Dark Hand,dark,8,10,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-DMth,88,Dark Mouth,dark,10,12,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Prst,89,Priest,holy,11,11,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Angl,90,Angel,holy,11,13,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Eldr,91,ElderDragon,fire,12,12,1,1,1,1,1,1,1,1,None,0,None,0,Burn,None,None,None
-Msrt,92,BladeMaster,elec,12,13,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Pptr,93,Puppeteer,air,12,12,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Vnus,94,Venus Trap,plant,12,13,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Krkn,95,Kraken,water,12,12,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-FMmc,96,FrozenMimic,ice,12,13,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Dino,97,Raging Dino,rock,12,12,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Vprs,98,Vampiress,blood,12,13,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Sphx,99,Sphinx,light,13,14,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Htmn,100,Hatman,dark,13,14,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-Bshp,101,Bishop,holy,14,15,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
-FBsh,102,FinalBishop,holy,15,16,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+code,id,name,element,level,level 2,boss,ppow,pdef,mpow,mdef,hp,ep,xp,gp,item1,rarity1,item2,rarity2,skill1,skill2,skill3,skill4
+None,,no enemy,None,,,,1,3,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Buny,1,Bunny,none,1,1,,2,7,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Rabt,2,Rabbit,none,3,3,,3,7,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+BGrl,3,Bunny Girl,none,5,5,,4,9,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Hors,4,Horse,none,2,2,,5,8,1,1,1,1,1,1,None,0,None,0,Stmp,None,None,None
+Unic,5,Unicorn,none,4,4,,6,9,1,1,1,1,1,1,None,0,None,0,Stmp,Stab,None,None
+Cent,6,Centaur,none,6,6,,7,8,1,1,1,1,1,1,None,0,None,0,Stmp,Pnch,None,None
+Ghst,7,Ghost,none,1,1,,8,9,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
+Pltr,8,Poltergeist,none,4,4,,9,7,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
+Zomb,9,Zombie,none,2,2,,10,9,1,1,1,1,1,1,None,0,None,0,Pnch,Bite,None,None
+Ghul,10,Ghoul,none,5,5,,11,7,1,1,1,1,1,1,None,0,None,0,Pnch,Bite,None,None
+Skel,11,Skeleton,none,3,3,,12,7,1,1,1,1,1,1,None,0,None,0,Pnch,Bite,None,None
+SklF,12,Skull Army,none,6,6,,13,5,1,1,1,1,1,1,None,0,None,0,Slsh,Blok,None,None
+FEye,13,FloatingEye,none,1,1,,14,2,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+EyeB,14,Eye Beast,none,4,4,,15,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Wilo,15,Willowisp,none,2,2,,16,1,1,1,1,1,1,1,None,0,None,0,Hant,Bite,None,None
+Skul,16,Giant Skull,none,5,5,,1,1,1,1,1,1,1,1,None,0,None,0,Hant,Bite,None,None
+Sdns,17,Sadness,none,3,3,,1,1,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
+Mdns,18,Madness,none,6,7,,1,1,1,1,1,1,1,1,None,0,None,0,Hant,None,None,None
+Man-,19,Man,none,0,0,,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
+Wman,20,Woman,none,0,0,,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
+Chld,21,Child,none,0,0,,1,1,1,1,1,1,1,1,None,0,None,0,Pnch,None,None,None
+Prin,22,Prince,variable,4,6,,1,1,1,1,1,1,1,1,None,0,None,0,Stab,None,None,None
+King,23,King,variable,8,8,,1,1,1,1,1,1,1,1,None,0,None,0,Stab,DStb,None,None
+Empr,24,Emperor,variable,12,10,,1,1,1,1,1,1,1,1,None,0,None,0,Stab,DStb,PStb,None
+Fitr,25,Fighter,variable,4,7,,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,None,None,None
+Gnrl,26,General,variable,8,9,,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,DSls,None,None
+Gint,27,Giant,variable,12,11,,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,DSls,PSls,None
+Cstr,28,Caster,variable,4,8,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Srcr,29,Sorceror,variable,8,10,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Mrln,30,Merlin,variable,12,12,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Lzrd,31,Lizard,fire,2,2,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
+Drgn,32,Dragon,fire,4,4,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
+Drkn,33,Drako,fire,6,6,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
+Snak,34,Snake,elec,2,3,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Cbra,35,Cobra,elec,4,5,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Naga,36,Lamia,elec,6,7,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,Pnch,None,None
+Bird,37,Bird,air,2,2,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Flap,None,None
+Crow,38,Crow,air,4,4,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Flap,None,None
+Hrpy,39,Harpy,air,6,6,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,Flap,None
+Sap-,40,Sap,plant,2,3,,1,1,1,1,1,1,1,1,None,0,None,0,Heal,None,None,None
+Slim,41,Slime,plant,4,5,,1,1,1,1,1,1,1,1,None,0,None,0,Heal,None,None,None
+Jely,42,Jelly Girl,plant,6,7,,1,1,1,1,1,1,1,1,None,0,None,0,Heal,None,None,None
+Fish,43,Fish,water,2,2,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Shrk,44,Shark,water,4,4,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Mrmd,45,Mermaid,water,6,6,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Mous,46,Mouse,ice,2,3,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Rat-,47,Rat,ice,4,5,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+MPri,48,MousePrince,ice,6,7,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Trtl,49,Turtle,rock,2,2,,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
+Trts,50,Tortise,rock,4,4,,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
+Kapa,51,Kapa,rock,6,6,,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
+Bat-,52,Bat,blood,2,3,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Vbat,53,Vampire Bat,blood,4,5,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Vamp,54,Vampire,blood,6,7,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Cat-,55,Cat,light,3,4,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
+Lion,56,Lion,light,5,6,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
+CGrl,57,Cat Girl,light,7,8,,1,1,1,1,1,1,1,1,None,0,None,0,Claw,Bite,None,None
+Dog-,58,Dog,dark,3,4,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Wolf,59,Wolf,dark,5,6,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+WWlf,60,Werewolf,dark,7,8,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Slug,61,Slug,holy,4,5,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Snal,62,Snail,holy,6,7,,1,1,1,1,1,1,1,1,None,0,None,0,None,Blok,None,None
+Hrmt,63,Hermit,holy,8,9,,1,1,1,1,1,1,1,1,None,0,None,0,None,Blok,Shin,None
+Mist,64,Mist,none,6,7,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Blrg,65,Blarg,none,9,8,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Rude,66,Rude Demon,none,7,9,,1,1,1,1,1,1,1,1,None,0,None,0,Spit,None,None,None
+Swrd,67,LivingSword,none,10,11,,1,1,1,1,1,1,1,1,None,0,None,0,Slsh,DSls,PSls,None
+Mimc,68,Mimic,none,8,10,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Embr,69,Embers,fire,7,8,,1,1,1,1,1,1,1,1,None,0,None,0,Burn,None,None,None
+Phnx,70,Phoenix,fire,9,10,,1,1,1,1,1,1,1,1,None,0,None,0,Burn,Rviv,None,None
+Bolt,71,Bolt Rider,elec,7,9,,1,1,1,1,1,1,1,1,None,0,None,0,Bolt,None,None,None
+Robt,72,Android,elec,9,11,,1,1,1,1,1,1,1,1,None,0,None,0,Bolt,Slsh,None,None
+Wind,73,Wind Rider,air,7,8,,1,1,1,1,1,1,1,1,None,0,None,0,Gust,None,None,None
+Pupt,74,Marionette,air,9,10,,1,1,1,1,1,1,1,1,None,0,None,0,Gust,Slsh,None,None
+Weed,75,Evil Weed,plant,7,9,,1,1,1,1,1,1,1,1,None,0,None,0,Spit,Bite,None,None
+Tree,76,Evil Tree,plant,9,11,,1,1,1,1,1,1,1,1,None,0,None,0,Frut,None,None,None
+Rain,77,Rain Rider,water,7,8,,1,1,1,1,1,1,1,1,None,0,None,0,Rain,None,None,None
+Hydr,78,Hydra,water,9,10,,1,1,1,1,1,1,1,1,None,0,None,0,Rain,Bite,DBit,None
+Snow,79,Snow Rider,ice,7,9,,1,1,1,1,1,1,1,1,None,0,None,0,Snow,None,None,None
+Bear,80,Polar Bear,ice,9,11,,1,1,1,1,1,1,1,1,None,0,None,0,Bite,None,None,None
+Shrm,81,Mushroom,rock,7,8,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Golm,82,Golem,rock,9,10,,1,1,1,1,1,1,1,1,None,0,None,0,Blok,None,None,None
+Deth,83,Death,blood,7,9,,1,1,1,1,1,1,1,1,None,0,None,0,Kill,Slsh,None,None
+Htre,84,HauntedTree,blood,9,11,,1,1,1,1,1,1,1,1,None,0,None,0,Kill,None,None,None
+Cact,85,Cactus,light,8,10,,1,1,1,1,1,1,1,1,None,0,None,0,Stab,None,None,None
+Mumy,86,Mummy,light,10,12,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Hand,87,Dark Hand,dark,8,10,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+DMth,88,Dark Mouth,dark,10,12,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Prst,89,Priest,holy,11,11,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Angl,90,Angel,holy,11,13,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Eldr,91,ElderDragon,fire,12,12,,1,1,1,1,1,1,1,1,None,0,None,0,Burn,None,None,None
+Msrt,92,BladeMaster,elec,12,13,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Pptr,93,Puppeteer,air,12,12,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Vnus,94,Venus Trap,plant,12,13,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Krkn,95,Kraken,water,12,12,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+FMmc,96,FrozenMimic,ice,12,13,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Dino,97,Raging Dino,rock,12,12,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Vprs,98,Vampiress,blood,12,13,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Sphx,99,Sphinx,light,13,14,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Htmn,100,Hatman,dark,13,14,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+Bshp,101,Bishop,holy,14,15,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
+FBsh,102,FinalBishop,holy,15,16,,1,1,1,1,1,1,1,1,None,0,None,0,None,None,None,None
