@@ -31,11 +31,16 @@ pink = 14
 sand = 15
 
 function rnd_int(min_in, max_in)
+ //safely generates a random integer
  assert(type(min_in)==number)
  assert(flr(min_in)==min_in)
+ assert(min_in>0)
  assert(type(max_in)==number)
  assert(flr(max_in)==max_in)
  assert(min_in<=max_in)
+ if min_in == max_in then
+  return min_in
+ end
  int = flr(rnd(1) * (max_in-min_in+1))+min_in
  assert(int <= max_in, int.." "..max_in)
  assert(int >= min_in, int.." "..min_in)
@@ -74,6 +79,18 @@ function lclr(list)
   local item = list[i]
   del(list,item)
  end
+end
+
+function linc(list,item)
+ assert(type(list)==table)
+ assert(#list>0)
+ assert(type(item)!=nil)
+ for i=1,#list do
+  if list[i] == item then
+   return true
+  end
+ end
+ return false
 end
 
 function inttobin(b)
@@ -156,7 +173,7 @@ settings = {
 	{i=8, n="^rand ^enemy",
 	 o={"^off", "^on"},
  	v={false, true},
-	 s=1},
+	 s=2},//1},
 	{i=9, n="^hit chance",
 	 o={"^on", "^hit", "^miss"},
  	v={"on", true, false},
@@ -189,6 +206,31 @@ end
 prince = 22
 fighter = 25
 caster = 28
+
+function is_fighter(enemy_id)
+ if enemy_id == fighter
+  or enemy_id == fighter + 1
+   or enemy_id == fighter + 2 then
+  return true  
+ end
+ return false
+end
+
+function is_caster(enemy_id)
+ if enemy_id == caster
+  or enemy_id == caster + 1
+   or enemy_id == caster + 2 then
+  return true  
+ end
+end
+
+function is_prince(enemy_id)
+ if enemy_id == prince
+  or enemy_id == prince + 1
+   or enemy_id == prince + 2 then
+  return true  
+ end
+end
 
 function get_element(eni)
  local en_el_c=lget(enemy.stats,eni).e
@@ -334,8 +376,23 @@ function set_up_enemies()
    e = lget(enemy.stats,id).e
    if e == "v" then
     //humans get random element
-    element_i = rnd_int(5,12)
-    element_n = sub(lget(elements,element_i).n,1,1)
+    local enemy_l =  lget(enemy.stats,id).l
+    local element_i
+    if id == prince
+     or id == fighter
+      or id == caster then
+     element_i = rnd_int(2,5)
+    elseif id == prince+1
+     or id == fighter+1
+      or id == caster+1 then
+     element_i = rnd_int(6,9)
+    elseif id == prince+2
+     or id == fighter+2
+      or id == caster+2 then
+     element_i = rnd_int(10,11)
+    end
+    assert(element_i)
+    local element_n = sub(lget(elements,element_i).n,1,1)
     e = element_n
    end
    local n = lget(enemy.stats,id).n
@@ -384,8 +441,8 @@ function set_up_party()
    local filled = true
    if random_party then filled = rnd(3) > 2 end
    if filled then
-    id = rnd_int(0,2)
-    if id == 0 then
+    id = rnd_int(1,2)
+    if id == 1 then
      id = fighter
     else
      id = caster
@@ -522,13 +579,12 @@ function _update()
 end
 
 function opposition(list)
- 
+ //returns the opposing list
  if list == arena.enemies then
   return arena.party
  else
   return arena.enemies
  end
-
 end
 
 function toggle_turn()
@@ -593,9 +649,7 @@ function attack()
  main_target_n = main_target.t.stats.n
  add(targets, main_target)
  
- if attacker.i == caster or
-  attacker.i == caster +1 or
-  attacker.i == caster +2 then
+ if is_caster(attacker.i) then
   for p_target in all(opposition(turn)) do
    if p_target.s == main_target.t.s +1 or
     p_target.s == main_target.t.s -1 then
@@ -631,17 +685,17 @@ function attack()
    hit = hit_chance
   else
    hit = rnd(1) < chance
-   if attacker.i == fighter or
-    attacker.i == fighter +1 or
-    attacker.i == fighter +2 then
+   if is_fighter(attacker.i) then
     if not hit then
      hit = rnd(1) < chance
     end
-   elseif attacker.i == prince or
-    attacker.i == prince +1 or
-    attacker.i == prince +2 then
+   elseif is_prince(attacker.i) then
     if hit then
      attacker.stats.e = target.t.stats.e
+     local unlocking_element = element_by_n(target.t.stats.e)
+     if not linc(unlocked_elements, unlocking_element) then
+      add(unlocked_elements, unlocking_element)
+     end
     end
    end
   end
