@@ -1368,6 +1368,19 @@ function draw_settings()
  end
  
 end
+
+function draw_stats()
+ message = ""
+ message = message.." l"..arena.party.level
+ message = message.." x"..arena.party.score
+ message = message.." b"..arena.party.battles
+ message = message.." e"..#unlocked_elements
+ print(message, 0, 0, white, black)
+end
+
+function _draw()
+ draw_stats()
+end
 -->8
 -- go
 
