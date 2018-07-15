@@ -173,7 +173,7 @@ settings = {
 	{i=8, n="^rand ^enemy",
 	 o={"^off", "^on"},
  	v={false, true},
-	 s=2},//1},
+	 s=1},
 	{i=9, n="^hit chance",
 	 o={"^on", "^hit", "^miss"},
  	v={"on", true, false},
@@ -181,7 +181,7 @@ settings = {
 	{i=10, n="^game over",
 	 o={"^new", "^cont."},
  	v={false, true},
-	 s=2},
+	 s=1}//2},
 }
 
 function set_up_settings()
@@ -638,6 +638,38 @@ function cap_cursor()
  end
 end
 
+function get_hit_chance(attacker, target)
+ if not attacker then return end
+ if not target then return end
+ if not target.t then return end
+
+	local attack_element = element_by_n(attacker.stats.e)
+	local target_element = element_by_n(target.t.stats.e)
+	local t_e_i = target_element.i
+	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
+	local chance
+	
+	if multiplier_char == "1" then
+	 chance = 0.25
+	elseif multiplier_char == "2" then
+	 chance = 0.375  
+	elseif multiplier_char == "4" then
+	 chance = 0.5
+	elseif multiplier_char == "6" then
+	 chance = 0.625
+	elseif multiplier_char == "8" then
+	 chance = 0.75
+	else
+	 assert(false, chance)
+	end
+ 
+ if is_fighter(attacker.i) then
+  chance = 1-((1-chance) * (1-chance))
+ end
+ 
+ return chance
+end
+
 function attack()
  attack_ticks = 0
  
@@ -690,7 +722,7 @@ function attack()
      hit = rnd(1) < chance
     end
    elseif is_prince(attacker.i) then
-    if hit then
+    if hit and turn==arena.party then
      attacker.stats.e = target.t.stats.e
      local unlocking_element = element_by_n(target.t.stats.e)
      if not linc(unlocked_elements, unlocking_element) then
@@ -1210,12 +1242,18 @@ function draw_element_chart()
  state = "element_chart"
  
  local chart = 
- {{x=-3, y=-1},{x=-3, y=1},
-  {x=3, y=-1},{x=3, y=1},
-  {x=0, y=-2},{x=1, y=-1},
-  {x=2, y=-0},{x=1, y=1},
-  {x=0, y=2},{x=-1, y=1},
-  {x=-2, y=0},{x=-1, y=-1}}
+ {{x=-3, y=-1},//none
+  {x= 0, y=-2},//fire
+  {x= 2, y= 0},//air
+  {x= 0, y= 2},//water
+  {x=-2, y= 0},//earth
+  {x= 1, y=-1},//elec
+  {x= 1, y= 1},//ice
+  {x=-1, y= 1},//plant
+  {x=-1, y=-1},//blood
+  {x= 3, y=-1},//light
+  {x= 3, y= 1},//dark
+  {x=-3, y= 1}}//holy
  
  local chart_x = 80
  local chart_y = 48
@@ -1375,6 +1413,17 @@ function draw_stats()
  message = message.." x"..arena.party.score
  message = message.." b"..arena.party.battles
  message = message.." e"..#unlocked_elements
+
+ if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
+  local attacker = lget(turn,cur.s.i)
+  //assert(false, attacker)
+  local main_target = {t=lget(opposition(turn),cur.i)}
+
+  local hit_chance = get_hit_chance(attacker, main_target)
+  if hit_chance then
+   message = message.." h"..hit_chance
+  end
+ end
  print(message, 0, 0, white, black)
 end
 
