@@ -1,74 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 16
 __lua__
--- set up
-
-clear = 13
-cls(clear)
-
-settings = {
-	{i=1, n="^auto ^turn", 
- 	o={"^off", "^on"},
- 	v={false, true},
- 	s=1},
-	{i=2, n="^text ^delay",
-	 o={"1", "5", "10", "15"},
- 	v={1, 5, 10, 15},
-	 s=3},
-	{i=3, n="^round ^icon",
-	 o={"^off", "^on"},
- 	v={false, true},
-	 s=2},
-	{i=4, n="^caps ^l^o^c^k",
-	 o={"^off", "^o^n"},
- 	v={false, true},
-	 s=1},
-	{i=5, n="^rand ^level",
-	 o={"^off", "^on"},
- 	v={false, true},
-	 s=1},
-	{i=6, n="^rand ^party",
-	 o={"^off", "^on"},
- 	v={false, true},
-	 s=1},
-	{i=7, n="^rand ^elem",
-	 o={"0", "4", "8", "10"},
- 	v={1, 5, 9, 11},
-	 s=1},
-	{i=8, n="^rand ^enemy",
-	 o={"^off", "^on"},
- 	v={false, true},
-	 s=1},
-	{i=9, n="^hit chance",
-	 o={"^on", "^hit", "^miss"},
- 	v={"on", true, false},
-	 s=1},
-	{i=10, n="^game over",
-	 o={"^new", "^cont."},
- 	v={false, true},
-	 s=2},
-}
-
-function set_up_settings()
- auto = set_up_setting(1)
- delay = set_up_setting(2)
- round = set_up_setting(3)
- caps_lock = set_up_setting(4)
- random_level = set_up_setting(5)
- random_party = set_up_setting(6)
- random_elem = set_up_setting(7)
- random_enemy = set_up_setting(8)
- hit_chance = set_up_setting(9)
- continue = set_up_setting(10)
-end
-function set_up_setting(index)
- local setting = lget(settings,index)
- local options = setting.v
- local selected = lget(options,setting.s)
- return selected
-end
-
-
+-- util
 table = "table"
 number = "number"
 string = "string"
@@ -96,10 +29,6 @@ sky = 12
 pale = 13
 pink = 14
 sand = 15
-
-prince = 22
-fighter = 25
-caster = 28
 
 function rnd_int(min_in, max_in)
  assert(type(min_in)==number)
@@ -188,7 +117,89 @@ function ord(sheet, s, i)
  return ci
 end
 
+-->8
+-- set up
+
+clear = 13
+cls(clear)
 palt(black, false)
+
+settings = {
+	{i=1, n="^auto ^turn", 
+ 	o={"^off", "^on"},
+ 	v={false, true},
+ 	s=1},
+	{i=2, n="^text ^delay",
+	 o={"1", "5", "10", "15"},
+ 	v={1, 5, 10, 15},
+	 s=3},
+	{i=3, n="^round ^icon",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=2},
+	{i=4, n="^caps ^l^o^c^k",
+	 o={"^off", "^o^n"},
+ 	v={false, true},
+	 s=1},
+	{i=5, n="^rand ^level",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
+	{i=6, n="^rand ^party",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
+	{i=7, n="^rand ^elem",
+	 o={"0", "4", "8", "10"},
+ 	v={1, 5, 9, 11},
+	 s=1},
+	{i=8, n="^rand ^enemy",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
+	{i=9, n="^hit chance",
+	 o={"^on", "^hit", "^miss"},
+ 	v={"on", true, false},
+	 s=1},
+	{i=10, n="^game over",
+	 o={"^new", "^cont."},
+ 	v={false, true},
+	 s=2},
+}
+
+function set_up_settings()
+ auto = set_up_setting(1)
+ delay = set_up_setting(2)
+ round = set_up_setting(3)
+ caps_lock = set_up_setting(4)
+ random_level = set_up_setting(5)
+ random_party = set_up_setting(6)
+ random_elem = set_up_setting(7)
+ random_enemy = set_up_setting(8)
+ hit_chance = set_up_setting(9)
+ continue = set_up_setting(10)
+end
+function set_up_setting(index)
+ local setting = lget(settings,index)
+ local options = setting.v
+ local selected = lget(options,setting.s)
+ return selected
+end
+
+prince = 22
+fighter = 25
+caster = 28
+
+function get_element(eni)
+ local en_el_c=lget(enemy.stats,eni).e
+ for element in all(elements) do
+  if sub(element.n, 1, 1) == en_el_c then
+   return element
+  end
+ end
+ assert(false, "unknown element:"..eni)
+end
+
 elements = {                 //nhldfeaiwprb
  {i=1, n="none", c=dark,    o="444444444444"},
 
