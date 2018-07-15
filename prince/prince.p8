@@ -693,39 +693,19 @@ function attack()
  for target in all(targets) do
  	assert(target)
 	
- 	local attack_element = element_by_n(attacker.stats.e)
- 	local target_element = element_by_n(target.t.stats.e)
- 	local t_e_i = target_element.i
- 	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
- 	
- 	if multiplier_char == "1" then
- 	 chance = 0.25
- 	elseif multiplier_char == "2" then
- 	 chance = 0.375  
- 	elseif multiplier_char == "4" then
- 	 chance = 0.5
- 	elseif multiplier_char == "6" then
- 	 chance = 0.625
- 	elseif multiplier_char == "8" then
- 	 chance = 0.75
- 	else
- 	 assert(false, chance)
- 	end
-
   local hit
   if hit_chance != "on" then
    hit = hit_chance
   else
+   local chance = get_hit_chance(attacker, target)
    hit = rnd(1) < chance
-   if is_fighter(attacker.i) then
-    if not hit then
-     hit = rnd(1) < chance
-    end
-   elseif is_prince(attacker.i) then
+   if is_prince(attacker.i) then
     if hit and turn==arena.party then
+     //prince changes element
      attacker.stats.e = target.t.stats.e
      local unlocking_element = element_by_n(target.t.stats.e)
      if not linc(unlocked_elements, unlocking_element) then
+      //unlocks element for later
       add(unlocked_elements, unlocking_element)
      end
     end
@@ -1416,7 +1396,6 @@ function draw_stats()
 
  if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
   local attacker = lget(turn,cur.s.i)
-  //assert(false, attacker)
   local main_target = {t=lget(opposition(turn),cur.i)}
 
   local hit_chance = get_hit_chance(attacker, main_target)
