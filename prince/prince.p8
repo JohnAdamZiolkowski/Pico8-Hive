@@ -182,6 +182,10 @@ settings = {
 	 o={"^new", "^cont."},
  	v={false, true},
 	 s=2},
+	{i=11, n="^draw stats",
+	 o={"^off", "^on"},
+ 	v={false, true},
+	 s=1},
 }
 
 function set_up_settings()
@@ -195,6 +199,7 @@ function set_up_settings()
  random_enemy = set_up_setting(8)
  hit_chance = set_up_setting(9)
  continue = set_up_setting(10)
+ stats = set_up_setting(11)
 end
 function set_up_setting(index)
  local setting = lget(settings,index)
@@ -1406,24 +1411,26 @@ function draw_settings()
 end
 
 function draw_stats()
- message = ""
- message = message.." l"..arena.party.level
- message = message.." x"..arena.party.score
- message = message.." b"..arena.party.battles
- message = message.." e"..#unlocked_elements
- message = message.." r"..arena.party.luck
-
- if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
-  local attacker = lget(turn,cur.s.i)
-  local main_target = {t=lget(opposition(turn),cur.i)}
-
-  local hit_chance = get_hit_chance(attacker, main_target)
-  hit_chance = sub(""..hit_chance*100,1,2)
-  if hit_chance then
-   message = message.." h"..hit_chance
+ if stats then
+  message = ""
+  message = message.." l"..arena.party.level
+  message = message.." x"..arena.party.score
+  message = message.." b"..arena.party.battles
+  message = message.." e"..#unlocked_elements
+  message = message.." r"..arena.party.luck
+ 
+  if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
+   local attacker = lget(turn,cur.s.i)
+   local main_target = {t=lget(opposition(turn),cur.i)}
+ 
+   local hit_chance = get_hit_chance(attacker, main_target)
+   hit_chance = sub(""..hit_chance*100,1,2)
+   if hit_chance then
+    message = message.." h"..hit_chance
+   end
   end
- end
- print(message, 0, 0, white, black)
+  print(message, 0, 0, white, black)
+	end
 end
 
 function _draw()
