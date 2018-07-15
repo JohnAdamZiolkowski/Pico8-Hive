@@ -169,7 +169,7 @@ settings = {
 	{i=7, n="^rand ^elem",
 	 o={"0", "4", "8", "10"},
  	v={1, 5, 9, 11},
-	 s=1},
+	 s=3},
 	{i=8, n="^rand ^enemy",
 	 o={"^off", "^on"},
  	v={false, true},
@@ -181,7 +181,7 @@ settings = {
 	{i=10, n="^game over",
 	 o={"^new", "^cont."},
  	v={false, true},
-	 s=1}//2},
+	 s=2},
 }
 
 function set_up_settings()
@@ -470,6 +470,7 @@ function set_up_party()
  arena.party.score = 0
  arena.party.battles = 0
  arena.party.level = 1
+ arena.party.luck = 0
  if random_level then
   arena.party.level = rnd_int(1,#levels)
   if arena.party.level > 1 then
@@ -694,11 +695,12 @@ function attack()
  	assert(target)
 	
   local hit
+  local chance = get_hit_chance(attacker, target)
   if hit_chance != "on" then
    hit = hit_chance
   else
-   local chance = get_hit_chance(attacker, target)
    hit = rnd(1) < chance
+   
    if is_prince(attacker.i) then
     if hit and turn==arena.party then
      //prince changes element
@@ -711,6 +713,21 @@ function attack()
     end
    end
   end
+  
+  if turn == arena.party then
+   if chance > 0.5 and not hit then
+    arena.party.luck -= chance-0.5
+   elseif chance < 0.5 and hit then
+    arena.party.luck += 0.5-chance
+   end
+  else
+   if chance < 0.5 and hit then
+    arena.party.luck -= 0.5-chance
+   elseif chance > 0.5 and not hit then
+    arena.party.luck += chance-0.5
+   end
+  end
+  
   target.h = hit
  end
  
@@ -941,6 +958,7 @@ function update_game_over()
   	old_level = arena.party.level
   	arena.party.level = 1
   	arena.party.score = 0
+  	arena.party.luck = 0
   	if old_level > 2 then
   	 arena.party.level = old_level-2
   	 arena.party.score = lget(levels,arena.party.level)
@@ -1393,12 +1411,14 @@ function draw_stats()
  message = message.." x"..arena.party.score
  message = message.." b"..arena.party.battles
  message = message.." e"..#unlocked_elements
+ message = message.." r"..arena.party.luck
 
  if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
   local attacker = lget(turn,cur.s.i)
   local main_target = {t=lget(opposition(turn),cur.i)}
 
   local hit_chance = get_hit_chance(attacker, main_target)
+  hit_chance = sub(""..hit_chance*100,1,2)
   if hit_chance then
    message = message.." h"..hit_chance
   end
