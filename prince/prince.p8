@@ -168,8 +168,8 @@ settings = {
 	 s=1},
 	{i=7, n="^rand ^elem",
 	 o={"0", "4", "8", "10"},
- 	v={1, 5, 9, 11},
-	 s=3},
+ 	v={1, 5, 9, 11, 12},
+	 s=1},
 	{i=8, n="^rand ^enemy",
 	 o={"^off", "^on"},
  	v={false, true},
@@ -581,6 +581,28 @@ function _update()
   elseif  btnp(⬇️) then
    change_settings(1)
   end
+ elseif state == "team_building" then
+  if btnp(🅾️) then
+   draw_arena()
+   draw_options()
+   state = "arena"
+  elseif btnp(❎) then
+   draw_element_chart()
+  elseif btnp(⬅️) then
+   change_element(lget(arena.party,cur.i))
+   draw_team_building()
+  elseif btnp(➡️) then
+   change_class(lget(arena.party,cur.i))
+   draw_team_building()
+  elseif btnp(⬆️) then
+   cur.i -= 1
+   cap_cursor()
+   draw_team_building()
+  elseif  btnp(⬇️) then
+   cur.i += 1
+   cap_cursor()
+   draw_team_building()
+  end
  end
 end
 
@@ -982,6 +1004,11 @@ function update_game_over()
   draw_arena()
   draw_options()
  end
+end
+
+function start_team_building()
+ state = "team_building"
+ draw_team_building()
 end
 -->8
 -- draw
@@ -1433,8 +1460,55 @@ function draw_stats()
 	end
 end
 
+function draw_team_building()
+ cls(clear)
+ draw_party()
+ draw_options()
+ print("^learned ^elements",2,2,0)
+ for e=1,#unlocked_elements do
+  local element = lget(unlocked_elements,e)
+  local e_n_c = sub(element.n,1,1)
+  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0) 
+ end
+ 
+ print("^party ^l:"..arena.party.level,83,2,0)
+ 
+ print("^l:^change element",2,95,0)
+ print("^r:^change class",2,103,0)
+ print("^b:^element chart",2,111,0)
+ print("^a:^finish",2,119,0)
+end
+
+function change_element(member)
+ local member_element_index_in_unlocked
+ for u=1,#unlocked_elements do
+  local element = lget(unlocked_elements,u)
+  local element_n = sub(element.n,1,1)
+  if element_n == member.stats.e then
+   member_element_index_in_unlocked = u
+  end
+ end
+ assert(member_element_index_in_unlocked)
+ member_element_index_in_unlocked += 1
+ if member_element_index_in_unlocked > # unlocked_elements then
+  member_element_index_in_unlocked = 1
+ end
+ local new_element = lget(unlocked_elements,member_element_index_in_unlocked)
+ member.stats.e = sub(new_element.n,1,1)
+end
+
+function change_class(member)
+ if is_fighter(member.i) then
+  member.i = caster
+ elseif is_caster(member.i) then
+  member.i = fighter
+ end
+end
+
 function _draw()
- draw_stats()
+ if state == "arena" then
+  draw_stats()
+ end
 end
 -->8
 -- go
@@ -1447,6 +1521,8 @@ for i=1,random_elem do
 end
 
 set_up_arena()
+//lclr(arena.enemies)
+//start_team_building()
 draw_arena()
 
 __gfx__
