@@ -32,8 +32,8 @@ settings = {
  	v={false, true},
 	 s=1},
 	{i=7, n="^rand ^elem",
-	 o={"^off", "^on"},
- 	v={false, true},
+	 o={"0", "4", "8", "10"},
+ 	v={1, 5, 9, 11},
 	 s=1},
 	{i=8, n="^rand ^enemy",
 	 o={"^off", "^on"},
@@ -189,19 +189,24 @@ function ord(sheet, s, i)
 end
 
 palt(black, false)
-elements = {
+elements = {                 //nhldfeaiwprb
  {i=1, n="none", c=dark,    o="444444444444"},
- {i=2, n="holy", c=pink,    o="418888888888"},
- {i=3, n="light", c=light,  o="441866666666"},
- {i=4, n="dark", c=purple,  o="448166666666"},
- {i=5, n="fire", c=orange,  o="412212468642"},
- {i=6, n="elec", c=yellow,  o="412221246864"},
- {i=7, n="air", c=sand,     o="412242124686"},
- {i=8, n="ice", c=sky,      o="412264212468"},
- {i=9, n="water", c=navy,   o="412286421246"},
- {i=10, n="plant", c=forest,o="412268642124"},
- {i=11, n="rock", c=brown,  o="412246864212"},
- {i=12, n="blood", c=red,   o="412224686421"},
+
+ {i=5, n="fire", c=orange,  o="412412468642"},
+ {i=7, n="air", c=sand,     o="412442124686"},
+ {i=9, n="water", c=navy,   o="414286421246"},
+ {i=11, n="rock", c=brown,  o="414246864212"},
+
+ {i=6, n="elec", c=yellow,  o="412421246864"},
+ {i=8, n="ice", c=sky,      o="412464212468"},
+ {i=10, n="plant", c=forest,o="414268642124"},
+ {i=12, n="blood", c=red,   o="414224686421"},
+
+ {i=3, n="light", c=light,  o="421866666666"},
+ {i=4, n="dark", c=purple,  o="428166666666"},
+
+ {i=2, n="holy", c=pink,    o="446688888888"},
+
  {i=13, n="variable", c=neon}
 }
 
@@ -378,11 +383,8 @@ function set_up_party()
  	end
  	if id != nil then
  	 //assign random element of basic 8
- 	 local e = rnd_int(5,12)
- 	 if random_elem then
- 	  e = rnd_int(1,12)
- 	 end
- 	 local element_n = sub(lget(elements,e).n,1,1)
+ 	 local e = rnd_int(1,#unlocked_elements)
+ 	 local element_n = sub(lget(unlocked_elements,e).n,1,1)
  	 local n = lget(enemy.stats,id).n
  	 local l = 1
  	 assert(e)
@@ -1305,6 +1307,12 @@ end
 -- go
 
 set_up_settings()
+unlocked_elements = {}
+for i=1,random_elem do
+ local element = lget(elements,i)
+ add(unlocked_elements,element)
+end
+
 set_up_arena()
 draw_arena()
 
