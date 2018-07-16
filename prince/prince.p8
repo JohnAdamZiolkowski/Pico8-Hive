@@ -30,6 +30,9 @@ pale = 13
 pink = 14
 sand = 15
 
+
+-- integer
+
 function rnd_int(min_in, max_in)
  //safely generates a random integer
  assert(type(min_in)==number)
@@ -47,20 +50,43 @@ function rnd_int(min_in, max_in)
  return int
 end
 
-function lget(list, index, not_nil)
+function cap_int(value_in, min_in, max_in)
+ //returns int within bounds
+ assert(type(value_in)==number)
+ assert(flr(value_in)==value_in)
+ assert(type(min_in)==number)
+ assert(flr(min_in)==min_in)
+ assert(type(max_in)==number)
+ assert(flr(max_in)==max_in)
+ 
+ local value_out = value_in
+ if value_out < min_in then
+  value_out = min_in
+ elseif value_out > max_in then
+  value_out = max_in
+ end
+ assert(value_out >= min_in, value_out)
+ assert(value_out <= max_in, value_out)
+ return value_out
+end
+
+
+-- list
+
+function lget(list, index)
+ //safely gets item at list index
  assert(type(list)==table)
  assert(type(index)==number)
  assert(flr(index)==index)
  assert(index!=0)
  assert(index<=#list, index.." "..#list)
  value = list[index]
- //if not_nil then
-  assert(value!=nil, "value is nil "..index)
- //end
+ assert(value!=nil, "value is nil "..index)
  return value
 end
 
 function lset(list, index, value, not_nil)
+ //safely sets vaule at list index
  assert(type(list)==table)
  assert(type(index)==number)
  assert(flr(index)==index)
@@ -72,6 +98,8 @@ function lset(list, index, value, not_nil)
 end
 
 function lclr(list)
+ //safely clears a list
+ //ignores non-list table items
  assert(type(list)==table)
  assert(#list>0)
  local length = #list
@@ -82,6 +110,7 @@ function lclr(list)
 end
 
 function linc(list,item)
+ //returns whether item is in list
  assert(type(list)==table)
  assert(#list>0)
  assert(type(item)!=nil)
@@ -115,16 +144,6 @@ function get_chars(sheet)
  end
 end
 
-function get_element(eni)
- local en_el_c=lget(enemy.stats,eni).e
- for element in all(elements) do
-  if sub(element.n, 1, 1) == en_el_c then
-   return element
-  end
- end
- assert(false, "unknown element:"..eni)
-end
-
 function ord(sheet, s, i)
  assert(type(sheet)==table)
  assert(type(s)==string)
@@ -137,9 +156,30 @@ end
 -->8
 -- set up
 
-clear = 13
-cls(clear)
-palt(black, false)
+function _init()
+ clear = 13
+ cls(clear)
+ palt(black, false)
+
+ set_up_settings()
+ unlocked_elements = {}
+ for i=1,random_elem do
+  local element = lget(elements,i)
+  add(unlocked_elements,element)
+ end
+
+ set_up_arena()
+ //lclr(arena.enemies)
+ //start_team_building()
+ draw_arena()
+end
+
+states = {
+ arena="arena",
+ settings="settings",
+ team_building="team_building",
+ element_chart="element_chart",
+}
 
 settings = {
 	{i=1, n="^auto ^turn", 
@@ -247,6 +287,16 @@ function get_element(eni)
  assert(false, "unknown element:"..eni)
 end
 
+function element_by_n(n)
+ assert(type(n)==string)
+ for element in all(elements) do
+	 if n == sub(element.n, 1, 1) then
+	  return element
+	 end
+	end
+	assert(false, "unknown element: "..n)
+end
+
 elements = {                 //nhldfeaiwprb
  {i=1, n="none", c=dark,    o="444444444444"},
 
@@ -312,7 +362,6 @@ boss_sets = {
  {l=16, i={90, 90, 102, 90, 90}} //final bishop
 }
 
-arena = nil
 
 levels = {  4,  12,  24,  40,
            64,  84, 108, 136,
@@ -505,16 +554,8 @@ end
 -->8
 -- update
 
-function check_over()
- if #arena.enemies == 0 then
-  battle_over()
- elseif #arena.party == 0 then
-  game_over()
- end
-end
-
 function _update()
- if state == "arena" then
+ if state == states.arena then
   if attack_ticks then
    update_attack()
   elseif over_ticks then
@@ -556,19 +597,19 @@ function _update()
     assert(false, turn)
    end
   end
- elseif state == "element_chart" then
+ elseif state == states.element_chart then
   if btnp(🅾️) or btnp(❎)
    or btnp(⬅️) or btnp(➡️)
    or btnp(⬆️) or btnp(⬇️) then
    draw_arena()
    draw_options()
-   state = "arena"
+   state = states.arena
   end
- elseif state == "settings" then
+ elseif state == states.settings then
   if btnp(❎) then
    draw_arena()
    draw_options()
-   state = "arena"
+   state = states.arena
    s_cur = nil
   elseif btnp(🅾️) then
    save_settings()
@@ -581,11 +622,11 @@ function _update()
   elseif  btnp(⬇️) then
    change_settings(1)
   end
- elseif state == "team_building" then
+ elseif state == states.team_building then
   if btnp(🅾️) then
    draw_arena()
    draw_options()
-   state = "arena"
+   state = states.arena
   elseif btnp(❎) then
    draw_element_chart()
   elseif btnp(⬅️) then
@@ -603,6 +644,14 @@ function _update()
    cap_cursor()
    draw_team_building()
   end
+ end
+end
+
+function check_over()
+ if #arena.enemies == 0 then
+  battle_over()
+ elseif #arena.party == 0 then
+  game_over()
  end
 end
 
@@ -659,10 +708,8 @@ function toggle_cursor()
 end
 
 function cap_cursor()
- if cur.i < 1 then
-  cur.i = 1
- elseif cur.i > #cur.l then
-  cur.i = #cur.l
+ if #cur.l > 0 then
+  cur.i = cap_int(cur.i, 1, #cur.l)
  end
 end
 
@@ -697,6 +744,9 @@ function get_hit_chance(attacker, target)
  
  return chance
 end
+
+
+-- attack
 
 function attack()
  attack_ticks = 0
@@ -858,6 +908,9 @@ function revive()
  end
 end
 
+
+-- auto turn
+
 function draw_auto_message()
  if turn == arena.party then
   local auto_message = "^press (^b) to end auto"
@@ -901,6 +954,9 @@ function update_auto_turn()
   auto_ticks = nil
  end
 end
+
+-- battle over
+
 
 function battle_over()
  over_ticks = 0
@@ -952,6 +1008,9 @@ function update_battle_over()
   over_ticks = nil
  end
 end
+
+
+-- game over
 
 function game_over()
  game_over_ticks = 0
@@ -1006,12 +1065,96 @@ function update_game_over()
  end
 end
 
+
+-- settings
+
+function change_settings(d)
+ s_cur.s += d
+ s_cur.s = cap_int(s_cur.s, 1, #settings+1)
+ if s_cur.s > #settings then
+  s_cur.o = 1
+ else
+  s_cur.o = lget(settings,s_cur.s).s
+ end
+	draw_settings()
+end
+
+function change_options(d)
+ s_cur.o += d
+ if s_cur.s > #settings then
+ s_cur.o = cap_int(s_cur.o, 1, 2)
+ else
+  setting = lget(settings, s_cur.s)
+  options = setting.o
+  s_cur.o = cap_int(s_cur.o, 1, #options)
+		setting.c = s_cur.o
+	end
+	draw_settings()
+end
+
+function save_settings()
+ if s_cur.s == #settings + 1 then
+  if s_cur.o == 2 then
+   for s=1,#settings do
+    setting = lget(settings,s)
+    setting.s = setting.c
+   end
+   set_up_settings()
+  else
+   
+  end
+  s_cur = nil 
+  draw_arena()
+  draw_options()
+  state = states.arena
+  //possible bug if auto
+  //already on
+  if auto then auto_turn() end
+ end
+end
+
+
+-- team building
+
 function start_team_building()
- state = "team_building"
+ state = states.team_building
  draw_team_building()
 end
+
+function change_element(member)
+ local member_element_index_in_unlocked
+ for u=1,#unlocked_elements do
+  local element = lget(unlocked_elements,u)
+  local element_n = sub(element.n,1,1)
+  if element_n == member.stats.e then
+   member_element_index_in_unlocked = u
+  end
+ end
+ assert(member_element_index_in_unlocked)
+ member_element_index_in_unlocked += 1
+ if member_element_index_in_unlocked > # unlocked_elements then
+  member_element_index_in_unlocked = 1
+ end
+ local new_element = lget(unlocked_elements,member_element_index_in_unlocked)
+ member.stats.e = sub(new_element.n,1,1)
+end
+
+function change_class(member)
+ if is_fighter(member.i) then
+  member.i = caster
+ elseif is_caster(member.i) then
+  member.i = fighter
+ end
+end
+
 -->8
 -- draw
+
+function _draw()
+ if stats and state == states.arena then
+  draw_stats()
+ end
+end
 
 note_pos = {x=2, y=83}
 
@@ -1227,16 +1370,6 @@ function draw_options()
  end
 end
 
-function element_by_n(n)
- assert(type(n)==string)
- for element in all(elements) do
-	 if n == sub(element.n, 1, 1) then
-	  return element
-	 end
-	end
-	assert(false, "unknown element: "..n)
-end
-
 function draw_element(x, y, element, ring, wide)
 	
 	assert(element, x.." "..y.." "..ring)
@@ -1267,9 +1400,12 @@ function draw_element(x, y, element, ring, wide)
  end
 end
 
+
+-- element chart
+
 function draw_element_chart()
  cls(clear)
- state = "element_chart"
+ state = states.element_chart
  
  local chart = 
  {{x=-3, y=-1},//none
@@ -1318,76 +1454,18 @@ function draw_element_chart()
  print("^holy is good against all!",2,120,black)
 end
 
+
+-- settings
+
 function enter_settings()
  cls(clear)
- state = "settings"
+ state = states.settings
  s_cur = {s=#settings+1, o=1}
  for s=1,#settings do
   setting = lget(settings,s)
   setting.c = setting.s
  end
  draw_settings()
-end
-
-function cap(value_in, min_in, max_in)
- assert(type(value_in)==number)
- assert(type(min_in)==number)
- assert(type(max_in)==number)
- 
- local value_out = value_in
- if value_out < min_in then
-  value_out = min_in
- elseif value_out > max_in then
-  value_out = max_in
- end
- assert(value_out >= min_in, value_out)
- assert(value_out <= max_in, value_out)
- return value_out
-end
-
-function change_settings(d)
- s_cur.s += d
- s_cur.s = cap(s_cur.s, 1, #settings+1)
- if s_cur.s > #settings then
-  s_cur.o = 1
- else
-  s_cur.o = lget(settings,s_cur.s).s
- end
-	draw_settings()
-end
-
-function change_options(d)
- s_cur.o += d
- if s_cur.s > #settings then
- s_cur.o = cap(s_cur.o, 1, 2)
- else
-  setting = lget(settings, s_cur.s)
-  options = setting.o
-  s_cur.o = cap(s_cur.o, 1, #options)
-		setting.c = s_cur.o
-	end
-	draw_settings()
-end
-
-function save_settings()
- if s_cur.s == #settings + 1 then
-  if s_cur.o == 2 then
-   for s=1,#settings do
-    setting = lget(settings,s)
-    setting.s = setting.c
-   end
-   set_up_settings()
-  else
-   
-  end
-  s_cur = nil 
-  draw_arena()
-  draw_options()
-  state = "arena"
-  //possible bug if auto
-  //already on
-  if auto then auto_turn() end
- end
 end
 
 function draw_settings()
@@ -1432,33 +1510,32 @@ function draw_settings()
    print(option,20*(o-1)+54+2,s*7+2,fc,bc)
   
   end
- 
  end
- 
 end
 
 function draw_stats()
- if stats then
-  message = ""
-  message = message.." l"..arena.party.level
-  message = message.." x"..arena.party.score
-  message = message.." b"..arena.party.battles
-  message = message.." e"..#unlocked_elements
-  message = message.." r"..arena.party.luck
- 
-  if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
-   local attacker = lget(turn,cur.s.i)
-   local main_target = {t=lget(opposition(turn),cur.i)}
- 
-   local hit_chance = get_hit_chance(attacker, main_target)
-   hit_chance = sub(""..hit_chance*100,1,2)
-   if hit_chance then
-    message = message.." h"..hit_chance
-   end
+ local message = ""
+ message = message.." l"..arena.party.level
+ message = message.." x"..arena.party.score
+ message = message.." b"..arena.party.battles
+ message = message.." e"..#unlocked_elements
+ message = message.." r"..arena.party.luck
+
+ if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
+  local attacker = lget(turn,cur.s.i)
+  local main_target = {t=lget(opposition(turn),cur.i)}
+
+  local hit_chance = get_hit_chance(attacker, main_target)
+  hit_chance = sub(""..hit_chance*100,1,2)
+  if hit_chance then
+   message = message.." h"..hit_chance
   end
-  print(message, 0, 0, white, black)
-	end
+ end
+ print(message, 0, 0, white, black)
 end
+
+
+-- team building
 
 function draw_team_building()
  cls(clear)
@@ -1478,52 +1555,6 @@ function draw_team_building()
  print("^b:^element chart",2,111,0)
  print("^a:^finish",2,119,0)
 end
-
-function change_element(member)
- local member_element_index_in_unlocked
- for u=1,#unlocked_elements do
-  local element = lget(unlocked_elements,u)
-  local element_n = sub(element.n,1,1)
-  if element_n == member.stats.e then
-   member_element_index_in_unlocked = u
-  end
- end
- assert(member_element_index_in_unlocked)
- member_element_index_in_unlocked += 1
- if member_element_index_in_unlocked > # unlocked_elements then
-  member_element_index_in_unlocked = 1
- end
- local new_element = lget(unlocked_elements,member_element_index_in_unlocked)
- member.stats.e = sub(new_element.n,1,1)
-end
-
-function change_class(member)
- if is_fighter(member.i) then
-  member.i = caster
- elseif is_caster(member.i) then
-  member.i = fighter
- end
-end
-
-function _draw()
- if state == "arena" then
-  draw_stats()
- end
-end
--->8
--- go
-
-set_up_settings()
-unlocked_elements = {}
-for i=1,random_elem do
- local element = lget(elements,i)
- add(unlocked_elements,element)
-end
-
-set_up_arena()
-//lclr(arena.enemies)
-//start_team_building()
-draw_arena()
 
 __gfx__
 affd0b777fdbb37bccc3afffcf000f36e638bff82fff20cac1ceafd2ecf302702001000000000000000000000000000000000000000000000000000000000000
