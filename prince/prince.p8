@@ -154,7 +154,7 @@ function ord(sheet, s, i)
 end
 
 -->8
--- set up
+-- init
 
 function _init()
  clear = 13
@@ -168,10 +168,17 @@ function _init()
   add(unlocked_elements,element)
  end
 
- set_up_arena()
+ arena = {}
+ arena.party = {}
+ arena.enemies = {}
+ 
+ set_up_party()
+
  //lclr(arena.enemies)
- //start_team_building()
- draw_arena()
+ //draw_arena()
+ 
+ start_team_building()
+ 
 end
 
 states = {
@@ -179,6 +186,7 @@ states = {
  settings="settings",
  team_building="team_building",
  element_chart="element_chart",
+ stack={"arena"}
 }
 
 settings = {
@@ -539,7 +547,7 @@ function set_up_party()
 end
 
 function set_up_arena()
- state = "arena"
+ set_state(states.arena)
  arena = {}
  
  arena.party = {n="party"}
@@ -551,99 +559,148 @@ function set_up_arena()
  if auto then auto_turn() end
 end
 
+function get_state()
+ assert(#states.stack>0)
+ return lget(states.stack, #states.stack)
+end
+
+function set_state(state)
+ assert(type(state)==string)
+ lset(states.stack, #states.stack, state)
+end
+
+function push_state(state)
+ assert(type(state)==string)
+ add(states.stack, state)
+end
+
+function pop_state()
+ local state = get_state()
+ del(states.stack, state)
+ 
+ state = get_state()
+ if state == states.arena then
+  if #arena.enemies == 0 then
+   set_up_enemies()
+  end
+  draw_arena()
+  draw_options()
+  //possible bug if auto
+  //already on
+  if auto then auto_turn() end
+ elseif get_state() == states.team_building then
+  draw_team_building()
+ end
+end
+
+function init_element_chart()
+ push_state(states.element_chart)
+ 
+ draw_element_chart()
+end
 -->8
 -- update
 
 function _update()
+ local state = get_state()
  if state == states.arena then
-  if attack_ticks then
-   update_attack()
-  elseif over_ticks then
-   update_battle_over()
-  elseif game_over_ticks then
-   update_game_over()
-  else
-   if turn == arena.party then
-    if not auto then
-     if btnp(⬅️) then
-      draw_element_chart()
-     elseif btnp(➡️) then
-      enter_settings()
-     elseif btnp(⬆️) then
-      cur.i -= 1
-      cap_cursor()
-      draw_arena()
-      draw_options()
-     elseif btnp(⬇️) then
-      cur.i += 1
-      cap_cursor()
-      draw_arena()
-      draw_options()
-     elseif btnp(🅾️) then
-      select()
-     elseif btnp(❎) then
-      deselect()
-    	end
-    else
-     if btnp(❎) then
-      end_auto_turn()
-     else
-      update_auto_turn()
-     end
-    end
-   elseif turn == arena.enemies then
-    update_auto_turn()
-   else
-    assert(false, turn)
-   end
-  end
+  update_arena()
+ 
  elseif state == states.element_chart then
   if btnp(🅾️) or btnp(❎)
    or btnp(⬅️) or btnp(➡️)
    or btnp(⬆️) or btnp(⬇️) then
-   draw_arena()
-   draw_options()
-   state = states.arena
+   pop_state()
   end
+ 
  elseif state == states.settings then
-  if btnp(❎) then
-   draw_arena()
-   draw_options()
-   state = states.arena
-   s_cur = nil
-  elseif btnp(🅾️) then
-   save_settings()
-  elseif btnp(⬅️) then
-   change_options(-1)
-  elseif btnp(➡️) then
-   change_options(1)
-  elseif btnp(⬆️) then
-   change_settings(-1)
-  elseif  btnp(⬇️) then
-   change_settings(1)
-  end
+  update_settings()
+ 
  elseif state == states.team_building then
-  if btnp(🅾️) then
-   draw_arena()
-   draw_options()
-   state = states.arena
-  elseif btnp(❎) then
-   draw_element_chart()
-  elseif btnp(⬅️) then
-   change_element(lget(arena.party,cur.i))
-   draw_team_building()
-  elseif btnp(➡️) then
-   change_class(lget(arena.party,cur.i))
-   draw_team_building()
-  elseif btnp(⬆️) then
-   cur.i -= 1
-   cap_cursor()
-   draw_team_building()
-  elseif  btnp(⬇️) then
-   cur.i += 1
-   cap_cursor()
-   draw_team_building()
+  update_team_building()
+ end
+end
+
+function update_arena()
+	if attack_ticks then
+  update_attack()
+ elseif over_ticks then
+  update_battle_over()
+ elseif game_over_ticks then
+  update_game_over()
+ else
+  if turn == arena.party then
+   if not auto then
+    if btnp(⬅️) then
+     init_element_chart()
+    elseif btnp(➡️) then
+     enter_settings()
+    elseif btnp(⬆️) then
+     cur.i -= 1
+     cap_cursor()
+     draw_arena()
+     draw_options()
+    elseif btnp(⬇️) then
+     cur.i += 1
+     cap_cursor()
+     draw_arena()
+     draw_options()
+    elseif btnp(🅾️) then
+     select()
+    elseif btnp(❎) then
+     deselect()
+   	end
+   else
+    if btnp(❎) then
+     end_auto_turn()
+    else
+     update_auto_turn()
+    end
+   end
+  elseif turn == arena.enemies then
+   update_auto_turn()
+  else
+   assert(false, turn)
   end
+ end
+end
+
+function update_settings()
+ if btnp(❎) then
+  s_cur = nil
+  pop_state()
+ elseif btnp(🅾️) then
+  save_settings()
+ elseif btnp(⬅️) then
+  change_options(-1)
+ elseif btnp(➡️) then
+  change_options(1)
+ elseif btnp(⬆️) then
+  change_settings(-1)
+ elseif  btnp(⬇️) then
+  change_settings(1)
+ end
+end
+
+function update_team_building()
+ if btnp(🅾️) then
+  pop_state()
+ elseif btnp(❎) then
+  init_element_chart()
+ elseif btnp(⬅️) then
+  change_element(lget(arena.party,cur.i))
+  draw_team_building()
+ elseif btnp(➡️) then
+  change_class(lget(arena.party,cur.i))
+  draw_team_building()
+ elseif btnp(⬆️) then
+  cur.i -= 1
+  cap_cursor()
+  draw_team_building()
+ elseif btnp(⬇️) then
+  cur.i += 1
+  cap_cursor()
+  draw_team_building()
  end
 end
 
@@ -1068,6 +1125,16 @@ end
 
 -- settings
 
+function enter_settings()
+ push_state(states.settings)
+ s_cur = {s=#settings+1, o=1}
+ for s=1,#settings do
+  setting = lget(settings,s)
+  setting.c = setting.s
+ end
+ draw_settings()
+end
+
 function change_settings(d)
  s_cur.s += d
  s_cur.s = cap_int(s_cur.s, 1, #settings+1)
@@ -1103,13 +1170,8 @@ function save_settings()
   else
    
   end
-  s_cur = nil 
-  draw_arena()
-  draw_options()
-  state = states.arena
-  //possible bug if auto
-  //already on
-  if auto then auto_turn() end
+  s_cur = nil
+  pop_state()
  end
 end
 
@@ -1117,7 +1179,7 @@ end
 -- team building
 
 function start_team_building()
- state = states.team_building
+ push_state(states.team_building)
  draw_team_building()
 end
 
@@ -1146,12 +1208,11 @@ function change_class(member)
   member.i = fighter
  end
 end
-
 -->8
 -- draw
 
 function _draw()
- if stats and state == states.arena then
+ if stats and get_state() == states.arena then
   draw_stats()
  end
 end
@@ -1405,7 +1466,6 @@ end
 
 function draw_element_chart()
  cls(clear)
- state = states.element_chart
  
  local chart = 
  {{x=-3, y=-1},//none
@@ -1456,17 +1516,6 @@ end
 
 
 -- settings
-
-function enter_settings()
- cls(clear)
- state = states.settings
- s_cur = {s=#settings+1, o=1}
- for s=1,#settings do
-  setting = lget(settings,s)
-  setting.c = setting.s
- end
- draw_settings()
-end
 
 function draw_settings()
  cls(clear)
