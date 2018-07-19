@@ -2,6 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 16
 __lua__
 -- util
+
 table = "table"
 number = "number"
 string = "string"
@@ -101,7 +102,7 @@ function lclr(list)
  //safely clears a list
  //ignores non-list table items
  assert(type(list)==table)
- //assert(#list>0)
+ assert(#list>0)
  local length = #list
  for i=length,1,-1 do
   local item = list[i]
@@ -153,6 +154,48 @@ function ord(sheet, s, i)
  return ci
 end
 
+
+-- state management
+
+function get_state()
+ assert(#states.stack>0)
+ return lget(states.stack, #states.stack)
+end
+
+function set_state(state)
+ assert(type(state)==table)
+ local index = 1
+ if #states.stack > index then
+  index = #states.stack
+ end
+ lset(states.stack, index, state)
+ if state.init then
+  state.init()
+ end
+ message = nil
+ set_stale()
+end
+
+function push_state(state)
+ assert(type(state)==table)
+ add(states.stack, state)
+ if state.init then
+  state.init()
+ end
+ message = nil
+ set_stale()
+end
+
+function pop_state()
+ local prev_state = get_state()
+ if prev_state.finish then
+  prev_state.finish()
+ end
+ message = nil
+ del(states.stack, prev_state)
+ set_stale()
+end
+
 -->8
 -- init
 
@@ -173,24 +216,59 @@ function _init()
  arena.enemies = {}
  
  set_up_party()
-
- //lclr(arena.enemies)
- //draw_arena()
- 
- start_team_building()
+ init_states()
+ set_state(states.arena)
+ did_level = true
+ push_state(states.battle_over)
  
 end
 
+function init_states()
 states = {
- arena="arena",
- settings="settings",
- team_building="team building",
- element_chart="element chart",
- attacking="attacking",
- battle_over="battle over",
- game_over="game over",
- stack={"arena"}
+ arena={name="^arena",
+        init=init_arena,
+        update=update_arena,
+        draw=draw_arena,
+        finish=finish_arena},
+        
+ settings={name="^settings",
+        init=init_settings,
+        update=update_settings,
+        draw=draw_settings,
+        finish=finish_settings},
+        
+ team_building={name="^team ^building",
+        init=init_team_building,
+        update=update_team_building,
+        draw=draw_team_building,
+        finish=finish_team_building},
+        
+ element_chart={name="^element ^chart",
+        init=init_element_chart,
+        update=update_element_chart,
+        draw=draw_element_chart,
+        finish=finish_element_chart},
+        
+ attacking={name="^attacking",
+        init=init_attack,
+        update=update_attack,
+        draw=draw_attack,
+        finish=finish_attack},
+        
+ battle_over={name="^battle ^over",
+        init=init_battle_over,
+        update=update_battle_over,
+        draw=draw_battle_over,
+        finish=finish_battle_over},
+        
+ game_over={name="^game ^over",
+        init=init_game_over,
+        update=update_game_over,
+        draw=draw_game_over,
+        finish=finish_game_over},
+ stack={}
 }
+end
 
 settings = {
 	{i=1, n="^auto ^turn", 
@@ -368,8 +446,8 @@ boss_sets = {
  {l=13, i={68, 48, 96, 47, 68}}, //frozen mimic
  {l=13, i={52, 54, 98, 83, 53}}, //vampiress
  {l=14, i={55, 86, 99, 57, 56}}, //sphinx
- {l=14, i={87, 88, 100, 88, 87}}, //hatman
- {l=15, i={89, 89, 101, 89, 89}}, //bishop
+ {l=14, i={87, 88, 100, 88, 87}},//hatman
+ {l=15, i={89, 89, 101, 89, 89}},//bishop
  {l=16, i={90, 90, 102, 90, 90}} //final bishop
 }
 
@@ -550,7 +628,6 @@ function set_up_party()
 end
 
 function set_up_arena()
- //set_state(states.arena)
  arena = {}
  
  arena.party = {n="party"}
@@ -559,80 +636,49 @@ function set_up_arena()
  arena.enemies = {n="enemies"}
  set_up_enemies()
  
- if auto then auto_turn() end
+ if auto then init_auto_turn() end
 end
 
-function get_state()
- assert(#states.stack>0)
- return lget(states.stack, #states.stack)
+function init_auto_turn()
+ auto_ticks = 0
 end
 
-function set_state(state)
- assert(type(state)==string)
- lset(states.stack, #states.stack, state)
+function init_battle_over()
+ over_ticks = 0
 end
 
-function push_state(state)
- assert(type(state)==string)
- add(states.stack, state)
+function init_game_over()
+ game_over_ticks = 0
 end
 
-function pop_state()
- local prev_state = get_state()
- del(states.stack, prev_state)
- 
- state = get_state()
- if state == states.arena then
-  if prev_state == states.team_building
-   or prev_state == states.battle_over
-    or prev_state == states.game_over then
-   set_up_enemies()
-  end
-  draw_arena()
-  draw_options()
-  //possible bug if auto
-  //already on
-  //if auto then auto_turn() end
- elseif get_state() == states.team_building then
-  draw_team_building()
+function init_settings()
+ s_cur = {s=#settings+1, o=1}
+ for s=1,#settings do
+  setting = lget(settings,s)
+  setting.c = setting.s
  end
 end
 
-function init_element_chart()
- push_state(states.element_chart)
- 
- draw_element_chart()
+function init_team_building()
+ turn = arena.party
+ cur.l = arena.party
+ cap_cursor()
 end
 -->8
 -- update
 
 function _update()
  local state = get_state()
+ if state.update then
+  state.update()
+ end
+end
 
- if state == states.arena then
-  update_arena()
- 
- elseif state == states.attacking then
-  update_attack()
- 
- elseif state == states.game_over then
-  update_game_over()
-  
- elseif state == states.battle_over then
-  update_battle_over()
-  
- elseif state == states.element_chart then
-  if btnp(🅾️) or btnp(❎)
-   or btnp(⬅️) or btnp(➡️)
-   or btnp(⬆️) or btnp(⬇️) then
-   pop_state()
-  end
- 
- elseif state == states.settings then
-  update_settings()
- 
- elseif state == states.team_building then
-  update_team_building()
+function update_element_chart()
+ if btnp(🅾️) or btnp(❎)
+ or btnp(⬅️) or btnp(➡️)
+ or btnp(⬆️) or btnp(⬇️) then
+  pop_state()
  end
 end
 
@@ -641,19 +687,13 @@ function update_arena()
  if turn == arena.party then
   if not auto then
    if btnp(⬅️) then
-    init_element_chart()
+    push_state(states.element_chart)
    elseif btnp(➡️) then
-    enter_settings()
+    push_state(states.settings)
    elseif btnp(⬆️) then
-    cur.i -= 1
-    cap_cursor()
-    draw_arena()
-    draw_options()
+    move_cursor(-1)
    elseif btnp(⬇️) then
-    cur.i += 1
-    cap_cursor()
-    draw_arena()
-    draw_options()
+    move_cursor(1)
    elseif btnp(🅾️) then
     select()
    elseif btnp(❎) then
@@ -661,21 +701,18 @@ function update_arena()
   	end
   else
    if btnp(❎) then
-    end_auto_turn()
+    finish_auto_turn()
    else
     update_auto_turn()
    end
   end
  elseif turn == arena.enemies then
   update_auto_turn()
- else
-  assert(false, turn)
  end
 end
 
 function update_settings()
  if btnp(❎) then
-  s_cur = nil
   pop_state()
  elseif btnp(🅾️) then
   save_settings()
@@ -691,130 +728,29 @@ function update_settings()
 end
 
 function update_team_building()
- if btnp(🅾️) then
-  pop_state()
- elseif btnp(❎) then
-  init_element_chart()
- elseif btnp(⬅️) then
-  change_element(lget(arena.party,cur.i))
-  draw_team_building()
- elseif btnp(➡️) then
-  change_class(lget(arena.party,cur.i))
-  draw_team_building()
- elseif btnp(⬆️) then
-  cur.i -= 1
-  cap_cursor()
-  draw_team_building()
- elseif btnp(⬇️) then
-  cur.i += 1
-  cap_cursor()
-  draw_team_building()
- end
-end
-
-function check_over()
- if #arena.enemies == 0 then
-  battle_over()
- elseif #arena.party == 0 then
-  game_over()
- end
-end
-
-function opposition(list)
- //returns the opposing list
- if list == arena.enemies then
-  return arena.party
- else
-  return arena.enemies
- end
-end
-
-function toggle_turn()
- if turn == arena.party then
-  turn = arena.enemies
-  auto_turn()
- else
-  turn = arena.party
-  if auto then
-   auto_turn()
+ if not auto then
+  if btnp(🅾️) then
+   pop_state()
+  elseif btnp(❎) then
+   push_state(states.element_chart)
+  elseif btnp(⬅️) then
+   change_element(lget(arena.party,cur.i))
+  elseif btnp(➡️) then
+   change_class(lget(arena.party,cur.i))
+  elseif btnp(⬆️) then
+   move_cursor(-1)
+  elseif btnp(⬇️) then
+   move_cursor(1)
   end
- end
- cap_cursor()
-end
-
-function select()
-  
- if cur.l == turn then
-  // select attacker
-  cur.s = {l=cur.l, i=cur.i}
-  toggle_cursor()
-  draw_arena()
-  draw_options()
- 
  else
-  // attack target
-  attack()
+  pop_state()
  end
-end
-
-function deselect()
- if cur.s then
-  cur.i = cur.s.i
-  cur.s = nil
-  toggle_cursor()
-  draw_arena()
-  draw_options()
- end
-end
-
-function toggle_cursor()
- cur.l = opposition(cur.l)
- cap_cursor()
-end
-
-function cap_cursor()
- if #cur.l > 0 then
-  cur.i = cap_int(cur.i, 1, #cur.l)
- end
-end
-
-function get_hit_chance(attacker, target)
- if not attacker then return end
- if not target then return end
- if not target.t then return end
-
-	local attack_element = element_by_n(attacker.stats.e)
-	local target_element = element_by_n(target.t.stats.e)
-	local t_e_i = target_element.i
-	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
-	local chance
-	
-	if multiplier_char == "1" then
-	 chance = 0.25
-	elseif multiplier_char == "2" then
-	 chance = 0.375  
-	elseif multiplier_char == "4" then
-	 chance = 0.5
-	elseif multiplier_char == "6" then
-	 chance = 0.625
-	elseif multiplier_char == "8" then
-	 chance = 0.75
-	else
-	 assert(false, chance)
-	end
- 
- if is_fighter(attacker.i) then
-  chance = 1-((1-chance) * (1-chance))
- end
- 
- return chance
 end
 
 
 -- attack
 
-function attack()
- push_state(states.attacking)
+function init_attack()
  attack_ticks = 0
  
  attacker = lget(turn,cur.s.i)
@@ -874,8 +810,6 @@ function attack()
   target.h = hit
  end
  
-	draw_arena()
-	draw_options()
 end
 
 function update_attack()
@@ -887,8 +821,8 @@ function update_attack()
   if #targets > 1 then
    name = #targets.." targets"
   end
-  note(attacker_n.." attacks "..name)
- 
+  message = attacker_n.." attacks "..name
+  set_stale()
  elseif attack_ticks == 3*delay then
   
   cur.s = nil
@@ -921,9 +855,8 @@ function update_attack()
    end
   end
  
-  draw_arena()
-  draw_options()
-  note(text)
+  message = text
+  set_stale()
 
  elseif attack_ticks == 6*delay then
   cur.s = nil
@@ -938,11 +871,433 @@ function update_attack()
   targets = nil
   
   toggle_turn()
-  //draw_arena()
-  //draw_options()
   pop_state()
   check_over()
  end
+end
+
+
+-- auto turn
+
+function draw_auto_message()
+ if turn == arena.party then
+  message = "^press (^b) to end auto"
+  set_stale()
+ end
+end
+
+function update_auto_turn()
+ if auto_ticks == nil then
+  auto_ticks = 0
+ end
+ auto_ticks += 1
+ if auto_ticks == 1 then
+  draw_auto_message()
+ elseif auto_ticks == 2*delay then
+  random_cursor()
+  draw_auto_message()
+ elseif auto_ticks == 4*delay then
+  select()
+  draw_auto_message()
+ elseif auto_ticks == 6*delay then
+  random_cursor()
+  draw_auto_message()
+ elseif auto_ticks == 8*delay then
+  select()
+  auto_ticks = nil
+ end
+end
+
+-- battle over
+
+function update_battle_over()
+ over_ticks += 1
+ 
+ if over_ticks == 2*delay then
+  set_stale()
+  message = "^no more enemies remain!"
+ elseif over_ticks == 5*delay then
+  set_stale()
+  arena.party.battles += 1
+  local s = ""
+  if arena.party.battles > 1 then s = "s" end
+  message = "^finished "..arena.party.battles.." battle"..s
+ elseif over_ticks == 10*delay then
+  set_stale()
+  message = "^total exp: "..arena.party.score
+ elseif over_ticks == 15*delay then
+  local next_level = lget(levels,arena.party.level)
+ 	if arena.party.score >= next_level and
+ 	 arena.party.level < #levels then
+ 	 arena.party.level += 1
+ 	 //maybe: lower score on level?
+ 	 if arena.party.level > #levels then
+ 	  arena.party.level = #levels
+ 	 end
+   did_level = true
+   revive()
+   text = "^level up!! ^now at "..arena.party.level 
+  else
+   text = "^currnent level: "..arena.party.level 
+  end
+  set_stale()
+  message = text
+ 
+ elseif over_ticks == 20*delay then
+  if did_level then
+   push_state(states.team_building)
+   did_level = false
+  end
+ elseif over_ticks == 21*delay then
+  set_up_enemies()
+  text = "^new enemies"
+  if #arena.enemies == 1 then
+   text = "^single "..lget(arena.enemies,1).stats.n
+  end
+  message = text.." appeared!"
+  set_stale()
+ elseif over_ticks == 23*delay then
+  over_ticks = nil
+  pop_state()
+ end
+end
+
+
+-- game over
+
+function update_game_over()
+ game_over_ticks += 1
+ 
+ if game_over_ticks == 2*delay then
+  message = "^your entire party is down!"
+  set_stale()
+ elseif game_over_ticks == 5*delay then
+  local s = "s"
+  if arena.party.battles == 1 then s = "" end
+  message = "^finished "..arena.party.battles.." battle"..s
+ 	set_stale()
+ elseif game_over_ticks == 10*delay then
+  
+  message = "^final level: "..arena.party.level
+ elseif game_over_ticks == 15*delay then
+  lclr(arena.enemies)
+  revive()
+ 	
+  turn = arena.party
+  cur = {l=arena.party, i=1,
+         s=nil}
+ 	cap_cursor()
+ 	arena.party.battles = 0
+ 	old_level = arena.party.level
+ 	arena.party.level = 1
+ 	arena.party.score = 0
+ 	arena.party.luck = 0
+ 	if old_level > 2 then
+ 	 arena.party.level = old_level-2
+ 	 arena.party.score = lget(levels,arena.party.level)
+ 	end
+ 	message = "^the party is set back to "..arena.party.level.."..."
+ 	set_stale()
+ elseif game_over_ticks == 18*delay then
+  push_state(states.team_building)
+ 
+ elseif game_over_ticks == 21*delay then
+  message = "^new enemies appear!"
+  set_up_enemies()
+  set_stale()
+ 
+ elseif game_over_ticks == 24*delay then
+  game_over_ticks = nil
+  pop_state()
+ end
+end
+
+
+-->8
+-- draw
+
+function _draw()
+ if stale then
+  local state = get_state()
+  if state.draw then
+   state.draw()
+   stale = false
+  end
+  if stats then
+   draw_stats()
+  end
+ end
+end
+
+function draw_arena()
+ cls(clear)
+ 
+ if message then
+  note(message)
+ end
+ 
+ //draw stones
+ for x = 0,15 do
+  spr(192, x*8, 0)
+ end
+ draw_enemies()
+ draw_party()
+ line(0,90,128,90,black)
+ draw_options()
+end
+
+function draw_element_chart()
+ cls(clear)
+ 
+ local chart = 
+ {{x=-3, y=-1},//none
+  {x= 0, y=-2},//fire
+  {x= 2, y= 0},//air
+  {x= 0, y= 2},//water
+  {x=-2, y= 0},//earth
+  {x= 1, y=-1},//elec
+  {x= 1, y= 1},//ice
+  {x=-1, y= 1},//plant
+  {x=-1, y=-1},//blood
+  {x= 3, y=-1},//light
+  {x= 3, y= 1},//dark
+  {x=-3, y= 1}}//holy
+ 
+ local chart_x = 80
+ local chart_y = 48
+
+ print("^elements",2,2,0)
+ print("^opposition ^chart",49,20,0)
+ for e=1,#elements-1 do
+  local element = lget(elements,e)
+  local e_n_c = sub(element.n,1,1)
+  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
+  
+  //draw chart
+  local offset = lget(chart,e)
+  print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
+ end
+
+ local line_x = chart_x+2
+ local line_y = chart_y+2
+ 
+ line(line_x, line_y-15, line_x, line_y+15, black)
+ line(line_x-15, line_y, line_x+15, line_y, black)
+ 
+ line(line_x-6, line_y-6, line_x+6, line_y+6, black)
+ line(line_x-6, line_y+6, line_x+6, line_y-6, black)
+ 
+ line(line_x+30, line_y+6, line_x+30, line_y-6, black)
+
+ print("^opposing elements hurt enemies",2,94,black)
+ print("more often. ^same elements will",2,100,black)
+ print("rarely hit. ^choose target well!",2,106,black)
+ print("^none has no bonus or weakness.",2,114,black)
+ print("^holy is good against all!",2,120,black)
+end
+
+function draw_settings()
+ cls(clear)
+ 
+ print("^settings",2,2,black)
+ local bc=nil
+ local fc=black
+ if s_cur.s == #settings+1 and
+  s_cur.o == 1 then
+  bc=black
+  fc=white
+ end
+ print("^cancel",50,120,fc,bc)
+ bc=nil
+ fc=black
+ if s_cur.s == #settings+1 and
+  s_cur.o == 2 then
+  bc=black
+  fc=white
+ end
+ print("^accept",86,120,fc,bc)
+ 
+ for s=1,#settings do
+  local setting = lget(settings,s)
+  bc=nil
+  fc=black
+  if s_cur.s == s then
+   bc=black
+   fc=white
+  end
+  print(setting.n..":",2,s*7+2,fc,bc)
+  
+  for o=1,#setting.o do
+   local option = lget(setting.o,o)
+   bc=nil
+   fc=black
+   if setting.c == o then
+    bc=black
+    fc=white
+   end
+   print(option,20*(o-1)+54+2,s*7+2,fc,bc)
+  
+  end
+ end
+end
+
+function draw_team_building()
+ cls(clear)
+ draw_party()
+ draw_options()
+ print("^learned ^elements",2,2,0)
+ for e=1,#unlocked_elements do
+  local element = lget(unlocked_elements,e)
+  local e_n_c = sub(element.n,1,1)
+  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0) 
+ end
+ 
+ print("^party ^l:"..arena.party.level,83,2,0)
+ 
+ print("^l:^change element",2,95,0)
+ print("^r:^change class",2,103,0)
+ print("^b:^element chart",2,111,0)
+ print("^a:^finish",2,119,0)
+end
+
+function draw_attack()
+ cls(clear)
+ draw_arena()
+ draw_options()
+ if message then
+  note(message)
+ end
+end
+
+function draw_battle_over()
+ cls(clear)
+ draw_arena()
+ draw_options()
+ if message then
+  note(message)
+ end
+end
+
+function draw_game_over()
+ cls(clear)
+ draw_arena()
+ draw_options()
+ if message then
+  note(message, red)
+ end
+end
+-->8
+-- logic
+
+
+function check_over()
+ if #arena.enemies == 0 then
+  push_state(states.battle_over)
+ elseif #arena.party == 0 then
+  push_state(states.game_over)
+ end
+end
+
+function opposition(list)
+ //returns the opposing list
+ if list == arena.enemies then
+  return arena.party
+ else
+  return arena.enemies
+ end
+end
+
+function toggle_turn()
+ if turn == arena.party then
+  turn = arena.enemies
+  init_auto_turn()
+ else
+  turn = arena.party
+  if auto then
+   init_auto_turn()
+  end
+ end
+ cap_cursor()
+end
+
+function select()
+  
+ if cur.l == turn then
+  // select attacker
+  cur.s = {l=cur.l, i=cur.i}
+  toggle_cursor()
+  set_stale()
+ 
+ else
+  // attack target
+  push_state(states.attacking)
+ end
+end
+
+function deselect()
+ if cur.s then
+  cur.i = cur.s.i
+  cur.s = nil
+  toggle_cursor()
+  set_stale()
+ end
+end
+
+function toggle_cursor()
+ cur.l = opposition(cur.l)
+ cap_cursor()
+end
+
+function move_cursor(d)
+ cur.i += d
+ cap_cursor()
+ set_stale()
+end
+
+function random_cursor()
+ cur.i = rnd_int(1, #cur.l)
+ set_stale()
+end
+
+function cap_cursor()
+ if #cur.l > 0 then
+  cur.i = cap_int(cur.i, 1, #cur.l)
+ end
+end
+
+
+-- arena
+
+function get_hit_chance(attacker, target)
+ if not attacker then return end
+ if not target then return end
+ if not target.t then return end
+
+	local attack_element = element_by_n(attacker.stats.e)
+	local target_element = element_by_n(target.t.stats.e)
+	local t_e_i = target_element.i
+	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
+	local chance
+	
+	if multiplier_char == "1" then
+	 chance = 0.25
+	elseif multiplier_char == "2" then
+	 chance = 0.375  
+	elseif multiplier_char == "4" then
+	 chance = 0.5
+	elseif multiplier_char == "6" then
+	 chance = 0.625
+	elseif multiplier_char == "8" then
+	 chance = 0.75
+	else
+	 assert(false, chance)
+	end
+ 
+ if is_fighter(attacker.i) then
+  chance = 1-((1-chance) * (1-chance))
+ end
+ 
+ return chance
 end
 
 function eliminate(list, target)
@@ -953,6 +1308,9 @@ function eliminate(list, target)
  end
  del(list, target)
 end
+
+
+-- battle over
 
 function revive()
  local unsorted = {}
@@ -976,185 +1334,39 @@ function revive()
 end
 
 
--- auto turn
+-- team building
 
-function draw_auto_message()
- if turn == arena.party then
-  local auto_message = "^press (^b) to end auto"
-  note(auto_message)
- end
-end
-
-function auto_turn()
- auto_ticks = 0
- draw_auto_message()
-end
-
-function end_auto_turn()
-	auto_ticks = nil
- lget(settings,1).s = 1
- set_up_settings()
- draw_arena()
- draw_options()
-end
-
-function update_auto_turn()
- auto_ticks += 1
- local auto_message = "^press (^b) to end auto"
- if auto_ticks == 1 then
-  draw_auto_message()
- elseif auto_ticks == 2*delay then
-  cur.i = rnd_int(1,#cur.l)
-  draw_arena()
-  draw_options()
-  draw_auto_message()
- elseif auto_ticks == 4*delay then
-  select()
-  draw_auto_message()
- elseif auto_ticks == 6*delay then
-  cur.i = rnd_int(1,#cur.l)
-  draw_arena()
-  draw_options()
-  draw_auto_message()
- elseif auto_ticks == 8*delay then
-  select()
-  auto_ticks = nil
- end
-end
-
--- battle over
-
-
-function battle_over()
- push_state(states.battle_over)
- over_ticks = 0
-end
-
-function update_battle_over()
- over_ticks += 1
- 
- if over_ticks == 2*delay then
-  draw_arena()
-  note("^no more enemies remain!")
- elseif over_ticks == 5*delay then
-  draw_arena()
-  arena.party.battles += 1
-  local s = ""
-  if arena.party.battles > 1 then s = "s" end
-  note("^finished "..arena.party.battles.." battle"..s)
- elseif over_ticks == 10*delay then
-  draw_arena()
-  note("^total exp: "..arena.party.score)
- elseif over_ticks == 15*delay then
-  local next_level = lget(levels,arena.party.level)
- 	if arena.party.score >= next_level and
- 	 arena.party.level < #levels then
- 	 arena.party.level += 1
- 	 //maybe: lower score on level?
- 	 if arena.party.level > #levels then
- 	  arena.party.level = #levels
- 	 end
-   did_level = true
-   revive()
-   text = "^level up!! ^now at "..arena.party.level 
-  else
-   text = "^currnent level: "..arena.party.level 
+function change_element(member)
+ local member_element_index_in_unlocked
+ for u=1,#unlocked_elements do
+  local element = lget(unlocked_elements,u)
+  local element_n = sub(element.n,1,1)
+  if element_n == member.stats.e then
+   member_element_index_in_unlocked = u
   end
-  draw_arena()
-  draw_options()
-  note(text)
- 
- elseif over_ticks == 20*delay then
-  if did_level then
-   start_team_building()
-   did_level = false
-  else
-   //set_up_enemies()
-   draw_arena()
-   draw_options()
-   text = "^new enemies"
-   if #arena.enemies == 1 then
-    text = "^single "..lget(arena.enemies,1).stats.n
-   end
-   note(text.." appeared!")
-  end
- elseif over_ticks == 23*delay then
-  over_ticks = nil
-  pop_state()
  end
+ assert(member_element_index_in_unlocked)
+ member_element_index_in_unlocked += 1
+ if member_element_index_in_unlocked > # unlocked_elements then
+  member_element_index_in_unlocked = 1
+ end
+ local new_element = lget(unlocked_elements,member_element_index_in_unlocked)
+ member.stats.e = sub(new_element.n,1,1)
+ set_stale()
 end
 
-
--- game over
-
-function game_over()
- push_state(states.game_over)
- game_over_ticks = 0
-end
-
-function update_game_over()
- game_over_ticks += 1
- 
- if game_over_ticks == 2*delay then
-  draw_arena()
-  note("^your entire party is down!", red)
- elseif game_over_ticks == 5*delay then
-  draw_arena()
-  local s = "s"
-  if arena.party.battles == 1 then s = "" end
-  note("^finished "..arena.party.battles.." battle"..s, red)
- elseif game_over_ticks == 10*delay then
-  draw_arena()
-  note("^final level: "..arena.party.level, red)
- elseif game_over_ticks == 15*delay then
-  local over_message
-  if continue then
-   lclr(arena.enemies)
-   revive()
-  	
-   turn = arena.party
-   cur = {l=arena.party, i=1,
-          s=nil}
-  	cap_cursor()
-  	arena.party.battles = 0
-  	old_level = arena.party.level
-  	arena.party.level = 1
-  	arena.party.score = 0
-  	arena.party.luck = 0
-  	if old_level > 2 then
-  	 arena.party.level = old_level-2
-  	 arena.party.score = lget(levels,arena.party.level)
-  	end
-  	pop_state()
-  	start_team_building()
-  	over_message = "^the party is set back to "..arena.party.level.."..."
-  	note(over_message)
-  	return
-  else
-   set_up_party()
-   over_message = "^a new party appears!"
-  end
-  draw_arena()
-  draw_options()
-  note(over_message)
- elseif game_over_ticks == 18*delay then
-  game_over_ticks = nil
-  pop_state()
+function change_class(member)
+ if is_fighter(member.i) then
+  member.i = caster
+  set_stale()
+ elseif is_caster(member.i) then
+  member.i = fighter
+  set_stale()
  end
 end
 
 
 -- settings
-
-function enter_settings()
- push_state(states.settings)
- s_cur = {s=#settings+1, o=1}
- for s=1,#settings do
-  setting = lget(settings,s)
-  setting.c = setting.s
- end
- draw_settings()
-end
 
 function change_settings(d)
  s_cur.s += d
@@ -1180,6 +1392,17 @@ function change_options(d)
 	draw_settings()
 end
 
+-->8
+-- finish
+
+function finish_auto_turn()
+	auto_ticks = nil
+ lget(settings,1).s = 1
+ set_up_settings()
+ message = nil
+ set_stale()
+end
+
 function save_settings()
  if s_cur.s == #settings + 1 then
   if s_cur.o == 2 then
@@ -1195,51 +1418,11 @@ function save_settings()
   pop_state()
  end
 end
-
-
--- team building
-
-function start_team_building()
- push_state(states.team_building)
- lclr(arena.enemies)
- turn = arena.party
- cur.l = arena.party
- cap_cursor()
- draw_team_building()
-end
-
-function change_element(member)
- local member_element_index_in_unlocked
- for u=1,#unlocked_elements do
-  local element = lget(unlocked_elements,u)
-  local element_n = sub(element.n,1,1)
-  if element_n == member.stats.e then
-   member_element_index_in_unlocked = u
-  end
- end
- assert(member_element_index_in_unlocked)
- member_element_index_in_unlocked += 1
- if member_element_index_in_unlocked > # unlocked_elements then
-  member_element_index_in_unlocked = 1
- end
- local new_element = lget(unlocked_elements,member_element_index_in_unlocked)
- member.stats.e = sub(new_element.n,1,1)
-end
-
-function change_class(member)
- if is_fighter(member.i) then
-  member.i = caster
- elseif is_caster(member.i) then
-  member.i = fighter
- end
-end
 -->8
--- draw
+-- graphihcs
 
-function _draw()
- if stats then
-  draw_stats()
- end
+function set_stale()
+ stale = true
 end
 
 note_pos = {x=2, y=83}
@@ -1353,18 +1536,6 @@ function draw_enemy(i, x, y, flipx)
  render(sheet, i-1, x, y, nil, black, nil, white, flipx)
 end
 
-function draw_arena()
- cls(clear)
- 
- //draw stones
- for x = 0,15 do
-  spr(192, x*8, 0)
- end
- draw_enemies()
- draw_party()
- line(0,90,128,90,black)
- draw_options()
-end
 
 function draw_enemies()
  for e in all(arena.enemies) do
@@ -1380,6 +1551,7 @@ function draw_party()
   spr(193, e.x+6, e.y+2)
  end
 end
+
 
 function draw_options()
  local lists = {{l=arena.enemies, x=2},
@@ -1487,106 +1659,6 @@ function draw_element(x, y, element, ring, wide)
 end
 
 
--- element chart
-
-function draw_element_chart()
- cls(clear)
- 
- local chart = 
- {{x=-3, y=-1},//none
-  {x= 0, y=-2},//fire
-  {x= 2, y= 0},//air
-  {x= 0, y= 2},//water
-  {x=-2, y= 0},//earth
-  {x= 1, y=-1},//elec
-  {x= 1, y= 1},//ice
-  {x=-1, y= 1},//plant
-  {x=-1, y=-1},//blood
-  {x= 3, y=-1},//light
-  {x= 3, y= 1},//dark
-  {x=-3, y= 1}}//holy
- 
- local chart_x = 80
- local chart_y = 48
-
- print("^elements",2,2,0)
- print("^opposition ^chart",49,20,0)
- for e=1,#elements-1 do
-  local element = lget(elements,e)
-  local e_n_c = sub(element.n,1,1)
-  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
-  
-  //draw chart
-  local offset = lget(chart,e)
-  print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
- end
-
- local line_x = chart_x+2
- local line_y = chart_y+2
- 
- line(line_x, line_y-15, line_x, line_y+15, black)
- line(line_x-15, line_y, line_x+15, line_y, black)
- 
- line(line_x-6, line_y-6, line_x+6, line_y+6, black)
- line(line_x-6, line_y+6, line_x+6, line_y-6, black)
- 
- line(line_x+30, line_y+6, line_x+30, line_y-6, black)
-
- print("^opposing elements hurt enemies",2,94,black)
- print("more often. ^same elements will",2,100,black)
- print("rarely hit. ^choose target well!",2,106,black)
- print("^none has no bonus or weakness.",2,114,black)
- print("^holy is good against all!",2,120,black)
-end
-
-
--- settings
-
-function draw_settings()
- cls(clear)
- 
- print("^settings",2,2,black)
- local bc=nil
- local fc=black
- if s_cur.s == #settings+1 and
-  s_cur.o == 1 then
-  bc=black
-  fc=white
- end
- print("^cancel",50,120,fc,bc)
- bc=nil
- fc=black
- if s_cur.s == #settings+1 and
-  s_cur.o == 2 then
-  bc=black
-  fc=white
- end
- print("^accept",86,120,fc,bc)
- 
- for s=1,#settings do
-  local setting = lget(settings,s)
-  bc=nil
-  fc=black
-  if s_cur.s == s then
-   bc=black
-   fc=white
-  end
-  print(setting.n..":",2,s*7+2,fc,bc)
-  
-  for o=1,#setting.o do
-   local option = lget(setting.o,o)
-   bc=nil
-   fc=black
-   if setting.c == o then
-    bc=black
-    fc=white
-   end
-   print(option,20*(o-1)+54+2,s*7+2,fc,bc)
-  
-  end
- end
-end
-
 function draw_stats()
  local message = ""
  message = message.." l"..arena.party.level
@@ -1610,34 +1682,15 @@ function draw_stats()
  local state_text = ""
  if states and states.stack then
   for s=1,#states.stack do
-   state = lget(states.stack,s)
-   print(state, 0, s*8+64, white, black)
+   local state = lget(states.stack,s)
+   local arrow = " "
+   if s == #states.stack then
+    arrow = "^["
+   end
+   print(arrow..state.name, 0, s*7+86, dark, black)
   end
  end
 end
-
-
--- team building
-
-function draw_team_building()
- cls(clear)
- draw_party()
- draw_options()
- print("^learned ^elements",2,2,0)
- for e=1,#unlocked_elements do
-  local element = lget(unlocked_elements,e)
-  local e_n_c = sub(element.n,1,1)
-  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0) 
- end
- 
- print("^party ^l:"..arena.party.level,83,2,0)
- 
- print("^l:^change element",2,95,0)
- print("^r:^change class",2,103,0)
- print("^b:^element chart",2,111,0)
- print("^a:^finish",2,119,0)
-end
-
 __gfx__
 affd0b777fdbb37bccc3afffcf000f36e638bff82fff20cac1ceafd2ecf302702001000000000000000000000000000000000000000000000000000000000000
 5a02dc3008481427b01fd280b7808769874b4043f000e2c6d2e0d0fe031f65f50110100000000000000000000000000000000000000000000000000000000000
