@@ -307,10 +307,10 @@ settings = {
 	 o={"^on", "^hit", "^miss"},
  	v={"on", true, false},
 	 s=1},
-	{i=10, n="^game over",
-	 o={"^new", "^cont."},
- 	v={false, true},
-	 s=2},
+	{i=10, n="^penalty",
+	 o={"^0", "^1", "^2", "^3"},
+ 	v={0, 1, 2, 3},
+	 s=3},
 	{i=11, n="^draw stats",
 	 o={"^off", "^on"},
  	v={false, true},
@@ -327,7 +327,7 @@ function set_up_settings()
  random_elem = set_up_setting(7)
  random_enemy = set_up_setting(8)
  hit_chance = set_up_setting(9)
- continue = set_up_setting(10)
+ penalty = set_up_setting(10)
  stats = set_up_setting(11)
 end
 function set_up_setting(index)
@@ -992,8 +992,8 @@ function update_game_over()
  	arena.party.level = 1
  	arena.party.score = 0
  	arena.party.luck = 0
- 	if old_level > 2 then
- 	 arena.party.level = old_level-2
+ 	if old_level > penalty then
+ 	 arena.party.level = old_level-penalty
  	 arena.party.score = lget(levels,arena.party.level)
  	end
  	message = "^the party is set back to "..arena.party.level.."..."
