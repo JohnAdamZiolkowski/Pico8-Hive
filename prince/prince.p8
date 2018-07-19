@@ -218,17 +218,23 @@ function _init()
  set_up_party()
  init_states()
  set_state(states.arena)
- did_level = true
- push_state(states.battle_over)
+ push_state(states.intro)
  
 end
 
 function init_states()
 states = {
+
+ intro={name="^intro",
+        init=init_intro,
+        update=update_intro,
+        draw=draw_arena_state,
+        finish=finish_intro},
+
  arena={name="^arena",
         init=init_arena,
         update=update_arena,
-        draw=draw_arena,
+        draw=draw_arena_state,
         finish=finish_arena},
         
  settings={name="^settings",
@@ -252,13 +258,13 @@ states = {
  attacking={name="^attacking",
         init=init_attack,
         update=update_attack,
-        draw=draw_attack,
+        draw=draw_arena_state,
         finish=finish_attack},
         
  battle_over={name="^battle ^over",
         init=init_battle_over,
         update=update_battle_over,
-        draw=draw_battle_over,
+        draw=draw_arena_state,
         finish=finish_battle_over},
         
  game_over={name="^game ^over",
@@ -639,6 +645,10 @@ function set_up_arena()
  if auto then init_auto_turn() end
 end
 
+function init_intro()
+ intro_ticks = 0
+end
+
 function init_auto_turn()
  auto_ticks = 0
 end
@@ -1012,7 +1022,33 @@ function update_game_over()
  end
 end
 
+-- intro
 
+function update_intro()
+ intro_ticks += 1
+ 
+ if intro_ticks == 2*delay then
+  set_stale()
+  message = "^a new journey begins"
+ 
+ elseif intro_ticks == 5*delay then
+  set_stale()
+  push_state(states.team_building)
+ 
+ elseif intro_ticks == 8*delay then
+  set_up_enemies()
+  text = "^new enemies"
+  if #arena.enemies == 1 then
+   text = "^single "..lget(arena.enemies,1).stats.n
+  end
+  message = text.." appeared!"
+  set_stale()
+  
+ elseif intro_ticks == 13*delay then
+  intro_ticks = nil
+  pop_state()
+ end
+end
 -->8
 -- draw
 
@@ -1160,16 +1196,7 @@ function draw_team_building()
  print("^a:^finish",2,119,0)
 end
 
-function draw_attack()
- cls(clear)
- draw_arena()
- draw_options()
- if message then
-  note(message)
- end
-end
-
-function draw_battle_over()
+function draw_arena_state()
  cls(clear)
  draw_arena()
  draw_options()
