@@ -86,15 +86,13 @@ function lget(list, index)
  return value
 end
 
-function lset(list, index, value, not_nil)
+function lset(list, index, value)
  //safely sets vaule at list index
  assert(type(list)==table)
  assert(type(index)==number)
  assert(flr(index)==index)
  assert(index!=0)
- if not_nil then
-  assert(value, "value is nil")
- end
+ assert(value, "value is nil")
  list[index] = value
 end
 
@@ -275,7 +273,7 @@ settings = {
 	{i=2, n="^text ^delay",
 	 o={"^1", "^5", "^1^0", "^1^5"},
  	v={1, 5, 10, 15},
-	 s=3},
+	 s=1},//3},
 	{i=3, n="^round ^icon",
 	 o={"^off", "^on"},
  	v={false, true},
@@ -335,10 +333,18 @@ function set_up_setting(index)
 end
 
 function set_up_elements()
+ for i=2,12 do
+  local element = lget(elements,i)
+  element.count = 0
+ end
+ 
  unlocked_elements = {}
  for i=1,random_elem do
   local element = lget(elements,i)
   add(unlocked_elements,element)
+  if element.i != 1 then
+   element.count = 1
+  end
  end
 end
 
@@ -593,7 +599,7 @@ function set_up_party()
  	end
  	if id != nil then
  	 //assign random element of basic 8
- 	 local e = rnd_int(1,#unlocked_elements)
+ 	 local e = 1//rnd_int(1,#unlocked_elements)
  	 local element_n = sub(lget(unlocked_elements,e).n,1,1)
  	 local n = lget(enemy.stats,id).n
  	 local l = 1
@@ -660,6 +666,73 @@ function init_team_building()
  turn = arena.party
  cur.l = arena.party
  cap_cursor()
+end
+
+
+function init_attack()
+ attack_ticks = 0
+ 
+ attacker = lget(turn,cur.s.i)
+ attacker_n = attacker.stats.n
+ assert(attacker)
+ targets = {}
+ main_target = {t=lget(opposition(turn),cur.i)}
+ main_target_n = main_target.t.stats.n
+ add(targets, main_target)
+ 
+ if is_caster(attacker.i) then
+  for p_target in all(opposition(turn)) do
+   if p_target.s == main_target.t.s +1 or
+    p_target.s == main_target.t.s -1 then
+    add(targets, {t=p_target})
+   end
+  end
+ end
+ 
+ for target in all(targets) do
+ 	assert(target)
+	
+  local hit
+  local chance = get_hit_chance(attacker, target)
+  if hit_chance != "on" then
+   hit = hit_chance
+  else
+   hit = rnd(1) < chance
+   
+   if is_prince(attacker.i) then
+    if hit and turn==arena.party then
+     local old_element = element_by_n(attacker.stats.e)
+     if old_element.i != 1 then
+      old_element.count += 1
+      if old_element.count > 9 then
+       old_element.count = 9
+      end
+     end
+     //prince changes element
+     attacker.stats.e = target.t.stats.e
+     local unlocking_element = element_by_n(target.t.stats.e)
+     take_element(unlocking_element)
+    end
+   end
+  end
+  
+  if turn == arena.party then
+   if chance > 0.5 and not hit then
+    arena.party.luck -= chance-0.5
+   elseif chance < 0.5 and hit then
+    arena.party.luck += 0.5-chance
+   end
+  else
+   if chance < 0.5 and hit then
+    arena.party.luck -= 0.5-chance
+   elseif chance > 0.5 and not hit then
+    arena.party.luck += chance-0.5
+   end
+  end
+  
+  target.h = hit
+ end
+ 
 end
 -->8
 -- update
@@ -747,67 +820,6 @@ end
 
 -- attack
 
-function init_attack()
- attack_ticks = 0
- 
- attacker = lget(turn,cur.s.i)
- attacker_n = attacker.stats.n
- assert(attacker)
- targets = {}
- main_target = {t=lget(opposition(turn),cur.i)}
- main_target_n = main_target.t.stats.n
- add(targets, main_target)
- 
- if is_caster(attacker.i) then
-  for p_target in all(opposition(turn)) do
-   if p_target.s == main_target.t.s +1 or
-    p_target.s == main_target.t.s -1 then
-    add(targets, {t=p_target})
-   end
-  end
- end
- 
- for target in all(targets) do
- 	assert(target)
-	
-  local hit
-  local chance = get_hit_chance(attacker, target)
-  if hit_chance != "on" then
-   hit = hit_chance
-  else
-   hit = rnd(1) < chance
-   
-   if is_prince(attacker.i) then
-    if hit and turn==arena.party then
-     //prince changes element
-     attacker.stats.e = target.t.stats.e
-     local unlocking_element = element_by_n(target.t.stats.e)
-     if not linc(unlocked_elements, unlocking_element) then
-      //unlocks element for later
-      add(unlocked_elements, unlocking_element)
-     end
-    end
-   end
-  end
-  
-  if turn == arena.party then
-   if chance > 0.5 and not hit then
-    arena.party.luck -= chance-0.5
-   elseif chance < 0.5 and hit then
-    arena.party.luck += 0.5-chance
-   end
-  else
-   if chance < 0.5 and hit then
-    arena.party.luck -= 0.5-chance
-   elseif chance > 0.5 and not hit then
-    arena.party.luck += chance-0.5
-   end
-  end
-  
-  target.h = hit
- end
- 
-end
 
 function update_attack()
  
@@ -1172,7 +1184,11 @@ function draw_team_building()
  for e=1,#unlocked_elements do
   local element = lget(unlocked_elements,e)
   local e_n_c = sub(element.n,1,1)
-  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, black) 
+  local y = 4+e*6
+  print("^@"..e_n_c.."^"..element.n, 4, y, black) 
+  if element.i != 1 then
+   print("x"..element.count, 40, y, black)
+  end
  end
  
  print("^party ^l:"..arena.party.level,83,2,black)
@@ -1327,6 +1343,24 @@ function eliminate(list, target)
  del(list, target)
 end
 
+function take_element(element)
+ if not linc(unlocked_elements, element) then
+  //unlocks element for later
+  add(unlocked_elements, element)
+ end
+ 
+ //if element.i != 1 then
+ // if element.count then
+ //  element.count += 1
+ // else
+ //  element.count = 1
+ // end
+ // if element.count > 9 then
+ //  element.count = 9
+ // end
+ //end
+ 
+end
 
 -- battle over
 
@@ -1356,19 +1390,40 @@ end
 
 function change_element(member)
  local member_element_index_in_unlocked
+ local member_element
  for u=1,#unlocked_elements do
   local element = lget(unlocked_elements,u)
   local element_n = sub(element.n,1,1)
   if element_n == member.stats.e then
+   member_element = element
    member_element_index_in_unlocked = u
   end
  end
  assert(member_element_index_in_unlocked)
- member_element_index_in_unlocked += 1
- if member_element_index_in_unlocked > # unlocked_elements then
-  member_element_index_in_unlocked = 1
+ if member_element.i != 1 then
+  member_element.count += 1
  end
- local new_element = lget(unlocked_elements,member_element_index_in_unlocked)
+ 
+ local found = false
+ local new_element
+ for u=1,#unlocked_elements do
+  if not found then
+   member_element_index_in_unlocked += 1
+   if member_element_index_in_unlocked > # unlocked_elements then
+    member_element_index_in_unlocked = 1
+   end
+   new_element = lget(unlocked_elements,member_element_index_in_unlocked)
+   if new_element.i == 1
+   or new_element.count > 0 then
+    found = true
+   end
+  end
+ end
+  
+ if new_element.i != 1 then
+  new_element.count -= 1
+ end
+ 
  member.stats.e = sub(new_element.n,1,1)
  set_stale()
 end
