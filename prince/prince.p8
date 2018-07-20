@@ -205,21 +205,12 @@ function _init()
  palt(black, false)
 
  set_up_settings()
- unlocked_elements = {}
- for i=1,random_elem do
-  local element = lget(elements,i)
-  add(unlocked_elements,element)
- end
-
- arena = {}
- arena.party = {}
- arena.enemies = {}
- 
+ set_up_elements()
+ set_up_arena() 
  set_up_party()
  init_states()
  set_state(states.arena)
  push_state(states.intro)
- 
 end
 
 function init_states()
@@ -282,7 +273,7 @@ settings = {
  	v={false, true},
  	s=1},
 	{i=2, n="^text ^delay",
-	 o={"1", "5", "10", "15"},
+	 o={"^1", "^5", "^1^0", "^1^5"},
  	v={1, 5, 10, 15},
 	 s=3},
 	{i=3, n="^round ^icon",
@@ -302,7 +293,7 @@ settings = {
  	v={false, true},
 	 s=1},
 	{i=7, n="^rand ^elem",
-	 o={"0", "4", "8", "10"},
+	 o={"^0", "^4", "^8", "^1^0"},
  	v={1, 5, 9, 11, 12},
 	 s=1},
 	{i=8, n="^rand ^enemy",
@@ -341,6 +332,14 @@ function set_up_setting(index)
  local options = setting.v
  local selected = lget(options,setting.s)
  return selected
+end
+
+function set_up_elements()
+ unlocked_elements = {}
+ for i=1,random_elem do
+  local element = lget(elements,i)
+  add(unlocked_elements,element)
+ end
 end
 
 prince = 22
@@ -635,14 +634,8 @@ end
 
 function set_up_arena()
  arena = {}
- 
- arena.party = {n="party"}
- set_up_party()
- 
+ arena.party = {n="party"} 
  arena.enemies = {n="enemies"}
- set_up_enemies()
- 
- if auto then init_auto_turn() end
 end
 
 function init_intro()
@@ -1171,7 +1164,7 @@ function draw_settings()
     bc=black
     fc=white
    end
-   print(option,20*(o-1)+54+2,s*7+2,fc,bc)
+   print(option,20*(o-1)+54,s*7+2,fc,bc)
   
   end
  end
@@ -1181,19 +1174,23 @@ function draw_team_building()
  cls(clear)
  draw_party()
  draw_options()
- print("^learned ^elements",2,2,0)
+ print("^learned ^elements",2,2,black)
  for e=1,#unlocked_elements do
   local element = lget(unlocked_elements,e)
   local e_n_c = sub(element.n,1,1)
-  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0) 
+  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, black) 
  end
  
- print("^party ^l:"..arena.party.level,83,2,0)
+ print("^party ^l:"..arena.party.level,83,2,black)
  
- print("^l:^change element",2,95,0)
- print("^r:^change class",2,103,0)
- print("^b:^element chart",2,111,0)
- print("^a:^finish",2,119,0)
+ if #unlocked_elements > 1 then
+  print("^l:^change element",2,95,black)
+ end
+ if not is_prince(lget(cur.l, cur.i).i) then
+  print("^r:^change class",2,103,black)
+ end
+ print("^b:^element chart",2,111,black)
+ print("^a:^finish",2,119, white, black)
 end
 
 function draw_arena_state()
