@@ -477,6 +477,41 @@ for e in all(enemy.stats) do
  end
 end
 
+function set_up_enemy(s, id)
+ e = lget(enemy.stats,id).e
+ if e == "v" then
+  //humans get random element
+  local enemy_l =  lget(enemy.stats,id).l
+  local element_i
+  if id == prince
+   or id == fighter
+    or id == caster then
+   element_i = rnd_int(2,5)
+  elseif id == prince+1
+   or id == fighter+1
+    or id == caster+1 then
+   element_i = rnd_int(6,9)
+  elseif id == prince+2
+   or id == fighter+2
+    or id == caster+2 then
+   element_i = rnd_int(10,11)
+  end
+  assert(element_i)
+  local element_n = sub(lget(elements,element_i).n,1,1)
+  e = element_n
+ end
+ local n = lget(enemy.stats,id).n
+ local l = lget(enemy.stats,id).l
+	local enemy = {
+	 s = s,
+		i = id,
+		x = 16 + ((s-1) % 2) * 12,
+		y = (s-1) * 14 + 13,
+		stats = {e=e, n=n, l=l}
+	}
+	add(arena.enemies, enemy)
+end
+
 function set_up_enemies()
  local l = 1
  if arena and arena.party and arena.party.level then
@@ -521,39 +556,8 @@ function set_up_enemies()
     local enemy = lget(enemies_at_level,e_l)
     id = enemy.i
    end
-   e = lget(enemy.stats,id).e
-   if e == "v" then
-    //humans get random element
-    local enemy_l =  lget(enemy.stats,id).l
-    local element_i
-    if id == prince
-     or id == fighter
-      or id == caster then
-     element_i = rnd_int(2,5)
-    elseif id == prince+1
-     or id == fighter+1
-      or id == caster+1 then
-     element_i = rnd_int(6,9)
-    elseif id == prince+2
-     or id == fighter+2
-      or id == caster+2 then
-     element_i = rnd_int(10,11)
-    end
-    assert(element_i)
-    local element_n = sub(lget(elements,element_i).n,1,1)
-    e = element_n
-   end
-   local n = lget(enemy.stats,id).n
-   local l = lget(enemy.stats,id).l
-  	local enemy = {
-  	 s = s,
-  		i = id,
-  		x = 16 + ((s-1) % 2) * 12,
-  		y = (s-1) * 14 + 13,
-  		stats = {e=e, n=n, l=l}
-  	}
-  	add(arena.enemies, enemy)
- 	end
+   set_up_enemy(s, id)
+  end
  end
  if #arena.enemies == 0 then
   set_up_enemies()
@@ -566,17 +570,7 @@ function set_up_boss(boss_set)
 	//populate enemies
  for s=1,5 do
   local id = lget(boss_set.i,s)
-  local e = lget(enemy.stats,id).e
-  local n = lget(enemy.stats,id).n
-  local l = lget(enemy.stats,id).l
- 	local enemy = {
- 	 s = s,
- 		i = id,
- 		x = 16 + ((s-1) % 2) * 12,
- 		y = (s-1) * 14 + 13,
- 		stats = {e=e, n=n, l=l}
- 	}
- 	add(arena.enemies, enemy)
+  set_up_enemy(s,id)
 	end
 end
 
