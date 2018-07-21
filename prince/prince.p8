@@ -354,29 +354,24 @@ prince = 22
 fighter = 25
 caster = 28
 
-function is_fighter(enemy_id)
- if enemy_id == fighter
-  or enemy_id == fighter + 1
-   or enemy_id == fighter + 2 then
+function is_in_line(enemy_id, base_id)
+ if enemy_id == base_id
+  or enemy_id == base_id + 1
+   or enemy_id == base_id + 2 then
   return true  
  end
- return false
+end
+
+function is_fighter(enemy_id)
+ return is_in_line(enemy_id, fighter)
 end
 
 function is_caster(enemy_id)
- if enemy_id == caster
-  or enemy_id == caster + 1
-   or enemy_id == caster + 2 then
-  return true  
- end
+ return is_in_line(enemy_id, caster)
 end
 
 function is_prince(enemy_id)
- if enemy_id == prince
-  or enemy_id == prince + 1
-   or enemy_id == prince + 2 then
-  return true  
- end
+ return is_in_line(enemy_id, prince)
 end
 
 function get_element(eni)
@@ -464,11 +459,12 @@ boss_sets = {
  {l=16, i={90, 90, 102, 90, 90}} //final bishop
 }
 
-
-levels = {  4,  12,  24,  40,
-           64,  84, 108, 136,
-          168, 204, 244, 288,
-          336, 388, 444, 512}
+levels = {}
+level = 0
+for i=1,16 do
+ level += i*5
+ add(levels,level)
+end
           
 enemies_by_level = {}
 for l=1,#levels do
@@ -548,7 +544,7 @@ function set_up_enemies()
  end
 
  for s=1,5 do
-  if rnd(1) < 0.33 then
+  if rnd(1) < 0.15*#arena.party then
    local id
    local e
    if random_enemy then
