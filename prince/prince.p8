@@ -198,9 +198,10 @@ end
 -- init
 
 function _init()
- clear = 13
+ clear = dark
  cls(clear)
  palt(black, false)
+ palt(pale, true)
 
  set_up_settings()
  set_up_elements()
@@ -290,7 +291,7 @@ settings = {
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{i=7, n="^rand ^elem",
+	{i=7, n="^have ^elem",
 	 o={"^0", "^4", "^8", "^1^0"},
  	v={1, 5, 9, 11, 12},
 	 s=1},
@@ -340,7 +341,7 @@ function set_up_elements()
  end
  
  unlocked_elements = {}
- for i=1,12 do//random_elem do
+ for i=1,random_elem do
   local element = lget(elements,i)
   add(unlocked_elements,element)
   if element.i != 1 then
@@ -1048,6 +1049,7 @@ end
 
 function _draw()
  if stale then
+  cls(clear)
   local state = get_state()
   if state.draw then
    state.draw()
@@ -1060,8 +1062,7 @@ function _draw()
 end
 
 function draw_arena()
- cls(clear)
- 
+
  if message then
   note(message)
  end
@@ -1077,7 +1078,6 @@ function draw_arena()
 end
 
 function draw_element_chart()
- cls(clear)
  
  local chart = 
  {{x=-3, y=-1},//none
@@ -1127,7 +1127,6 @@ function draw_element_chart()
 end
 
 function draw_settings()
- cls(clear)
  
  print("^settings",2,2,black)
  local bc=nil
@@ -1172,7 +1171,6 @@ function draw_settings()
 end
 
 function draw_team_building()
- cls(clear)
  draw_party()
  draw_options()
  print("^learned ^elements",2,2,black)
@@ -1192,7 +1190,7 @@ function draw_team_building()
  if #unlocked_elements > 1 then
   print("^l:^change element",2,95,black)
  end
- if not is_prince(lget(cur.l, cur.i).i) then
+ if not is_prince(lget(arena.party, cur.i).i) then
   print("^r:^change class",2,103,black)
  end
  print("^b:^element chart",2,111,black)
@@ -1200,7 +1198,6 @@ function draw_team_building()
 end
 
 function draw_arena_state()
- cls(clear)
  draw_arena()
  draw_options()
  if message then
@@ -1209,7 +1206,6 @@ function draw_arena_state()
 end
 
 function draw_game_over()
- cls(clear)
  draw_arena()
  draw_options()
  if message then
@@ -1456,7 +1452,7 @@ function change_settings(d)
  else
   s_cur.o = lget(settings,s_cur.s).s
  end
-	draw_settings()
+	set_stale()
 end
 
 function change_options(d)
@@ -1469,7 +1465,7 @@ function change_options(d)
   s_cur.o = cap_int(s_cur.o, 1, #options)
 		setting.c = s_cur.o
 	end
-	draw_settings()
+	set_stale()
 end
 
 -->8
