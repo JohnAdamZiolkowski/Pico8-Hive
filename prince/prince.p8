@@ -273,7 +273,7 @@ settings = {
 	{i=2, n="^text ^delay",
 	 o={"^1", "^5", "^1^0", "^1^5"},
  	v={1, 5, 10, 15},
-	 s=1},//3},
+	 s=3},
 	{i=3, n="^round ^icon",
 	 o={"^off", "^on"},
  	v={false, true},
@@ -336,14 +336,15 @@ function set_up_elements()
  for i=2,12 do
   local element = lget(elements,i)
   element.count = 0
+  element.party = 0
  end
  
  unlocked_elements = {}
- for i=1,random_elem do
+ for i=1,12 do//random_elem do
   local element = lget(elements,i)
   add(unlocked_elements,element)
   if element.i != 1 then
-   element.count = 1
+   element.count = 0
   end
  end
 end
@@ -702,16 +703,10 @@ function init_attack()
    if is_prince(attacker.i) then
     if hit and turn==arena.party then
      local old_element = element_by_n(attacker.stats.e)
-     if old_element.i != 1 then
-      old_element.count += 1
-      if old_element.count > 9 then
-       old_element.count = 9
-      end
-     end
+     local new_element = element_by_n(target.t.stats.e)     
      //prince changes element
      attacker.stats.e = target.t.stats.e
-     local unlocking_element = element_by_n(target.t.stats.e)
-     take_element(unlocking_element)
+     take_element(old_element, new_element)
     end
    end
   end
@@ -1188,6 +1183,7 @@ function draw_team_building()
   print("^@"..e_n_c.."^"..element.n, 4, y, black) 
   if element.i != 1 then
    print("x"..element.count, 40, y, black)
+   print("p"..element.party, 54, y, black)
   end
  end
  
@@ -1343,23 +1339,32 @@ function eliminate(list, target)
  del(list, target)
 end
 
-function take_element(element)
- if not linc(unlocked_elements, element) then
-  //unlocks element for later
-  add(unlocked_elements, element)
+function take_element(old_element, new_element)
+ assert(linc(elements, old_element))
+ assert(linc(elements, new_element))
+ 
+ if not linc(unlocked_elements, new_element) then
+  //unlocks new element for later
+  add(unlocked_elements, new_element)
  end
  
- //if element.i != 1 then
- // if element.count then
- //  element.count += 1
- // else
- //  element.count = 1
- // end
- // if element.count > 9 then
- //  element.count = 9
- // end
- //end
+ //store old element
+ if old_element.i != 1 then
+  old_element.count += 1
+		old_element.party -= 1
+  if old_element.count + old_element.party > 9 then
+   old_element.count = 9 - old_element.party
+  end
+ end
  
+ //update party count
+ if new_element.i != 1 then
+  new_element.party += 1
+  if new_element.count + new_element.party > 9 then
+   new_element.count = 9 - new_element.party
+  end
+ end
+
 end
 
 -- battle over
@@ -1402,6 +1407,7 @@ function change_element(member)
  assert(member_element_index_in_unlocked)
  if member_element.i != 1 then
   member_element.count += 1
+  member_element.party -= 1
  end
  
  local found = false
@@ -1422,6 +1428,7 @@ function change_element(member)
   
  if new_element.i != 1 then
   new_element.count -= 1
+  new_element.party += 1
  end
  
  member.stats.e = sub(new_element.n,1,1)
