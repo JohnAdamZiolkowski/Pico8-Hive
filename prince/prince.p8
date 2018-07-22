@@ -514,7 +514,7 @@ end
 
 function set_up_enemies()
  local l = 1
- if arena and party and level then
+ if party and level then
   l = level
  end
 
@@ -547,7 +547,7 @@ function set_up_enemies()
     id = rnd_int(1,#enemy.stats)
    else
     local l = 1
-    if arena and party and level then
+    if party and level then
      l = level
     end
     if l > #enemies_by_level then l = #enemies_by_level end
@@ -628,9 +628,8 @@ function set_up_party()
 end
 
 function set_up_arena()
- arena = {}
- party = {n="party"} 
- enemies = {n="enemies"}
+ party = {} 
+ enemies = {}
 end
 
 function init_intro()
