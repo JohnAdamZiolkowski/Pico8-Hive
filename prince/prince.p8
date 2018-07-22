@@ -267,47 +267,43 @@ states = {
 end
 
 settings = {
-	{i=1, n="^auto ^turn", 
+	{n="^auto ^turn", 
  	o={"^off", "^on"},
  	v={false, true},
  	s=1},
-	{i=2, n="^text ^delay",
+	{n="^text ^delay",
 	 o={"^1", "^5", "^1^0", "^1^5"},
  	v={1, 5, 10, 15},
 	 s=3},
-	{i=3, n="^round ^icon",
-	 o={"^off", "^on"},
- 	v={false, true},
-	 s=2},
-	{i=4, n="^caps ^l^o^c^k",
+	{n="^caps ^l^o^c^k",
 	 o={"^off", "^o^n"},
  	v={false, true},
 	 s=1},
-	{i=5, n="^rand ^level",
+	{n="^rand ^level",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{i=6, n="^rand ^party",
+	{n="^rand ^party",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{i=7, n="^have ^elem",
+	{n="^have ^elem",
 	 o={"^0", "^4", "^8", "^1^0"},
  	v={1, 5, 9, 11, 12},
 	 s=1},
-	{i=8, n="^rand ^enemy",
+	{n="^rand ^enemy",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
-	{i=9, n="^hit chance",
+	{n="^hit chance",
 	 o={"^on", "^hit", "^miss"},
  	v={"on", true, false},
 	 s=1},
-	{i=10, n="^penalty",
+	{n="^penalty",
 	 o={"^0", "^1", "^2", "^3"},
  	v={0, 1, 2, 3},
 	 s=3},
-	{i=11, n="^draw stats",
+	{n="^draw stats",
 	 o={"^off", "^on"},
  	v={false, true},
 	 s=1},
@@ -316,15 +312,14 @@ settings = {
 function set_up_settings()
  auto = set_up_setting(1)
  delay = set_up_setting(2)
- round = set_up_setting(3)
- caps_lock = set_up_setting(4)
- random_level = set_up_setting(5)
- random_party = set_up_setting(6)
- random_elem = set_up_setting(7)
- random_enemy = set_up_setting(8)
- hit_chance = set_up_setting(9)
- penalty = set_up_setting(10)
- stats = set_up_setting(11)
+ caps_lock = set_up_setting(3)
+ random_level = set_up_setting(4)
+ random_party = set_up_setting(5)
+ random_elem = set_up_setting(6)
+ random_enemy = set_up_setting(7)
+ hit_chance = set_up_setting(8)
+ penalty = set_up_setting(9)
+ stats = set_up_setting(10)
 end
 function set_up_setting(index)
  local setting = lget(settings,index)
@@ -544,7 +539,7 @@ function set_up_enemies()
  end
 
  for s=1,5 do
-  if rnd(1) < 0.15*#arena.party then
+  if rnd(1) < 0.05*#arena.party+arena.party.level/32 then
    local id
    local e
    if random_enemy then
@@ -617,6 +612,7 @@ function set_up_party()
  arena.party.battles = 0
  arena.party.level = 1
  arena.party.luck = 0
+ arena.party.setbacks = 0
  if random_level then
   arena.party.level = rnd_int(1,#levels)
   if arena.party.level > 1 then
@@ -663,7 +659,8 @@ end
 function init_team_building()
  turn = arena.party
  cur.l = arena.party
- cap_cursor()
+ revive()
+ cur.i = 3 //prince
 end
 
 
@@ -790,6 +787,8 @@ function update_settings()
 end
 
 function update_team_building()
+ if game_complete then return end
+ 
  if not auto then
   if btnp(🅾️) then
    pop_state()
@@ -945,7 +944,7 @@ function update_battle_over()
   message = text
  
  elseif over_ticks == 20*delay then
-  if did_level then
+  if did_level or game_complete then
    push_state(states.team_building)
    did_level = false
   end
@@ -988,11 +987,10 @@ function update_game_over()
   cur = {l=arena.party, i=1,
          s=nil}
  	cap_cursor()
- 	arena.party.battles = 0
  	old_level = arena.party.level
  	arena.party.level = 1
  	arena.party.score = 0
- 	arena.party.luck = 0
+ 	arena.party.setbacks += 1
  	if old_level > penalty then
  	 arena.party.level = old_level-penalty
  	 arena.party.score = lget(levels,arena.party.level)
@@ -1169,28 +1167,40 @@ end
 function draw_team_building()
  draw_party()
  draw_options()
- print("^learned ^elements",2,2,black)
+ print("^learned ^elements",2,2)
  for e=1,#unlocked_elements do
   local element = lget(unlocked_elements,e)
   local e_n_c = sub(element.n,1,1)
   local y = 4+e*6
-  print("^@"..e_n_c.."^"..element.n, 4, y, black) 
+  print("^@"..e_n_c.."^"..element.n, 4, y) 
   if element.i != 1 then
-   print("x"..element.count, 40, y, black)
-   print("p"..element.party, 54, y, black)
+   print("x"..element.count, 40, y)
+   print("p"..element.party, 54, y)
   end
  end
  
- print("^party ^l:"..arena.party.level,83,2,black)
- 
- if #unlocked_elements > 1 then
-  print("^l:^change element",2,95,black)
- end
- if not is_prince(lget(arena.party, cur.i).i) then
-  print("^r:^change class",2,103,black)
- end
- print("^b:^element chart",2,111,black)
- print("^a:^finish",2,119, white, black)
+ print("^party ^l:"..arena.party.level,83,2)
+
+	if game_complete then
+  note("^the journey is complete.")
+		print("^congratulations!",2,93)
+		print("   ^battles: "..arena.party.battles,2,100)
+		print("^experience: "..arena.party.score,2,107)
+  print("  ^setbacks: "..arena.party.setbacks,2,114)
+		print("^total luck: "..arena.party.luck,2,121)
+	
+	else
+	 note("^get the party ready to go")
+
+  if #unlocked_elements > 1 then
+   print("^l:^change element",2,95)
+  end
+  if not is_prince(lget(arena.party, cur.i).i) then
+   print("^r:^change class",2,103)
+  end
+  print("^b:^element chart",2,111)
+  print("^a:^finish",2,119, white, black)
+	end
 end
 
 function draw_arena_state()
@@ -1329,6 +1339,9 @@ function eliminate(list, target)
   add(arena.party.dead, target)
  end
  del(list, target)
+ if target.i == 102 then
+  game_complete = true
+ end
 end
 
 function take_element(old_element, new_element)
@@ -1517,6 +1530,9 @@ function print(s, x, y, pc, bg_col, caps, caps_lock)
  assert(type(s)==string,type(s))
  assert(type(x)==number)
  assert(type(y)==number)
+ if pc == nil then
+  pc = black
+ end
  assert(type(pc)==number)
  
  local offset = 0
@@ -1706,9 +1722,7 @@ function draw_element(x, y, element, ring, wide)
 	local fill = element.c
 	
  if wide then
-	 if round then
-   circfill(x, y, 2, fill)
-  end
+  circfill(x, y, 2, fill)
   circfill(x, y, 1.5, fill)
   if ring != white then
    pset(x, y-1, white)
@@ -1721,12 +1735,11 @@ function draw_element(x, y, element, ring, wide)
  else
   circ(x-1, y, 1, ring)
   pset(x-1, y, fill)
-  if round then
-   pset(x-2, y-1, fill)
-   pset(x-2, y+1, fill)
-   pset(x, y-1, fill)
-   pset(x, y+1, fill)
-  end
+  
+  pset(x-2, y-1, fill)
+  pset(x-2, y+1, fill)
+  pset(x, y-1, fill)
+  pset(x, y+1, fill)
  end
 end
 
@@ -1736,6 +1749,7 @@ function draw_stats()
  message = message.." l"..arena.party.level
  message = message.." x"..arena.party.score
  message = message.." b"..arena.party.battles
+ message = message.." s"..arena.party.setbacks
  message = message.." e"..#unlocked_elements
  message = message.." r"..arena.party.luck
 
