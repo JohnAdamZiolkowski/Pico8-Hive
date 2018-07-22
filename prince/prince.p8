@@ -481,7 +481,7 @@ function set_up_enemy(s, id)
  e = lget(enemy.stats,id).e
  if e == "v" then
   //humans get random element
-  local enemy_l =  lget(enemy.stats,id).l
+  local enemy_l = lget(enemy.stats,id).l
   local element_i
   if id == prince
    or id == fighter
@@ -507,7 +507,9 @@ function set_up_enemy(s, id)
 		i = id,
 		x = 16 + ((s-1) % 2) * 12,
 		y = (s-1) * 14 + 13,
-		stats = {e=e, n=n, l=l}
+		e = e,
+		n = n,
+		l = l
 	}
 	add(enemies, enemy)
 end
@@ -515,7 +517,7 @@ end
 function set_up_enemies()
  enemies.dead = {}
  local l = 1
- if party and level then
+ if level then
   l = level
  end
 
@@ -547,10 +549,6 @@ function set_up_enemies()
    if random_enemy then
     id = rnd_int(1,#enemy.stats)
    else
-    local l = 1
-    if party and level then
-     l = level
-    end
     if l > #enemies_by_level then l = #enemies_by_level end
     local enemies_at_level = lget(enemies_by_level,l)
     local e_l = rnd_int(1,#enemies_at_level)
@@ -604,7 +602,9 @@ function set_up_party()
   		i = id,
   		x = 96 - ((s-1) % 2) * 12,
   		y = (s-1) * 14 + 13,
-  		stats = {e=element_n, n=n, l=l}
+  		e = element_n,
+  	 n = n,
+  	 l = l
   	}
   	add(party, member)
  	end
@@ -668,11 +668,11 @@ function init_attack()
  attack_ticks = 0
  
  attacker = lget(turn,cur.s.i)
- attacker_n = attacker.stats.n
+ attacker_n = attacker.n
  assert(attacker)
  targets = {}
  main_target = {t=lget(opposition(turn),cur.i)}
- main_target_n = main_target.t.stats.n
+ main_target_n = main_target.t.n
  add(targets, main_target)
  
  if is_caster(attacker.i) then
@@ -696,10 +696,10 @@ function init_attack()
    
    if is_prince(attacker.i) then
     if hit and turn==party then
-     local old_element = element_by_n(attacker.stats.e)
-     local new_element = element_by_n(target.t.stats.e)     
+     local old_element = element_by_n(attacker.e)
+     local new_element = element_by_n(target.t.e)     
      //prince changes element
-     attacker.stats.e = target.t.stats.e
+     attacker.e = target.t.e
      take_element(old_element, new_element)
     end
    end
@@ -951,7 +951,7 @@ function update_battle_over()
   set_up_enemies()
   text = "^new enemies"
   if #enemies == 1 then
-   text = "^single "..lget(enemies,1).stats.n
+   text = "^single "..lget(enemies,1).n
   end
   message = text.." appeared!"
   set_stale()
@@ -1026,7 +1026,7 @@ function update_intro()
   set_up_enemies()
   text = "^new enemies"
   if #enemies == 1 then
-   text = "^single "..lget(enemies,1).stats.n
+   text = "^single "..lget(enemies,1).n
   end
   message = text.." appeared!"
   set_stale()
@@ -1307,8 +1307,8 @@ function get_hit_chance(attacker, target)
  if not target then return end
  if not target.t then return end
 
-	local attack_element = element_by_n(attacker.stats.e)
-	local target_element = element_by_n(target.t.stats.e)
+	local attack_element = element_by_n(attacker.e)
+	local target_element = element_by_n(target.t.e)
 	local t_e_i = target_element.i
 	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
 	local chance
@@ -1336,7 +1336,7 @@ end
 
 function eliminate(list, target)
  if list == enemies then
-  score += target.stats.l
+  score += target.l
  end
  add(list.dead, target)
  del(list, target)
@@ -1405,7 +1405,7 @@ function change_element(member)
  for u=1,#unlocked_elements do
   local element = lget(unlocked_elements,u)
   local element_n = sub(element.n,1,1)
-  if element_n == member.stats.e then
+  if element_n == member.e then
    member_element = element
    member_element_index_in_unlocked = u
   end
@@ -1437,7 +1437,7 @@ function change_element(member)
   new_element.party += 1
  end
  
- member.stats.e = sub(new_element.n,1,1)
+ member.e = sub(new_element.n,1,1)
  set_stale()
 end
 
@@ -1640,7 +1640,7 @@ function draw_party()
   draw_enemy(e.i, e.x, e.y, true)
  end
  for e in all(party.dead) do
-  spr(193, e.x+6, e.y+2)
+  spr(193, e.x+7, e.y+2)
  end
 end
 
@@ -1656,7 +1656,7 @@ function draw_options()
   local list = lget(lists,l)
   for e = 1,#list.l do 
    local en = lget(list.l,e)
-   local element = lget(list.l,e).stats.e
+   local element = lget(list.l,e).e
    local c = black
    local bg = nil
    local icon = "^ "
