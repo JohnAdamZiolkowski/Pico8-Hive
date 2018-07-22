@@ -929,7 +929,6 @@ function update_battle_over()
  	if score >= next_level and
  	 level < #levels then
  	 level += 1
- 	 //maybe: lower score on level?
  	 if level > #levels then
  	  level = #levels
  	 end
@@ -949,6 +948,9 @@ function update_battle_over()
   end
  elseif over_ticks == 21*delay then
   set_up_enemies()
+  turn = party
+  cur.l = party
+  cap_cursor()
   text = "^new enemies"
   if #enemies == 1 then
    text = "^single "..lget(enemies,1).n
