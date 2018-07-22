@@ -460,6 +460,7 @@ for i=1,16 do
  level += i*5
  add(levels,level)
 end
+level = nil
           
 enemies_by_level = {}
 for l=1,#levels do
@@ -513,8 +514,8 @@ end
 
 function set_up_enemies()
  local l = 1
- if arena and party and party.level then
-  l = party.level
+ if arena and party and level then
+  l = level
  end
 
  local boss_set
@@ -539,15 +540,15 @@ function set_up_enemies()
  end
 
  for s=1,5 do
-  if rnd(1) < 0.05*#party+party.level/32 then
+  if rnd(1) < 0.05*#party+level/32 then
    local id
    local e
    if random_enemy then
     id = rnd_int(1,#enemy.stats)
    else
     local l = 1
-    if arena and party and party.level then
-     l = party.level
+    if arena and party and level then
+     l = level
     end
     if l > #enemies_by_level then l = #enemies_by_level end
     local enemies_at_level = lget(enemies_by_level,l)
@@ -608,15 +609,15 @@ function set_up_party()
  	end
  end
  
- party.score = 0
- party.battles = 0
- party.level = 1
- party.luck = 0
- party.setbacks = 0
+ score = 0
+ battles = 0
+ level = 1
+ luck = 0
+ setbacks = 0
  if random_level then
-  party.level = rnd_int(1,#levels)
-  if party.level > 1 then
-   party.score = lget(levels,party.level-1)
+  level = rnd_int(1,#levels)
+  if level > 1 then
+   score = lget(levels,level-1)
  	end
  end
  party.dead = {}
@@ -707,15 +708,15 @@ function init_attack()
   
   if turn == party then
    if chance > 0.5 and not hit then
-    party.luck -= chance-0.5
+    luck -= chance-0.5
    elseif chance < 0.5 and hit then
-    party.luck += 0.5-chance
+    luck += 0.5-chance
    end
   else
    if chance < 0.5 and hit then
-    party.luck -= 0.5-chance
+    luck -= 0.5-chance
    elseif chance > 0.5 and not hit then
-    party.luck += chance-0.5
+    luck += chance-0.5
    end
   end
   
@@ -918,27 +919,27 @@ function update_battle_over()
   message = "^no more enemies remain!"
  elseif over_ticks == 5*delay then
   set_stale()
-  party.battles += 1
+  battles += 1
   local s = ""
-  if party.battles > 1 then s = "s" end
-  message = "^finished "..party.battles.." battle"..s
+  if battles > 1 then s = "s" end
+  message = "^finished "..battles.." battle"..s
  elseif over_ticks == 10*delay then
   set_stale()
-  message = "^total exp: "..party.score
+  message = "^total exp: "..score
  elseif over_ticks == 15*delay then
-  local next_level = lget(levels,party.level)
- 	if party.score >= next_level and
- 	 party.level < #levels then
- 	 party.level += 1
+  local next_level = lget(levels,level)
+ 	if score >= next_level and
+ 	 level < #levels then
+ 	 level += 1
  	 //maybe: lower score on level?
- 	 if party.level > #levels then
- 	  party.level = #levels
+ 	 if level > #levels then
+ 	  level = #levels
  	 end
    did_level = true
    revive()
-   text = "^level up!! ^now at "..party.level 
+   text = "^level up!! ^now at "..level 
   else
-   text = "^currnent level: "..party.level 
+   text = "^currnent level: "..level 
   end
   set_stale()
   message = text
@@ -973,12 +974,12 @@ function update_game_over()
   set_stale()
  elseif game_over_ticks == 5*delay then
   local s = "s"
-  if party.battles == 1 then s = "" end
-  message = "^finished "..party.battles.." battle"..s
+  if battles == 1 then s = "" end
+  message = "^finished "..battles.." battle"..s
  	set_stale()
  elseif game_over_ticks == 10*delay then
   
-  message = "^final level: "..party.level
+  message = "^final level: "..level
  elseif game_over_ticks == 15*delay then
   lclr(enemies)
   revive()
@@ -987,15 +988,15 @@ function update_game_over()
   cur = {l=party, i=1,
          s=nil}
  	cap_cursor()
- 	old_level = party.level
- 	party.level = 1
- 	party.score = 0
- 	party.setbacks += 1
+ 	old_level = level
+ 	level = 1
+ 	score = 0
+ 	setbacks += 1
  	if old_level > penalty then
- 	 party.level = old_level-penalty
- 	 party.score = lget(levels,party.level)
+ 	 level = old_level-penalty
+ 	 score = lget(levels,level)
  	end
- 	message = "^the party is set back to "..party.level.."..."
+ 	message = "^the party is set back to "..level.."..."
  	set_stale()
  elseif game_over_ticks == 18*delay then
   push_state(states.team_building)
@@ -1179,15 +1180,15 @@ function draw_team_building()
   end
  end
  
- print("^party ^l:"..party.level,83,2)
+ print("^party ^l:"..level,83,2)
 
 	if game_complete then
   note("^the journey is complete.")
 		print("^congratulations!",2,93)
-		print("   ^battles: "..party.battles,2,100)
-		print("^experience: "..party.score,2,107)
-  print("  ^setbacks: "..party.setbacks,2,114)
-		print("^total luck: "..party.luck,2,121)
+		print("   ^battles: "..battles,2,100)
+		print("^experience: "..score,2,107)
+  print("  ^setbacks: "..setbacks,2,114)
+		print("^total luck: "..luck,2,121)
 	
 	else
 	 note("^get the party ready to go")
@@ -1334,7 +1335,7 @@ end
 
 function eliminate(list, target)
  if list == enemies then
-  party.score += target.stats.l
+  score += target.stats.l
  elseif list == party then
   add(party.dead, target)
  end
@@ -1746,12 +1747,12 @@ end
 
 function draw_stats()
  local message = ""
- message = message.." l"..party.level
- message = message.." x"..party.score
- message = message.." b"..party.battles
- message = message.." s"..party.setbacks
+ message = message.." l"..level
+ message = message.." x"..score
+ message = message.." b"..battles
+ message = message.." s"..setbacks
  message = message.." e"..#unlocked_elements
- message = message.." r"..party.luck
+ message = message.." r"..luck
 
  if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
   local attacker = lget(turn,cur.s.i)
