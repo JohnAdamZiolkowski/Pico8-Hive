@@ -156,17 +156,17 @@ end
 -- state management
 
 function get_state()
- assert(#states.stack>0)
- return lget(states.stack, #states.stack)
+ assert(#states_stack>0)
+ return lget(states_stack, #states_stack)
 end
 
 function set_state(state)
  assert(type(state)==table)
  local index = 1
- if #states.stack > index then
-  index = #states.stack
+ if #states_stack > index then
+  index = #states_stack
  end
- lset(states.stack, index, state)
+ lset(states_stack, index, state)
  if state.init then
   state.init()
  end
@@ -176,7 +176,7 @@ end
 
 function push_state(state)
  assert(type(state)==table)
- add(states.stack, state)
+ add(states_stack, state)
  if state.init then
   state.init()
  end
@@ -190,7 +190,7 @@ function pop_state()
   prev_state.finish()
  end
  message = nil
- del(states.stack, prev_state)
+ del(states_stack, prev_state)
  set_stale()
 end
 
@@ -262,8 +262,8 @@ states = {
         update=update_game_over,
         draw=draw_game_over,
         finish=finish_game_over},
- stack={}
 }
+states_stack={}
 end
 
 settings = {
