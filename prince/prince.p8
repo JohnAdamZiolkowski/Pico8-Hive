@@ -390,22 +390,22 @@ function element_by_n(n)
 end
 
 elements = {                 //nhldfeaiwprb
- {i=1, n="none", c=dark,    o="444444444444"},
+ {i=1, n="none", c=dark,    o="412244444444"},
 
  {i=5, n="fire", c=orange,  o="412412468642"},
  {i=7, n="air", c=sand,     o="412442124686"},
  {i=9, n="water", c=navy,   o="414286421246"},
  {i=11, n="rock", c=brown,  o="414246864212"},
 
- {i=6, n="elec", c=yellow,  o="412421246864"},
- {i=8, n="ice", c=sky,      o="412464212468"},
- {i=10, n="plant", c=forest,o="414268642124"},
- {i=12, n="blood", c=red,   o="414224686421"},
+ {i=6, n="elec", c=yellow,  o="412461242864"},
+ {i=8, n="ice", c=sky,      o="412464612428"},
+ {i=10, n="plant", c=forest,o="414228646124"},
+ {i=12, n="blood", c=red,   o="414224286461"},
 
- {i=3, n="light", c=light,  o="421866666666"},
- {i=4, n="dark", c=purple,  o="428166666666"},
+ {i=3, n="light", c=light,  o="621844446666"},
+ {i=4, n="dark", c=purple,  o="628166664444"},
 
- {i=2, n="holy", c=pink,    o="446688888888"},
+ {i=2, n="holy", c=pink,    o="846688888888"},
 
  {i=13, n="variable", c=neon}
 }
