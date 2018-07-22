@@ -508,13 +508,13 @@ function set_up_enemy(s, id)
 		y = (s-1) * 14 + 13,
 		stats = {e=e, n=n, l=l}
 	}
-	add(arena.enemies, enemy)
+	add(enemies, enemy)
 end
 
 function set_up_enemies()
  local l = 1
- if arena and arena.party and arena.party.level then
-  l = arena.party.level
+ if arena and party and party.level then
+  l = party.level
  end
 
  local boss_set
@@ -539,15 +539,15 @@ function set_up_enemies()
  end
 
  for s=1,5 do
-  if rnd(1) < 0.05*#arena.party+arena.party.level/32 then
+  if rnd(1) < 0.05*#party+party.level/32 then
    local id
    local e
    if random_enemy then
     id = rnd_int(1,#enemy.stats)
    else
     local l = 1
-    if arena and arena.party and arena.party.level then
-     l = arena.party.level
+    if arena and party and party.level then
+     l = party.level
     end
     if l > #enemies_by_level then l = #enemies_by_level end
     local enemies_at_level = lget(enemies_by_level,l)
@@ -558,7 +558,7 @@ function set_up_enemies()
    set_up_enemy(s, id)
   end
  end
- if #arena.enemies == 0 then
+ if #enemies == 0 then
   set_up_enemies()
  end
 end
@@ -604,32 +604,32 @@ function set_up_party()
   		y = (s-1) * 14 + 13,
   		stats = {e=element_n, n=n, l=l}
   	}
-  	add(arena.party, member)
+  	add(party, member)
  	end
  end
  
- arena.party.score = 0
- arena.party.battles = 0
- arena.party.level = 1
- arena.party.luck = 0
- arena.party.setbacks = 0
+ party.score = 0
+ party.battles = 0
+ party.level = 1
+ party.luck = 0
+ party.setbacks = 0
  if random_level then
-  arena.party.level = rnd_int(1,#levels)
-  if arena.party.level > 1 then
-   arena.party.score = lget(levels,arena.party.level-1)
+  party.level = rnd_int(1,#levels)
+  if party.level > 1 then
+   party.score = lget(levels,party.level-1)
  	end
  end
- arena.party.dead = {}
+ party.dead = {}
  
- turn = arena.party
- cur = {l=arena.party, i=1,
+ turn = party
+ cur = {l=party, i=1,
         s=nil}
 end
 
 function set_up_arena()
  arena = {}
- arena.party = {n="party"} 
- arena.enemies = {n="enemies"}
+ party = {n="party"} 
+ enemies = {n="enemies"}
 end
 
 function init_intro()
@@ -657,8 +657,8 @@ function init_settings()
 end
 
 function init_team_building()
- turn = arena.party
- cur.l = arena.party
+ turn = party
+ cur.l = party
  revive()
  cur.i = 3 //prince
 end
@@ -695,7 +695,7 @@ function init_attack()
    hit = rnd(1) < chance
    
    if is_prince(attacker.i) then
-    if hit and turn==arena.party then
+    if hit and turn==party then
      local old_element = element_by_n(attacker.stats.e)
      local new_element = element_by_n(target.t.stats.e)     
      //prince changes element
@@ -705,17 +705,17 @@ function init_attack()
    end
   end
   
-  if turn == arena.party then
+  if turn == party then
    if chance > 0.5 and not hit then
-    arena.party.luck -= chance-0.5
+    party.luck -= chance-0.5
    elseif chance < 0.5 and hit then
-    arena.party.luck += 0.5-chance
+    party.luck += 0.5-chance
    end
   else
    if chance < 0.5 and hit then
-    arena.party.luck -= 0.5-chance
+    party.luck -= 0.5-chance
    elseif chance > 0.5 and not hit then
-    arena.party.luck += chance-0.5
+    party.luck += chance-0.5
    end
   end
   
@@ -743,7 +743,7 @@ end
 
 function update_arena()
 
- if turn == arena.party then
+ if turn == party then
   if not auto then
    if btnp(⬅️) then
     push_state(states.element_chart)
@@ -765,7 +765,7 @@ function update_arena()
     update_auto_turn()
    end
   end
- elseif turn == arena.enemies then
+ elseif turn == enemies then
   update_auto_turn()
  end
 end
@@ -795,9 +795,9 @@ function update_team_building()
   elseif btnp(❎) then
    push_state(states.element_chart)
   elseif btnp(⬅️) then
-   change_element(lget(arena.party,cur.i))
+   change_element(lget(party,cur.i))
   elseif btnp(➡️) then
-   change_class(lget(arena.party,cur.i))
+   change_class(lget(party,cur.i))
   elseif btnp(⬆️) then
    move_cursor(-1)
   elseif btnp(⬇️) then
@@ -880,7 +880,7 @@ end
 -- auto turn
 
 function draw_auto_message()
- if turn == arena.party then
+ if turn == party then
   message = "^press (^b) to end auto"
   set_stale()
  end
@@ -918,27 +918,27 @@ function update_battle_over()
   message = "^no more enemies remain!"
  elseif over_ticks == 5*delay then
   set_stale()
-  arena.party.battles += 1
+  party.battles += 1
   local s = ""
-  if arena.party.battles > 1 then s = "s" end
-  message = "^finished "..arena.party.battles.." battle"..s
+  if party.battles > 1 then s = "s" end
+  message = "^finished "..party.battles.." battle"..s
  elseif over_ticks == 10*delay then
   set_stale()
-  message = "^total exp: "..arena.party.score
+  message = "^total exp: "..party.score
  elseif over_ticks == 15*delay then
-  local next_level = lget(levels,arena.party.level)
- 	if arena.party.score >= next_level and
- 	 arena.party.level < #levels then
- 	 arena.party.level += 1
+  local next_level = lget(levels,party.level)
+ 	if party.score >= next_level and
+ 	 party.level < #levels then
+ 	 party.level += 1
  	 //maybe: lower score on level?
- 	 if arena.party.level > #levels then
- 	  arena.party.level = #levels
+ 	 if party.level > #levels then
+ 	  party.level = #levels
  	 end
    did_level = true
    revive()
-   text = "^level up!! ^now at "..arena.party.level 
+   text = "^level up!! ^now at "..party.level 
   else
-   text = "^currnent level: "..arena.party.level 
+   text = "^currnent level: "..party.level 
   end
   set_stale()
   message = text
@@ -951,8 +951,8 @@ function update_battle_over()
  elseif over_ticks == 21*delay then
   set_up_enemies()
   text = "^new enemies"
-  if #arena.enemies == 1 then
-   text = "^single "..lget(arena.enemies,1).stats.n
+  if #enemies == 1 then
+   text = "^single "..lget(enemies,1).stats.n
   end
   message = text.." appeared!"
   set_stale()
@@ -973,29 +973,29 @@ function update_game_over()
   set_stale()
  elseif game_over_ticks == 5*delay then
   local s = "s"
-  if arena.party.battles == 1 then s = "" end
-  message = "^finished "..arena.party.battles.." battle"..s
+  if party.battles == 1 then s = "" end
+  message = "^finished "..party.battles.." battle"..s
  	set_stale()
  elseif game_over_ticks == 10*delay then
   
-  message = "^final level: "..arena.party.level
+  message = "^final level: "..party.level
  elseif game_over_ticks == 15*delay then
-  lclr(arena.enemies)
+  lclr(enemies)
   revive()
  	
-  turn = arena.party
-  cur = {l=arena.party, i=1,
+  turn = party
+  cur = {l=party, i=1,
          s=nil}
  	cap_cursor()
- 	old_level = arena.party.level
- 	arena.party.level = 1
- 	arena.party.score = 0
- 	arena.party.setbacks += 1
+ 	old_level = party.level
+ 	party.level = 1
+ 	party.score = 0
+ 	party.setbacks += 1
  	if old_level > penalty then
- 	 arena.party.level = old_level-penalty
- 	 arena.party.score = lget(levels,arena.party.level)
+ 	 party.level = old_level-penalty
+ 	 party.score = lget(levels,party.level)
  	end
- 	message = "^the party is set back to "..arena.party.level.."..."
+ 	message = "^the party is set back to "..party.level.."..."
  	set_stale()
  elseif game_over_ticks == 18*delay then
   push_state(states.team_building)
@@ -1027,8 +1027,8 @@ function update_intro()
  elseif intro_ticks == 8*delay then
   set_up_enemies()
   text = "^new enemies"
-  if #arena.enemies == 1 then
-   text = "^single "..lget(arena.enemies,1).stats.n
+  if #enemies == 1 then
+   text = "^single "..lget(enemies,1).stats.n
   end
   message = text.." appeared!"
   set_stale()
@@ -1179,15 +1179,15 @@ function draw_team_building()
   end
  end
  
- print("^party ^l:"..arena.party.level,83,2)
+ print("^party ^l:"..party.level,83,2)
 
 	if game_complete then
   note("^the journey is complete.")
 		print("^congratulations!",2,93)
-		print("   ^battles: "..arena.party.battles,2,100)
-		print("^experience: "..arena.party.score,2,107)
-  print("  ^setbacks: "..arena.party.setbacks,2,114)
-		print("^total luck: "..arena.party.luck,2,121)
+		print("   ^battles: "..party.battles,2,100)
+		print("^experience: "..party.score,2,107)
+  print("  ^setbacks: "..party.setbacks,2,114)
+		print("^total luck: "..party.luck,2,121)
 	
 	else
 	 note("^get the party ready to go")
@@ -1195,7 +1195,7 @@ function draw_team_building()
   if #unlocked_elements > 1 then
    print("^l:^change element",2,95)
   end
-  if not is_prince(lget(arena.party, cur.i).i) then
+  if not is_prince(lget(party, cur.i).i) then
    print("^r:^change class",2,103)
   end
   print("^b:^element chart",2,111)
@@ -1223,28 +1223,28 @@ end
 
 
 function check_over()
- if #arena.enemies == 0 then
+ if #enemies == 0 then
   push_state(states.battle_over)
- elseif #arena.party == 0 then
+ elseif #party == 0 then
   push_state(states.game_over)
  end
 end
 
 function opposition(list)
  //returns the opposing list
- if list == arena.enemies then
-  return arena.party
+ if list == enemies then
+  return party
  else
-  return arena.enemies
+  return enemies
  end
 end
 
 function toggle_turn()
- if turn == arena.party then
-  turn = arena.enemies
+ if turn == party then
+  turn = enemies
   init_auto_turn()
  else
-  turn = arena.party
+  turn = party
   if auto then
    init_auto_turn()
   end
@@ -1333,10 +1333,10 @@ function get_hit_chance(attacker, target)
 end
 
 function eliminate(list, target)
- if list == arena.enemies then
-  arena.party.score += target.stats.l
- elseif list == arena.party then
-  add(arena.party.dead, target)
+ if list == enemies then
+  party.score += target.stats.l
+ elseif list == party then
+  add(party.dead, target)
  end
  del(list, target)
  if target.i == 102 then
@@ -1376,20 +1376,20 @@ end
 
 function revive()
  local unsorted = {}
- for member in all(arena.party) do
+ for member in all(party) do
   add(unsorted, member)
-  del(arena.party, member)
+  del(party, member)
  end
  //scared to do it in one loop
- for member in all(arena.party.dead) do
+ for member in all(party.dead) do
   add(unsorted, member)
-  del(arena.party.dead, member)
+  del(party.dead, member)
  end
  for s=1,5 do
   for u=1,#unsorted do
    member = lget(unsorted,u)
    if member.s == s then
-    add(arena.party, member)
+    add(party, member)
    end
   end
  end
@@ -1626,24 +1626,24 @@ end
 
 
 function draw_enemies()
- for e in all(arena.enemies) do
+ for e in all(enemies) do
   draw_enemy(e.i, e.x, e.y)
  end
 end
 
 function draw_party()
- for e in all(arena.party) do
+ for e in all(party) do
   draw_enemy(e.i, e.x, e.y, true)
  end
- for e in all(arena.party.dead) do
+ for e in all(party.dead) do
   spr(193, e.x+6, e.y+2)
  end
 end
 
 
 function draw_options()
- local lists = {{l=arena.enemies, x=2},
-                {l=arena.party, x=82}}
+ local lists = {{l=enemies, x=2},
+                {l=party, x=82}}
  if caps_lock then
   lists[2].x = 70
  end
@@ -1676,7 +1676,7 @@ function draw_options()
     (cur.s and cur.s.l != list.l and (cur.i == e or subtarget) and attack_ticks and attack_ticks<20) then
     c = white
     bg = black
-     if turn == arena.enemies or
+     if turn == enemies or
       settings.auto then 
       icon = "^>" //hollow
      else
@@ -1685,7 +1685,7 @@ function draw_options()
     gem = "^"..gem
    elseif cur.l == list.l
     and cur.i != e
-     and turn == arena.party
+     and turn == party
       and not attack_ticks
        and not game_over_ticks 
         and (not settings.auto
@@ -1699,7 +1699,7 @@ function draw_options()
    elseif cur.l == list.l
     and (cur.i == e or subtarget)
      and not attack_ticks then
-     if turn == arena.enemies or
+     if turn == enemies or
       settings.auto then
       icon = "^>" //hollow
      else
@@ -1746,12 +1746,12 @@ end
 
 function draw_stats()
  local message = ""
- message = message.." l"..arena.party.level
- message = message.." x"..arena.party.score
- message = message.." b"..arena.party.battles
- message = message.." s"..arena.party.setbacks
+ message = message.." l"..party.level
+ message = message.." x"..party.score
+ message = message.." b"..party.battles
+ message = message.." s"..party.setbacks
  message = message.." e"..#unlocked_elements
- message = message.." r"..arena.party.luck
+ message = message.." r"..party.luck
 
  if cur and cur.l and cur.l == opposition(turn) and cur.s and cur.s.i then
   local attacker = lget(turn,cur.s.i)
