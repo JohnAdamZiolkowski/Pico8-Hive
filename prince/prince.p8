@@ -121,6 +121,42 @@ function linc(list,item)
  return false
 end
 
+function lsrt(list,attribute)
+ assert(type(list)==table)
+ assert(#list>0)
+ assert(type(attribute)==string)
+	local length = #list
+	if length == 1 then
+	 return
+	end
+	local unsorted = {}
+	for i=1,#list do
+	 local item = lget(list,i)
+	 add(unsorted,item)
+	end
+	assert(#unsorted==length)
+	for i=1,#unsorted do
+	 local item = lget(list,1)
+	 del(list,item)
+	end
+	assert(#list==0)
+	for s=1,length do
+ 	local lowest_v
+ 	local lowest_item
+  for u=1,#unsorted do
+   local item = lget(unsorted,u)
+   local value = item[attribute]
+   assert(value)
+   if not lowest_v or value < lowest_v then
+    lowest_v = value
+    lowest_item = item
+   end
+  end
+  add(list,lowest_item)
+  del(unsorted,lowest_item)
+ end
+end
+
 function inttobin(b)
  local t={}
  local a=0
@@ -461,7 +497,9 @@ for i=1,16 do
  add(levels,level)
 end
 level = nil
-          
+
+member_join_levels = {2,4,6,8}
+
 enemies_by_level = {}
 for l=1,#levels do
  lset(enemies_by_level,l,{})
@@ -573,42 +611,47 @@ function set_up_boss(boss_set)
 	end
 end
 
-function set_up_party()
- for s = 1,5 do
-  local id
-  if s == 3 then
-   id = prince
+function set_up_member(available)
+ local id
+ local s
+ if #party == 0 then
+  id = prince
+  s = 3
+ else
+  if #available==0 then return end
+  
+  local a = rnd_int(1,#available)
+	 s = lget(available,a)
+	 id = rnd_int(1,2)
+  if id == 1 then
+   id = fighter
   else
-   local filled = true
-   if random_party then filled = rnd(3) > 2 end
-   if filled then
-    id = rnd_int(1,2)
-    if id == 1 then
-     id = fighter
-    else
-     id = caster
-    end
-   end
- 	end
- 	if id != nil then
- 	 //assign random element of basic 8
- 	 local e = 1//rnd_int(1,#unlocked_elements)
- 	 local element_n = sub(lget(unlocked_elements,e).n,1,1)
- 	 local n = lget(enemy.stats,id).n
- 	 local l = 1
- 	 assert(e)
-  	local member = {
-  	 s = s,
-  		i = id,
-  		x = 96 - ((s-1) % 2) * 12,
-  		y = (s-1) * 14 + 13,
-  		e = element_n,
-  	 n = n,
-  	 l = l
-  	}
-  	add(party, member)
- 	end
- end
+   id = caster
+  end
+	end
+	if id != nil then
+	 //assign random element of basic 8
+	 local e = 1//rnd_int(1,#unlocked_elements)
+	 local element_n = sub(lget(unlocked_elements,e).n,1,1)
+	 local n = lget(enemy.stats,id).n
+	 local l = 1
+	 assert(e)
+ 	local member = {
+ 	 s = s,
+ 		i = id,
+ 		x = 96 - ((s-1) % 2) * 12,
+ 		y = (s-1) * 14 + 13,
+ 		e = element_n,
+ 	 n = n,
+ 	 l = l
+ 	}
+ 	add(party, member)
+ 	lsrt(party,"s")
+	end
+end
+
+function set_up_party()
+ set_up_member(3, {})
  
  score = 0
  battles = 0
@@ -660,9 +703,36 @@ function init_team_building()
  turn = party
  cur.l = party
  revive()
+ find_new_member()
  cur.i = 3 //prince
+ cap_cursor()
 end
 
+function find_new_member()
+ local appears
+ for l=1,#member_join_levels do
+  local mjl = lget(member_join_levels,l)
+  if mjl==level and #party<l+1 then
+   appears = true
+  end
+ end
+ if not appears then return end
+ 
+ local available = {}
+ for s=1,5 do
+  local found
+  for p=1,#party do
+   local member = lget(party,p)
+   if member.s == s then
+    found = true
+   end
+  end
+  if not found then
+   add(available,s)
+  end
+ end
+ set_up_member(available)
+end
 
 function init_attack()
  attack_ticks = 0
