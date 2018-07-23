@@ -340,7 +340,7 @@ function set_up_elements()
   local element = lget(elements,i)
   add(unlocked_elements,element)
   if element.i != 1 then
-   element.count = 0
+   element.count = 1
   end
  end
 end
@@ -804,6 +804,7 @@ function update_team_building()
    move_cursor(1)
   end
  else
+  auto_team_building()
   pop_state()
  end
 end
@@ -1480,6 +1481,37 @@ function change_options(d)
 	set_stale()
 end
 
+function auto_team_building()
+ for p=1,#party do
+  cur.i = p
+  if rnd(1) > 0.5 then
+   change_class(lget(party,cur.i))
+  end
+  for u=1,#unlocked_elements do
+   if lget(party,cur.i).e != "n" then
+   	change_element(lget(party,cur.i))
+   end
+  end
+ end
+ for p=1,#party do
+  cur.i = p
+  local available = {}
+		for u=1,#unlocked_elements do
+		 local element = lget(unlocked_elements,u)
+		 if element.i == 1 or element.count > 0 then
+		  add(available, element)
+		 end
+		end
+  local e = rnd_int(1,#available)
+  local element = lget(available,e)
+  for u=1,#available do
+   local member = lget(party,cur.i)
+   if member.e != sub(element.n,1,1) then
+    change_element(member)
+  	end
+  end
+ end
+end
 -->8
 -- finish
 
