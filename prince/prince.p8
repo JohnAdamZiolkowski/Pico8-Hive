@@ -425,23 +425,23 @@ function element_by_n(n)
 	assert(false, "unknown element: "..n)
 end
 
-elements = {                 //nhldfeaiwprb
- {i=1, n="none", c=dark,    o="412244444444"},
+elements = {                 //nfawreipbldh
+ {i=1, n="none", c=dark,    o="444444444221"},
 
- {i=2, n="fire", c=orange,  o="412412468642"},
- {i=3, n="air", c=sand,     o="412442124686"},
- {i=4, n="water", c=navy,   o="414286421246"},
- {i=5, n="rock", c=brown,  o="414246864212"},
+ {i=2, n="fire", c=orange,  o="414842662241"},
+ {i=3, n="air", c=sand,     o="441482266241"},
+ {i=4, n="water", c=navy,   o="484146226421"},
+ {i=5, n="rock", c=brown,   o="448416622421"},
 
- {i=6, n="elec", c=yellow,  o="412461242864"},
- {i=7, n="ice", c=sky,      o="412464612428"},
- {i=8, n="plant", c=forest,o="414228646124"},
- {i=9, n="blood", c=red,   o="414224286461"},
+ {i=6, n="elec", c=yellow,  o="462261484241"},
+ {i=7, n="ice", c=sky,      o="466224148241"},
+ {i=8, n="plant", c=forest, o="426628414421"},
+ {i=9, n="blood", c=red,    o="422664841421"},
 
- {i=10, n="light", c=light,  o="621844446666"},
- {i=11, n="dark", c=purple,  o="628166664444"},
+ {i=10, n="light", c=light, o="644664466182"},
+ {i=11, n="dark", c=purple, o="666446644812"},
 
- {i=12, n="holy", c=pink,    o="846688888888"},
+ {i=12, n="holy", c=pink,   o="888888888664"},
 
  {i=13, n="variable", c=neon}
 }
@@ -691,6 +691,10 @@ function init_game_over()
  game_over_ticks = 0
 end
 
+function init_element_chart()
+ e_cur = {e=1}
+end
+
 function init_settings()
  s_cur = {s=#settings+1, o=1}
  for s=1,#settings do
@@ -803,11 +807,35 @@ function _update()
  end
 end
 
+function move_element_chart(d)
+ e_cur.e += d
+ e_cur.e = cap_int(e_cur.e,1,#elements-1)
+ set_stale()
+end
+
+function show_element_chance(mode)
+ if e_cur.o != mode then
+  e_cur.o = mode
+ else
+  e_cur.o = nil
+ end
+ set_stale()
+end
+
 function update_element_chart()
- if btnp(🅾️) or btnp(❎)
- or btnp(⬅️) or btnp(➡️)
- or btnp(⬆️) or btnp(⬇️) then
+ if btnp(🅾️) or btnp(❎) then
   pop_state()
+ 
+ elseif btnp(⬆️) then
+  move_element_chart(-1)
+  
+ elseif btnp(⬇️) then
+  move_element_chart(1)
+  
+ elseif btn(⬅️) then
+  show_element_chance("attacking")
+ elseif btn(➡️) then
+  show_element_chance("dodging")
  end
 end
 
@@ -1147,34 +1175,27 @@ end
 
 function draw_element_chart()
  
+ local cur_element = lget(elements,e_cur.e)
+ 
  local chart = 
  {{x=-3, y=-1},//none
+ 
   {x= 0, y=-2},//fire
   {x= 2, y= 0},//air
   {x= 0, y= 2},//water
   {x=-2, y= 0},//earth
+  
   {x= 1, y=-1},//elec
   {x= 1, y= 1},//ice
   {x=-1, y= 1},//plant
   {x=-1, y=-1},//blood
+  
   {x= 3, y=-1},//light
   {x= 3, y= 1},//dark
   {x=-3, y= 1}}//holy
  
  local chart_x = 80
- local chart_y = 48
-
- print("^elements",2,2,0)
- print("^opposition ^chart",49,20,0)
- for e=1,#elements-1 do
-  local element = lget(elements,e)
-  local e_n_c = sub(element.n,1,1)
-  print("^@"..e_n_c.."^"..element.n, 4, 4+e*6, 0)
-  
-  //draw chart
-  local offset = lget(chart,e)
-  print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, 0)
- end
+ local chart_y = 32
 
  local line_x = chart_x+2
  local line_y = chart_y+2
@@ -1187,6 +1208,40 @@ function draw_element_chart()
  
  line(line_x+30, line_y+6, line_x+30, line_y-6, black)
 
+ print("^elements",2,2,black)
+ print("^opposition ^chart",49,2,black)
+ for e=1,#elements-1 do
+  local col_1 = black
+  local col_2 = nil
+  if e_cur.e == e then
+   col_1 = white
+   col_2 = black
+  end
+  local element = lget(elements,e)
+  local e_n_c = sub(element.n,1,1)
+  print("^@"..e_n_c.."^"..element.n, 4, 2+e*7, col_1, col_2)
+  
+  //draw chart
+  local offset = lget(chart,e)
+
+  print("^@"..e_n_c, chart_x+offset.x*10, chart_y+offset.y*10, col_1, col_2)
+  
+  if e_cur.o == "dodging" then
+  	local t_e_i = cur_element.i
+			local multiplier_char = sub(element.o, t_e_i, t_e_i)
+   print(multiplier_char, chart_x+offset.x*10+7, chart_y+offset.y*10, white, black)
+  
+  elseif e_cur.o == "attacking" then
+	  local t_e_i = element.i
+			local multiplier_char = sub(cur_element.o, t_e_i, t_e_i)
+   print(multiplier_char, chart_x+offset.x*10-5, chart_y+offset.y*10, white, black)
+  end
+ end
+
+ print("^inspect ^hit ^chances:",42,66,black)
+ print("^u/^d:select element",48,73,black)
+ print("^l:^:  ^r:^-",64,80,black)
+ 
  print("^opposing elements hurt enemies",2,94,black)
  print("more often. ^same elements will",2,100,black)
  print("rarely hit. ^choose target well!",2,106,black)
@@ -1651,7 +1706,7 @@ function print(s, x, y, pc, bg_col, caps, caps_lock)
     ci = ord(sheet, s, char)
    end
    if bg_col != nil then
-    rectfill(x+offset-1, y-1, x+offset+sheet.tw+1, y+sheet.th, bg_col)
+    rectfill(x+offset-1, y-1, x+offset+sheet.tw, y+sheet.th, bg_col)
    end
    if elem then
     ci = -1 //space
