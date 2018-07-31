@@ -428,20 +428,20 @@ end
 elements = {                 //nhldfeaiwprb
  {i=1, n="none", c=dark,    o="412244444444"},
 
- {i=5, n="fire", c=orange,  o="412412468642"},
- {i=7, n="air", c=sand,     o="412442124686"},
- {i=9, n="water", c=navy,   o="414286421246"},
- {i=11, n="rock", c=brown,  o="414246864212"},
+ {i=2, n="fire", c=orange,  o="412412468642"},
+ {i=3, n="air", c=sand,     o="412442124686"},
+ {i=4, n="water", c=navy,   o="414286421246"},
+ {i=5, n="rock", c=brown,  o="414246864212"},
 
  {i=6, n="elec", c=yellow,  o="412461242864"},
- {i=8, n="ice", c=sky,      o="412464612428"},
- {i=10, n="plant", c=forest,o="414228646124"},
- {i=12, n="blood", c=red,   o="414224286461"},
+ {i=7, n="ice", c=sky,      o="412464612428"},
+ {i=8, n="plant", c=forest,o="414228646124"},
+ {i=9, n="blood", c=red,   o="414224286461"},
 
- {i=3, n="light", c=light,  o="621844446666"},
- {i=4, n="dark", c=purple,  o="628166664444"},
+ {i=10, n="light", c=light,  o="621844446666"},
+ {i=11, n="dark", c=purple,  o="628166664444"},
 
- {i=2, n="holy", c=pink,    o="846688888888"},
+ {i=12, n="holy", c=pink,    o="846688888888"},
 
  {i=13, n="variable", c=neon}
 }
@@ -1428,6 +1428,7 @@ function take_element(old_element, new_element)
  if not linc(unlocked_elements, new_element) then
   //unlocks new element for later
   add(unlocked_elements, new_element)
+  lsrt(unlocked_elements, "i")
  end
  
  //store old element
