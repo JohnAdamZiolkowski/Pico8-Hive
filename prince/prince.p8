@@ -1053,7 +1053,9 @@ function update_game_over()
   message = "^final level: "..level
  elseif game_over_ticks == 15*delay then
   lclr(enemies)
-  lclr(enemies.dead)
+  if #enemies.dead>0 then 
+   lclr(enemies.dead)
+  end
   revive()
  	
   turn = party
