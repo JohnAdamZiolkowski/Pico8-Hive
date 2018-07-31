@@ -465,20 +465,20 @@ function element_by_n(n)
 end
 
 elements = {                 //nfawreipbldh
- {i=1, n="none", c=dark,    o="444444444221"},
+ {i=1, n="none", c=dark,    o="444444444332"},
 
- {i=2, n="fire", c=orange,  o="414842662241"},
- {i=3, n="air", c=sand,     o="441482266241"},
- {i=4, n="water", c=navy,   o="484146226421"},
- {i=5, n="rock", c=brown,   o="448416622421"},
+ {i=2, n="fire", c=orange,  o="424843663342"},
+ {i=3, n="air", c=sand,     o="442483366342"},
+ {i=4, n="water", c=navy,   o="484246336432"},
+ {i=5, n="rock", c=brown,   o="448426633432"},
 
- {i=6, n="elec", c=yellow,  o="462261484241"},
- {i=7, n="ice", c=sky,      o="466224148241"},
- {i=8, n="plant", c=forest, o="426628414421"},
- {i=9, n="blood", c=red,    o="422664841421"},
+ {i=6, n="elec", c=yellow,  o="433662484342"},
+ {i=7, n="ice", c=sky,      o="463364248342"},
+ {i=8, n="plant", c=forest, o="466338424432"},
+ {i=9, n="blood", c=red,    o="436634842432"},
 
- {i=10, n="light", c=light, o="644664466182"},
- {i=11, n="dark", c=purple, o="666446644812"},
+ {i=10, n="light", c=light, o="644664466283"},
+ {i=11, n="dark", c=purple, o="666446644823"},
 
  {i=12, n="holy", c=pink,   o="888888888664"},
 
@@ -1503,9 +1503,9 @@ function get_hit_chance(attacker, target)
 	local multiplier_char = sub(attack_element.o, t_e_i, t_e_i)
 	local chance
 	
-	if multiplier_char == "1" then
+	if multiplier_char == "2" then
 	 chance = 0.25
-	elseif multiplier_char == "2" then
+	elseif multiplier_char == "3" then
 	 chance = 0.375  
 	elseif multiplier_char == "4" then
 	 chance = 0.5
