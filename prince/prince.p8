@@ -1251,13 +1251,21 @@ function draw_element_chart()
  local line_x = chart_x+2
  local line_y = chart_y+2
  
- line(line_x, line_y-15, line_x, line_y+15, black)
- line(line_x-15, line_y, line_x+15, line_y, black)
+ line(line_x, line_y-15, line_x, line_y+15, purple)
+ line(line_x-15, line_y, line_x+15, line_y, purple)
  
- line(line_x-6, line_y-6, line_x+6, line_y+6, black)
- line(line_x-6, line_y+6, line_x+6, line_y-6, black)
+ line(line_x-6, line_y-6, line_x+6, line_y+6, purple)
+ line(line_x-6, line_y+6, line_x+6, line_y-6, purple)
  
- line(line_x+30, line_y+6, line_x+30, line_y-6, black)
+ line(line_x+30, line_y+6, line_x+30, line_y-6, purple)
+
+ line(line_x, line_y-15, line_x, line_y, light)
+ line(line_x, line_y, line_x+15, line_y, light)
+ 
+ line(line_x, line_y, line_x+6, line_y+6, light)
+ line(line_x, line_y, line_x+6, line_y-6, light)
+ 
+ line(line_x+30, line_y, line_x+30, line_y-6, light)
 
  print("^elements",2,2,black)
  print("^opposition ^chart",49,2,black)
