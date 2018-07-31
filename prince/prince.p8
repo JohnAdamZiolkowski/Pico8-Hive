@@ -157,6 +157,32 @@ function lsrt(list,attribute)
  end
 end
 
+function split(str,sep)
+ assert(type(str)==string)
+ assert(#str>0)
+ assert(type(sep)==string)
+ assert(#sep>0)
+ local list = {}
+ local start = 0
+ for c=1,#str+1 do
+  local char = sub(str,c,c)
+  if char == sep or c==#str+1 then
+   local item = sub(str,start,c-1)
+   assert(#item>0)
+   add(list,item)
+   start = c+1
+  end
+ end
+ assert(#list>0)
+ return list
+end
+
+function strtoint(str)
+ assert(type(str)==string)
+ assert(#str>0)
+ return 1
+end
+
 function inttobin(b)
  local t={}
  local a=0
@@ -472,8 +498,21 @@ enemy = {
  tw = 16,
  th = 12,
  layers = 2,
- stats = {{i=1,n="^bunny",e="n",l=1},{i=2,n="^rabbit",e="n",l=3},{i=3,n="^bunny ^girl",e="n",l=5},{i=4,n="^horse",e="n",l=2},{i=5,n="^unicorn",e="n",l=4},{i=6,n="^centaur",e="n",l=6},{i=7,n="^ghost",e="n",l=1},{i=8,n="^poltergeist",e="n",l=4},{i=9,n="^zombie",e="n",l=2},{i=10,n="^ghoul",e="n",l=5},{i=11,n="^skeleton",e="n",l=3},{i=12,n="^skull ^army",e="n",l=6},{i=13,n="^floating^eye",e="n",l=1},{i=14,n="^eye ^beast",e="n",l=4},{i=15,n="^willowisp",e="n",l=2},{i=16,n="^giant ^skull",e="n",l=5},{i=17,n="^sadness",e="n",l=3},{i=18,n="^madness",e="n",l=7},{i=19,n="^man",e="n",l=0},{i=20,n="^woman",e="n",l=0},{i=21,n="^child",e="n",l=0},{i=22,n="^prince",e="v",l=6},{i=23,n="^king",e="v",l=8},{i=24,n="^emperor",e="v",l=10},{i=25,n="^fighter",e="v",l=7},{i=26,n="^general",e="v",l=9},{i=27,n="^giant",e="v",l=11},{i=28,n="^caster",e="v",l=8},{i=29,n="^sorceror",e="v",l=10},{i=30,n="^merlin",e="v",l=12},{i=31,n="^lizard",e="f",l=2},{i=32,n="^dragon",e="f",l=4},{i=33,n="^drako",e="f",l=6},{i=34,n="^snake",e="e",l=3},{i=35,n="^cobra",e="e",l=5},{i=36,n="^lamia",e="e",l=7},{i=37,n="^bird",e="a",l=2},{i=38,n="^crow",e="a",l=4},{i=39,n="^harpy",e="a",l=6},{i=40,n="^sap",e="p",l=3},{i=41,n="^slime",e="p",l=5},{i=42,n="^jelly ^girl",e="p",l=7},{i=43,n="^fish",e="w",l=2},{i=44,n="^shark",e="w",l=4},{i=45,n="^mermaid",e="w",l=6},{i=46,n="^mouse",e="i",l=3},{i=47,n="^rat",e="i",l=5},{i=48,n="^mouse^prince",e="i",l=7},{i=49,n="^turtle",e="r",l=2},{i=50,n="^tortise",e="r",l=4},{i=51,n="^kapa",e="r",l=6},{i=52,n="^bat",e="b",l=3},{i=53,n="^vampire ^bat",e="b",l=5},{i=54,n="^vampire",e="b",l=7},{i=55,n="^cat",e="l",l=4},{i=56,n="^lion",e="l",l=6},{i=57,n="^cat ^girl",e="l",l=8},{i=58,n="^dog",e="d",l=4},{i=59,n="^wolf",e="d",l=6},{i=60,n="^werewolf",e="d",l=8},{i=61,n="^slug",e="h",l=5},{i=62,n="^snail",e="h",l=7},{i=63,n="^hermit",e="h",l=9},{i=64,n="^mist",e="n",l=7},{i=65,n="^blarg",e="n",l=8},{i=66,n="^rude ^demon",e="n",l=9},{i=67,n="^living^sword",e="n",l=11},{i=68,n="^mimic",e="n",l=10},{i=69,n="^embers",e="f",l=8},{i=70,n="^phoenix",e="f",l=10},{i=71,n="^bolt ^rider",e="e",l=9},{i=72,n="^android",e="e",l=11},{i=73,n="^wind ^rider",e="a",l=8},{i=74,n="^marionette",e="a",l=10},{i=75,n="^evil ^weed",e="p",l=9},{i=76,n="^evil ^tree",e="p",l=11},{i=77,n="^rain ^rider",e="w",l=8},{i=78,n="^hydra",e="w",l=10},{i=79,n="^snow ^rider",e="i",l=9},{i=80,n="^polar ^bear",e="i",l=11},{i=81,n="^mushroom",e="r",l=8},{i=82,n="^golem",e="r",l=10},{i=83,n="^death",e="b",l=9},{i=84,n="^haunted^tree",e="b",l=11},{i=85,n="^cactus",e="l",l=10},{i=86,n="^mummy",e="l",l=12},{i=87,n="^dark ^hand",e="d",l=10},{i=88,n="^dark ^mouth",e="d",l=12},{i=89,n="^priest",e="h",l=11},{i=90,n="^angel",e="h",l=13},{i=91,n="^elder^dragon",e="f",l=12},{i=92,n="^blade^master",e="e",l=13},{i=93,n="^puppeteer",e="a",l=12},{i=94,n="^venus ^trap",e="p",l=13},{i=95,n="^kraken",e="w",l=12},{i=96,n="^frozen^mimic",e="i",l=13},{i=97,n="^raging ^dino",e="r",l=12},{i=98,n="^vampiress",e="b",l=13},{i=99,n="^sphinx",e="l",l=14},{i=100,n="^hatman",e="d",l=14},{i=101,n="^bishop",e="h",l=15},{i=102,n="^final^bishop",e="h",l=16}}
+ str = '^bunny,n,1|^rabbit,n,3|^bunny ^girl,n,5|^horse,n,2|^unicorn,n,4|^centaur,n,6|^ghost,n,1|^poltergeist,n,4|^zombie,n,2|^ghoul,n,5|^skeleton,n,3|^skull ^army,n,6|^floating^eye,n,1|^eye ^beast,n,4|^willowisp,n,2|^giant ^skull,n,5|^sadness,n,3|^madness,n,7|^man,n,0|^woman,n,0|^child,n,0|^prince,v,6|^king,v,8|^emperor,v,10|^fighter,v,7|^general,v,9|^giant,v,11|^caster,v,8|^sorceror,v,10|^merlin,v,12|^lizard,f,2|^dragon,f,4|^drako,f,6|^snake,e,3|^cobra,e,5|^lamia,e,7|^bird,a,2|^crow,a,4|^harpy,a,6|^sap,p,3|^slime,p,5|^jelly ^girl,p,7|^fish,w,2|^shark,w,4|^mermaid,w,6|^mouse,i,3|^rat,i,5|^mouse^prince,i,7|^turtle,r,2|^tortise,r,4|^kapa,r,6|^bat,b,3|^vampire ^bat,b,5|^vampire,b,7|^cat,l,4|^lion,l,6|^cat ^girl,l,8|^dog,d,4|^wolf,d,6|^werewolf,d,8|^slug,h,5|^snail,h,7|^hermit,h,9|^mist,n,7|^blarg,n,8|^rude ^demon,n,9|^living^sword,n,11|^mimic,n,10|^embers,f,8|^phoenix,f,10|^bolt ^rider,e,9|^android,e,11|^wind ^rider,a,8|^marionette,a,10|^evil ^weed,p,9|^evil ^tree,p,11|^rain ^rider,w,8|^hydra,w,10|^snow ^rider,i,9|^polar ^bear,i,11|^mushroom,r,8|^golem,r,10|^death,b,9|^haunted^tree,b,11|^cactus,l,10|^mummy,l,12|^dark ^hand,d,10|^dark ^mouth,d,12|^priest,h,11|^angel,h,13|^elder^dragon,f,12|^blade^master,e,13|^puppeteer,a,12|^venus ^trap,p,13|^kraken,w,12|^frozen^mimic,i,13|^raging ^dino,r,12|^vampiress,b,13|^sphinx,l,14|^hatman,d,14|^bishop,h,15|^final^bishop,h,16'
 }
+enemy.stats = split(enemy.str,"|")
+for e=1,#enemy.stats do
+ local e_str = lget(enemy.stats,e)
+ local e_split = split(e_str,",")
+ local e_stats = {
+  i=e,
+  n=lget(e_split,1),
+  e=lget(e_split,2),
+  l=strtoint(lget(e_split,3))
+ }
+ lset(enemy.stats,e,e_stats)
+end
+//assert(false, enemy.stats[102].n)
 
 boss_sets = {
  {l=12, i={31, 32, 91, 33, 32}}, //elder dragon

@@ -24,9 +24,10 @@ with open(file_path, "r") as file:
 
         level = split[5]
 
-        enemy = '{i=' + id + ',n="' + name + '",e="' + element + '",l=' + level + '},'
+        # enemy = '{i=' + id + ',n="' + name + '",e="' + element + '",l=' + level + '},'
+        enemy = name + ',' + element + ',' + level + '|'
 
         print(enemy)
         output += enemy
 
-    print("stats = {" + output + "}")
+    print("str = '" + output[:-1] + "'")
