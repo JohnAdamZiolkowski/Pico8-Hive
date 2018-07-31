@@ -177,12 +177,6 @@ function split(str,sep)
  return list
 end
 
-function strtoint(str)
- assert(type(str)==string)
- assert(#str>0)
- return 1
-end
-
 function inttobin(b)
  local t={}
  local a=0
@@ -212,6 +206,25 @@ function ord(sheet, s, i)
  local ci = sheet.s2c[sub(s,i or 1,i or 1)]
  assert(ci, s..".."..i)
  return ci
+end
+
+function strtoint(str)
+ assert(type(str)==string)
+ assert(#str>0)
+ local sheet = {
+  chars="0123456789"
+ }
+ get_chars(sheet)
+ 
+ local value = 0
+ local multiplier = 1
+ for ci=#str,1,-1 do
+  local cv = ord(sheet,str,ci)+1
+  assert(type(cv)==number)
+  value += cv * multiplier
+  multiplier *= 10
+ end
+ return value
 end
 
 
