@@ -1452,24 +1452,11 @@ end
 -- battle over
 
 function revive()
- local unsorted = {}
- for member in all(party) do
-  add(unsorted, member)
-  del(party, member)
- end
- //scared to do it in one loop
  for member in all(party.dead) do
-  add(unsorted, member)
+  add(party, member)
   del(party.dead, member)
  end
- for s=1,5 do
-  for u=1,#unsorted do
-   member = lget(unsorted,u)
-   if member.s == s then
-    add(party, member)
-   end
-  end
- end
+ lsrt(party,"s")
 end
 
 
