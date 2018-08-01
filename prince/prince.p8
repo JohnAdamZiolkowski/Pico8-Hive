@@ -377,7 +377,7 @@ settings = {
 	{n="^penalty",
 	 o={"^0", "^1", "^2", "^3"},
  	v={0, 1, 2, 3},
-	 s=3},
+	 s=2},
 	{n="^draw stats",
 	 o={"^off", "^on"},
  	v={false, true},
@@ -546,7 +546,15 @@ boss_sets = {
 levels = {}
 level = 0
 for i=1,16 do
- level += i*5
+ if i < 3 then
+  level += i*2
+ elseif i < 5 then
+  level += i*3
+ elseif i < 8 then
+  level += i*4
+ else
+  level += i*5
+ end
  add(levels,level)
 end
 level = nil
@@ -2063,13 +2071,17 @@ function add_anim(anim, element_n, x, y, team)
   dx = 0
  end
  
+ local d = anim.delay
+ if d > delay then
+  d = delay
+ end
  
  local new = {
   a=anim.frames,
   c=element.c,
   x=x+dx,
   y=y,
-  d=anim.delay,
+  d=d,
   dt=0,
   f=1,
   s=swap
