@@ -420,6 +420,8 @@ function set_up_elements()
  end
 end
 
+step = 4
+
 prince = 22
 fighter = 25
 caster = 28
@@ -595,6 +597,7 @@ function set_up_enemy(s, id)
 	 s = s,
 		i = id,
 		x = 16 + ((s-1) % 2) * 12,
+		sx = 0,
 		y = (s-1) * 14 + 13,
 		e = e,
 		n = n,
@@ -691,6 +694,7 @@ function set_up_member(available)
  	 s = s,
  		i = id,
  		x = 96 - ((s-1) % 2) * 12,
+ 		sx = 0,
  		y = (s-1) * 14 + 13,
  		e = element_n,
  	 n = n,
@@ -966,6 +970,24 @@ function update_attack()
  attack_ticks += 1
  
  if attack_ticks == 1 then
+  
+  if turn == party then
+   attacker.sx = -step
+  else
+   attacker.sx = step
+  end
+  
+  for t=1,#targets do
+   local target = lget(targets,t)
+   if not target.h then
+    if turn == party then
+     target.t.sx = -step
+    else
+     target.t.sx = step
+    end
+   end
+  end
+  
   local name = main_target_n
   if #targets > 1 then
    name = #targets.." targets"
@@ -1011,12 +1033,22 @@ function update_attack()
   cur.s = nil
   attack_ticks = nil
   
+  attacker.sx = 0
+  
   attacker = nil
   attacker_n = nil
   
   chance = nil
   main_target = nil
   main_target_n = nil
+  
+  for t=1,#targets do
+   local target = lget(targets,t)
+   if target then
+    target.t.sx = 0
+   end
+  end
+  
   targets = nil
   
   toggle_turn()
@@ -1837,7 +1869,8 @@ end
 
 function draw_enemies()
  for e in all(enemies) do
-  draw_enemy(e.i, e.x, e.y)
+  draw_enemy(e.i, e.x+e.sx, e.y)
+  //line(e.x+4, e.y+12, e.x+12, e.y+12)
  end
  for e in all(enemies.dead) do
   spr(195, e.x+4, e.y+4)
@@ -1846,7 +1879,8 @@ end
 
 function draw_party()
  for e in all(party) do
-  draw_enemy(e.i, e.x, e.y, true)
+  draw_enemy(e.i, e.x+e.sx, e.y, true)
+  //line(e.x+4, e.y+12, e.x+12, e.y+12)
  end
  for e in all(party.dead) do
   spr(193, e.x+7, e.y+2)
